@@ -19,6 +19,7 @@ template<typename R>
 struct Parser {
     virtual R parse(Input &input) = 0;
     virtual ~Parser() {}
+    virtual R operator()(Input &input) {return parse(input);}
 };
 
 #endif // QPARSEC_H
