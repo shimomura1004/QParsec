@@ -10,11 +10,11 @@ int main() {
 
         try {
             S(Choice({Str("int"), Str("vector")}))->parse(input);
-            S(Many1(Space()))->parse(input);
+            S(SkipMany1(Space()))->parse(input);
             auto var = S(AnyChar())->parse(input);
-            S(Many1(Space()))->parse(input);
+            S(SkipMany1(Space()))->parse(input);
             S(Char('='))->parse(input);
-            S(Many1(Space()))->parse(input);
+            S(SkipMany1(Space()))->parse(input);
 
             S(Char('('))->parse(input);
             auto tuple = S(SepBy(Many1(Digit()), Char(',')))->parse(input);
