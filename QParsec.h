@@ -2,6 +2,7 @@
 #define QPARSEC_H
 
 #include <QString>
+#include <QSharedPointer>
 
 struct Input {
     int index;
@@ -21,5 +22,9 @@ struct Parser {
     virtual ~Parser() {}
     virtual R operator()(Input &input) {return parse(input);}
 };
+
+template<typename T>
+QSharedPointer< Parser<T> > S(Parser<T> *p)
+{ return QSharedPointer< Parser<T> >(p);}
 
 #endif // QPARSEC_H
