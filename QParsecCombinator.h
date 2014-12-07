@@ -59,6 +59,18 @@ struct ParserMany1 : ParserMany<T> {
     }
 };
 
+template<>
+struct ParserMany1<QChar> : ParserMany<QChar> {
+    ParserMany1(Parser<QChar> *p) : ParserMany<QChar>(p) {}
+
+    QString parse(Input &input) {
+        QString result;
+        result += ParserMany<QChar>::p_->parse(input);
+        result += ParserMany<QChar>::parse(input);
+        return result;
+    }
+};
+
 template<typename T>
 struct ParserSkipMany : Parser<void> {
     Parser<T> *p_;

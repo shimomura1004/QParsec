@@ -26,8 +26,7 @@ int main() {
             S(SkipMany1(Space()))->parse(input);
 
             S(Char('('))->parse(input);
-            //auto tuple = S(SepBy(Many1(Digit()), Char(',')))->parse(input);
-            auto tuple = S(SepBy(Many(Digit()), Char(',')))->parse(input);
+            auto tuple = S(SepBy(Many1(Digit()), Char(',')))->parse(input);
             S(Char(')'))->parse(input);
 
             qDebug() << "set" << var << "to" << tuple;
