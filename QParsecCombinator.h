@@ -8,25 +8,6 @@
 // todo: remove parse method (use operator()?)
 
 template<typename T>
-struct ParserTry : Parser<T> {
-    Parser<T> *p_;
-
-    ParserTry(Parser<T> *p) : p_(p) {}
-    ~ParserTry() {delete p_;}
-
-    T parse(Input &input) {
-        Input tmp = input;
-        try {
-            return p_->parse(input);
-        }
-        catch (const ParserException &e) {
-            input = tmp;
-            throw e;
-        }
-    }
-};
-
-template<typename T>
 struct ParserMany : Parser< QList<T> > {
     Parser<T> *p_;
 
@@ -144,10 +125,6 @@ struct ParserSepBy : Parser< QList<T> > {
     }
 };
 
-
-template<typename T>
-ParserTry<T> *Try(Parser<T> *p)
-{ return new ParserTry<T>(p); }
 
 template<typename T>
 ParserMany<T> *Many(Parser<T> *p)

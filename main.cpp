@@ -4,6 +4,17 @@
 #include "QParsecCombinator.h"
 #include "QParsecChar.h"
 
+struct ParserStruct : Parser<void> {
+  void parse(Input &input) {
+      S(SkipMany(Space()))->parse(input);
+      S(Str("struct"))->parse(input);
+      S(SkipMany(Space()))->parse(input);
+      S(Char('{'));
+      S(Char('}'));
+      S(SkipMany(Space()))->parse(input);
+  }
+};
+
 int main() {
     {
         Input input("vector x = (12321,35)");
