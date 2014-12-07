@@ -27,6 +27,26 @@ struct ParserMany : Parser< QList<T> > {
     }
 };
 
+template<>
+struct ParserMany<QChar> : Parser<QString> {
+    Parser<QChar> *p_;
+
+    ParserMany(Parser<QChar> *p) : p_(p) {}
+    ~ParserMany() {delete p_;}
+
+    QString parse(Input &input) {
+        QString result;
+        try {
+            Q_FOREVER {
+                result += p_->parse(input);
+            }
+        }
+        catch (const ParserException &) {
+            return result;
+        }
+    }
+};
+
 template<typename T>
 struct ParserMany1 : ParserMany<T> {
     ParserMany1(Parser<T> *p) : ParserMany<T>(p) {}
@@ -129,6 +149,10 @@ struct ParserSepBy : Parser< QList<T> > {
 template<typename T>
 ParserMany<T> *Many(Parser<T> *p)
 { return new ParserMany<T>(p); }
+
+template<>
+ParserMany<QChar> *Many(Parser<QChar> *p)
+{ return new ParserMany<QChar>(p); }
 
 template<typename T>
 ParserMany1<T> *Many1(Parser<T> *p)

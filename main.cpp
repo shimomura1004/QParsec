@@ -21,14 +21,13 @@ int main() {
 
         try {
             S(Choice({Str("int"), Str("vector")}))->parse(input);
-            S(SkipMany1(Space()))->parse(input);
-            auto var = S(AnyChar())->parse(input);
-            S(SkipMany1(Space()))->parse(input);
-            S(Char('='))->parse(input);
+            auto var = S(Seq(SkipMany1(Space()), AnyChar()))->parse(input);
+            S(Seq(SkipMany1(Space()), Char('=')))->parse(input);
             S(SkipMany1(Space()))->parse(input);
 
             S(Char('('))->parse(input);
-            auto tuple = S(SepBy(Many1(Digit()), Char(',')))->parse(input);
+            //auto tuple = S(SepBy(Many1(Digit()), Char(',')))->parse(input);
+            auto tuple = S(SepBy(Many(Digit()), Char(',')))->parse(input);
             S(Char(')'))->parse(input);
 
             qDebug() << "set" << var << "to" << tuple;

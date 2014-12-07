@@ -29,7 +29,7 @@ template<typename T>
 QSharedPointer< Parser<T> > S(Parser<T> *p)
 { return QSharedPointer< Parser<T> >(p);}
 
-
+// todo: handle arbitrary number of arguments
 template<typename T1, typename T2>
 struct ParserSeq : Parser<T2> {
     Parser<T1> *p1_;
