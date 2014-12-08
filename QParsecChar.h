@@ -48,8 +48,7 @@ struct ParserNoneOf : Parser<QChar> {
 struct ParserChar : Parser<QChar> {
     QChar c_;
 
-    ParserChar(char c) : c_(c) {}
-    ParserChar(QChar c) : c_(c) {}
+    ParserChar(QChar c, QChar *out = nullptr) : Parser(out), c_(c) {}
 
     QChar parse(Input &input) {
         if (input.value.isEmpty())
@@ -59,6 +58,9 @@ struct ParserChar : Parser<QChar> {
 
         input.value.remove(0, 1);
         input.index += 1;
+
+        if (out_)
+            *out_ = c_;
         return c_;
     }
 };
@@ -66,8 +68,7 @@ struct ParserChar : Parser<QChar> {
 struct ParserStr : Parser<QString> {
     QString s_;
 
-    ParserStr(char *s) : s_(s) {}
-    ParserStr(QString s) : s_(s) {}
+    ParserStr(QString s, QString *out) : Parser(out), s_(s) {}
 
     QString parse(Input &input) {
         if (input.value.isEmpty())
@@ -77,17 +78,25 @@ struct ParserStr : Parser<QString> {
 
         input.value.remove(0, s_.length());
         input.index += s_.length();
+
+        if (out_)
+            *out_ = s_;
         return s_;
     }
 };
 
 struct ParserAnyChar : Parser<QChar> {
+    ParserAnyChar(QChar *out) : Parser(out) {}
+
     QChar parse(Input &input) {
         if (input.value.isEmpty())
             throw ParserException(input.index, "Unexpected end of input");
         QChar c = input.value[0];
         input.value.remove(0, 1);
         input.index += 1;
+
+        if (out_)
+            *out_ = c;
         return c;
     }
 };
@@ -113,9 +122,9 @@ ParserOneOf *OneOf(QString chars) { return new ParserOneOf(chars); }
 ParserOneOf *OneOf(char* chars) { return new ParserOneOf(chars); }
 ParserNoneOf *NoneOf(QString chars) { return new ParserNoneOf(chars); }
 ParserNoneOf *NoneOf(char* chars) { return new ParserNoneOf(chars); }
-ParserChar *Char(char c) { return new ParserChar(c); }
-ParserStr *Str(QString s) { return new ParserStr(s); }
-ParserAnyChar *AnyChar() { return new ParserAnyChar(); }
+ParserChar *Char(QChar c, QChar *out = nullptr) { return new ParserChar(c, out); }
+ParserStr *Str(QString s, QString *out = nullptr) { return new ParserStr(s, out); }
+ParserAnyChar *AnyChar(QChar *out = nullptr) { return new ParserAnyChar(out); }
 ParserDigit *Digit() { return new ParserDigit(); }
 ParserSpace *Space() { return new ParserSpace(); }
 

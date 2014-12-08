@@ -20,8 +20,10 @@ int main() {
         Input input("vector x = (12321,35)");
 
         try {
+            QChar var;
+
             S(Choice({Str("int"), Str("vector")}))->parse(input);
-            auto var = S(Seq(SkipMany1(Space()), AnyChar()))->parse(input);
+            S(Seq(SkipMany1(Space()), AnyChar(&var)))->parse(input);
             S(Seq(SkipMany1(Space()), Char('=')))->parse(input);
             S(SkipMany1(Space()))->parse(input);
 

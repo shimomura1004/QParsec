@@ -20,9 +20,11 @@ struct ParserException {
 
 template<typename T>
 struct Parser {
-    virtual T parse(Input &input) = 0;
+    T *out_;
+
+    Parser(T *out = nullptr) : out_(out) {}
     virtual ~Parser() {}
-    virtual T operator()(Input &input) {return parse(input);}
+    virtual T parse(Input &input) = 0;
 };
 
 template<typename T>
