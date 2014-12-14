@@ -4,14 +4,11 @@
 #include "QParsec.h"
 #include <QList>
 
-// todo: use smart pointer
-// todo: remove parse method (use operator()?)
-
 template<typename T>
 struct ParserMany : Parser< QList<T> > {
     Parser<T> *p_;
 
-    ParserMany(Parser<T> *p) : p_(p) {}
+    ParserMany(Parser<T> *p, QList<T> *out = nullptr) : Parser< QList<T> >(out), p_(p) {}
     ~ParserMany() {delete p_;}
 
     QList<T> parse(Input &input) {
@@ -22,6 +19,8 @@ struct ParserMany : Parser< QList<T> > {
             }
         }
         catch (const ParserException &) {
+            if (Parser< QList<T> >::out_)
+                *Parser< QList<T> >::out_ = result;
             return result;
         }
     }
@@ -31,7 +30,7 @@ template<>
 struct ParserMany<QChar> : Parser<QString> {
     Parser<QChar> *p_;
 
-    ParserMany(Parser<QChar> *p) : p_(p) {}
+    ParserMany(Parser<QChar> *p, QString *out = nullptr) : Parser(out), p_(p) {}
     ~ParserMany() {delete p_;}
 
     QString parse(Input &input) {
@@ -42,6 +41,8 @@ struct ParserMany<QChar> : Parser<QString> {
             }
         }
         catch (const ParserException &) {
+            if (out_)
+                *out_ = result;
             return result;
         }
     }
@@ -49,24 +50,30 @@ struct ParserMany<QChar> : Parser<QString> {
 
 template<typename T>
 struct ParserMany1 : ParserMany<T> {
-    ParserMany1(Parser<T> *p) : ParserMany<T>(p) {}
+    ParserMany1(Parser<T> *p, QList<T> *out = nullptr) : ParserMany<T>(p, out) {}
 
     QList<T> parse(Input &input) {
         QList<T> result;
         result.push_back(ParserMany<T>::p_->parse(input));
         result.append(ParserMany<T>::parse(input));
+
+        if (ParserMany<T>::out_)
+            *ParserMany<T>::out_ = result;
         return result;
     }
 };
 
 template<>
 struct ParserMany1<QChar> : ParserMany<QChar> {
-    ParserMany1(Parser<QChar> *p) : ParserMany<QChar>(p) {}
+    ParserMany1(Parser<QChar> *p, QString *out = nullptr) : ParserMany<QChar>(p, out) {}
 
     QString parse(Input &input) {
         QString result;
         result += ParserMany<QChar>::p_->parse(input);
         result += ParserMany<QChar>::parse(input);
+
+        if (out_)
+            *out_ = result;
         return result;
     }
 };
@@ -159,16 +166,16 @@ struct ParserSepBy : Parser< QList<T> > {
 
 
 template<typename T>
-ParserMany<T> *Many(Parser<T> *p)
-{ return new ParserMany<T>(p); }
-
-template<>
-ParserMany<QChar> *Many(Parser<QChar> *p)
-{ return new ParserMany<QChar>(p); }
+ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
+{ return new ParserMany<T>(p, out); }
+ParserMany<QChar> *Many(Parser<QChar> *p, QString *out = nullptr)
+{ return new ParserMany<QChar>(p, out); }
 
 template<typename T>
-ParserMany1<T> *Many1(Parser<T> *p)
-{ return new ParserMany1<T>(p); }
+ParserMany1<T> *Many1(Parser<T> *p, QList<T> *out = nullptr)
+{ return new ParserMany1<T>(p, out); }
+ParserMany1<QChar> *Many1(Parser<QChar> *p, QString *out = nullptr)
+{ return new ParserMany1<QChar>(p, out); }
 
 template<typename T>
 ParserSkipMany<T> *SkipMany(Parser<T> *p)
@@ -181,8 +188,9 @@ ParserSkipMany1<T> *SkipMany1(Parser<T> *p)
 template<typename T>
 ParserChoice<T> *Choice(QList< Parser<T>* > p)
 { return new ParserChoice<T>(p); }
-template<typename T>
-ParserChoice<T> *Choice(std::initializer_list< Parser<T>* > p)
+
+template<typename T> ParserChoice<T>
+*Choice(std::initializer_list< Parser<T>* > p)
 { return new ParserChoice<T>(p); }
 
 template<typename T, typename TSep>

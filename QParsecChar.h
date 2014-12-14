@@ -12,8 +12,8 @@
 struct ParserOneOf : Parser<QChar> {
     QString chars_;
 
-    ParserOneOf(QString chars) : chars_(chars) {}
-    ParserOneOf(char* chars) : chars_(chars) {}
+    ParserOneOf(QString chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
+    ParserOneOf(char* chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
 
     QChar parse(Input &input) {
         if (input.value.isEmpty())
@@ -23,6 +23,9 @@ struct ParserOneOf : Parser<QChar> {
         QChar c = input.value[0];
         input.value.remove(0, 1);
         input.index += 1;
+
+        if (out_)
+            *out_ = c;
         return c;
     }
 };
@@ -30,8 +33,8 @@ struct ParserOneOf : Parser<QChar> {
 struct ParserNoneOf : Parser<QChar> {
     QString chars_;
 
-    ParserNoneOf(QString chars) : chars_(chars) {}
-    ParserNoneOf(char* chars) : chars_(chars) {}
+    ParserNoneOf(QString chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
+    ParserNoneOf(char* chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
 
     QChar parse(Input &input) {
         if (input.value.isEmpty())
@@ -41,6 +44,9 @@ struct ParserNoneOf : Parser<QChar> {
         QChar c = input.value[0];
         input.value.remove(0, 1);
         input.index += 1;
+
+        if (out_)
+            *out_ = c;
         return c;
     }
 };
@@ -68,7 +74,7 @@ struct ParserChar : Parser<QChar> {
 struct ParserStr : Parser<QString> {
     QString s_;
 
-    ParserStr(QString s, QString *out) : Parser(out), s_(s) {}
+    ParserStr(QString s, QString *out = nullptr) : Parser(out), s_(s) {}
 
     QString parse(Input &input) {
         if (input.value.isEmpty())
@@ -86,7 +92,7 @@ struct ParserStr : Parser<QString> {
 };
 
 struct ParserAnyChar : Parser<QChar> {
-    ParserAnyChar(QChar *out) : Parser(out) {}
+    ParserAnyChar(QChar *out = nullptr) : Parser(out) {}
 
     QChar parse(Input &input) {
         if (input.value.isEmpty())
@@ -104,7 +110,14 @@ struct ParserAnyChar : Parser<QChar> {
 struct ParserDigit : Parser<QChar> {
     static ParserOneOf p_;
 
-    QChar parse(Input &input) {return p_.parse(input);}
+    ParserDigit(QChar *out = nullptr) : Parser(out) {}
+
+    QChar parse(Input &input) {
+        QChar c = p_.parse(input);
+        if (out_)
+            *out_ = c;
+        return c;
+    }
 };
 ParserOneOf
 ParserDigit::p_("0123456789");
@@ -112,20 +125,42 @@ ParserDigit::p_("0123456789");
 struct ParserSpace : Parser<QChar> {
     static ParserOneOf p_;
 
-    QChar parse(Input &input) {return p_.parse(input);}
+    ParserSpace(QChar *out = nullptr) : Parser(out) {}
+
+    QChar parse(Input &input) {
+        QChar c =  p_.parse(input);
+        if (out_)
+            *out_ = c;
+        return c;
+    }
 };
 ParserOneOf
 ParserSpace::p_(" \v\f\t\r\n");
 
 
-ParserOneOf *OneOf(QString chars) { return new ParserOneOf(chars); }
-ParserOneOf *OneOf(char* chars) { return new ParserOneOf(chars); }
-ParserNoneOf *NoneOf(QString chars) { return new ParserNoneOf(chars); }
-ParserNoneOf *NoneOf(char* chars) { return new ParserNoneOf(chars); }
-ParserChar *Char(QChar c, QChar *out = nullptr) { return new ParserChar(c, out); }
-ParserStr *Str(QString s, QString *out = nullptr) { return new ParserStr(s, out); }
-ParserAnyChar *AnyChar(QChar *out = nullptr) { return new ParserAnyChar(out); }
-ParserDigit *Digit() { return new ParserDigit(); }
-ParserSpace *Space() { return new ParserSpace(); }
+ParserOneOf *OneOf(QString chars, QChar *out = nullptr)
+{ return new ParserOneOf(chars, out); }
+ParserOneOf *OneOf(char* chars, QChar *out = nullptr)
+{ return new ParserOneOf(chars, out); }
+
+ParserNoneOf *NoneOf(QString chars, QChar *out = nullptr)
+{ return new ParserNoneOf(chars, out); }
+ParserNoneOf *NoneOf(char* chars, QChar *out = nullptr)
+{ return new ParserNoneOf(chars, out); }
+
+ParserChar *Char(QChar c, QChar *out = nullptr)
+{ return new ParserChar(c, out); }
+
+ParserStr *Str(QString s, QString *out = nullptr)
+{ return new ParserStr(s, out); }
+
+ParserAnyChar *AnyChar(QChar *out = nullptr)
+{ return new ParserAnyChar(out); }
+
+ParserDigit *Digit(QChar *out = nullptr)
+{ return new ParserDigit(out); }
+
+ParserSpace *Space(QChar *out = nullptr)
+{ return new ParserSpace(out); }
 
 #endif // QPARSECCHAR_H

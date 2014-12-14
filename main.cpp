@@ -28,10 +28,13 @@ int main() {
             S(SkipMany1(Space()))->parse(input);
 
             S(Char('('))->parse(input);
-            auto tuple = S(SepBy(Many1(Digit()), Char(',')))->parse(input);
+            QString test;
+            //auto tuple = S(SepBy(Many1(Digit(), &test), Char(',')))->parse(input);
+            auto tuple = S(SepBy(Many(Digit(), &test), Char(',')))->parse(input);
             S(Char(')'))->parse(input);
 
             qDebug() << "set" << var << "to" << tuple;
+            qDebug() << test;
         }
         catch (const ParserException& e) {
             qDebug() << "ParseError at" << e.index << ":" << e.reason;
