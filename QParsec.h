@@ -9,24 +9,24 @@
 class Input {
 protected:
     int index_;
-    QString value_;
+    QString str_;
     QStringList stacks_;
 
 public:
-    Input(const QString &v) : index_(0), value_(v) {}
+    Input(const QString &v) : index_(0), str_(v) {}
 
-    bool isEmpty(){ return value_.isEmpty(); }
-    int length(){ return value_.length(); }
+    bool isEmpty(){ return str_.isEmpty(); }
+    int length(){ return str_.length(); }
     int index(){ return index_; }
-    QCharRef operator[](int idx) { return value_[idx]; }
-    const QString &str() { return value_; }
+    QCharRef operator[](int idx) { return str_[idx]; }
+    const QString &str() { return str_; }
 
     void preserve() {
         stacks_.push_back("");
     }
     QString consume(int n) {
-        const QString s = value_.left(n);
-        value_.remove(0, n);
+        const QString s = str_.left(n);
+        str_.remove(0, n);
         index_ += s.length();
         if (!stacks_.empty())
             stacks_.last().append(s);
@@ -35,7 +35,7 @@ public:
     void restore() {
         assert(!stacks_.empty());
         const QString s = stacks_.last();
-        value_.prepend(s);
+        str_.prepend(s);
         index_ -= s.length();
         clear();
     }
