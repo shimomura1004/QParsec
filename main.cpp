@@ -17,6 +17,22 @@ struct ParserStruct : Parser<void> {
 
 int main() {
     {
+    // try example
+    {
+        Input input("aabcd");
+        try {
+            auto result = S(Choice({ Try(Seq(Char('a'), Char('b'))),
+                                     Seq(Char('a'), Char('a'))
+                                   }))->parse(input);
+            qDebug() << "result:" << result << input.value << input.stacks_;
+        }
+        catch (const ParserException &e) {
+            qDebug() << "ParseError at" << e.index << ":" << e.reason;
+        }
+    }
+#if 0
+    // basic example
+    {
         Input input("vector x = (12321,35)");
 
         try {
@@ -41,6 +57,7 @@ int main() {
         }
         qDebug() << input.value;
     }
+#endif
 
     return 0;
 }

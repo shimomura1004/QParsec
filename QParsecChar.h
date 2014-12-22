@@ -62,8 +62,7 @@ struct ParserChar : Parser<QChar> {
         if (input.value[0] != c_)
             throw ParserException(input.index, QStringLiteral("Expected '%1' but got '%2'").arg(QString(c_), input.value.mid(0, 1)));
 
-        input.value.remove(0, 1);
-        input.index += 1;
+        input.consume(1);
 
         if (out_)
             *out_ = c_;
@@ -82,8 +81,7 @@ struct ParserStr : Parser<QString> {
         if (!input.value.startsWith(s_))
             throw ParserException(input.index, QStringLiteral("Expected '%1' but got '%2'").arg(s_, input.value.mid(0, s_.length())));
 
-        input.value.remove(0, s_.length());
-        input.index += s_.length();
+        input.consume(s_.length());
 
         if (out_)
             *out_ = s_;

@@ -1,14 +1,39 @@
 #ifndef QPARSEC_H
 #define QPARSEC_H
 
+#include <cassert>
 #include <QString>
+#include <QStringList>
 #include <QSharedPointer>
 
-// todo: define accessor
-// duplicate all input (in Try) is inefficient
+// todo: encapsulation
 struct Input {
     int index;
     QString value;
+    QStringList stacks_;
+
+    void preserve() {
+        stacks_.push_back("");
+    }
+    void consume(int n) {
+        const QString s = value.left(n);
+        value.remove(0, n);
+        index += s.length();
+        if (!stacks_.empty())
+            stacks_.last().append(s);
+    }
+    void restore() {
+        assert(!stacks_.empty());
+        const QString s = stacks_.last();
+        value.prepend(s);
+        index -= s.length();
+        clear();
+    }
+    void clear() {
+        assert(!stacks_.empty());
+        stacks_.pop_back();
+    }
+
     Input(QString v) : index(0), value(v) {}
 };
 
@@ -64,12 +89,14 @@ struct ParserTry : Parser<T> {
     ~ParserTry() {delete p_;}
 
     T parse(Input &input) {
-        Input tmp = input;
+        input.preserve();
         try {
-            return p_->parse(input);
+            auto result = p_->parse(input);
+            input.clear();
+            return result;
         }
         catch (const ParserException &e) {
-            input = tmp;
+            input.restore();
             throw e;
         }
     }
