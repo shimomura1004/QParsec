@@ -17,6 +17,35 @@ struct ParserStruct : Parser<void> {
 
 int main() {
     {
+        Input input("aahellobcd");
+
+        try {
+            ParserSeq<> p0;
+            ParserSeq<QChar> p1(Char('a'));
+            ParserSeq<QChar, QString> p2(Char('a'), Str("hello"));
+            //ParserSeq3<QChar, QChar, QString> p3(Char('a'), Char('b'), Str("hoge"));
+
+
+            p0.parse(input);
+            qDebug() << input.value;
+            p1.parse(input);
+            qDebug() << input.value;
+            p2.parse(input);
+            qDebug() << input.value;
+            //p3.parse(input);
+            //qDebug() << input.value;
+
+            Input input2("1hoge");
+            auto p = S(Seq(Char('1'), Str("hoge"), Char('a')));
+            p->parse(input2);
+            qDebug() << input2.value;
+        }
+        catch (const ParserException &e) {
+            qDebug() << "ParseError at" << e.index << ":" << e.reason;
+        }
+    }
+
+#if 0
     // try example
     {
         Input input("aabcd");
@@ -30,6 +59,7 @@ int main() {
             qDebug() << "ParseError at" << e.index << ":" << e.reason;
         }
     }
+#endif
 #if 0
     // basic example
     {

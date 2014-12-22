@@ -56,18 +56,17 @@ template<typename T>
 QSharedPointer< Parser<T> > S(Parser<T> *p)
 { return QSharedPointer< Parser<T> >(p);}
 
-// todo: handle arbitrary number of arguments
-template<typename T1, typename T2>
-struct ParserSeq : Parser<T2> {
-    Parser<T1> *p1_;
-    Parser<T2> *p2_;
-
-    ParserSeq(Parser<T1> *p1, Parser<T2> *p2) : p1_(p1), p2_(p2) {}
-    ~ParserSeq(){ delete p1_; delete p2_; }
-
-    T2 parse(Input &input) {
-        p1_->parse(input);
-        return p2_->parse(input);
+template<typename... Ts>
+struct ParserSeq : Parser<void> {
+    void parse(Input&) {}
+};
+template<typename T, typename... Ts>
+struct ParserSeq<T, Ts...> : ParserSeq<Ts...> {
+    Parser<T>* p_;
+    ParserSeq(Parser<T>* p, Parser<Ts>*... ps) : ParserSeq<Ts...>(ps...), p_(p) {}
+    void parse(Input &input) {
+        p_->parse(input);
+        ParserSeq<Ts...>::parse(input);
     }
 };
 
@@ -102,10 +101,9 @@ struct ParserTry : Parser<T> {
     }
 };
 
-
-template<typename T1, typename T2>
-ParserSeq<T1, T2> *Seq(Parser<T1> *p1, Parser<T2> *p2)
-{ return new ParserSeq<T1, T2>(p1, p2); }
+template<typename... Ts>
+ParserSeq<Ts...> *Seq(Parser<Ts>*... ps)
+{ return new ParserSeq<Ts...>(ps...); }
 
 ParserFail *Fail(QString message)
 { return new ParserFail(message); }
