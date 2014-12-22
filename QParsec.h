@@ -71,7 +71,10 @@ struct ParserSeq : Parser<void> {
 template<typename T, typename... Ts>
 struct ParserSeq<T, Ts...> : ParserSeq<Ts...> {
     Parser<T>* p_;
+
     ParserSeq(Parser<T>* p, Parser<Ts>*... ps) : ParserSeq<Ts...>(ps...), p_(p) {}
+    virtual ~ParserSeq() { delete p_; }
+
     void parse(Input &input) {
         p_->parse(input);
         ParserSeq<Ts...>::parse(input);
