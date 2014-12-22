@@ -16,14 +16,12 @@ struct ParserOneOf : Parser<QChar> {
     ParserOneOf(char* chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
 
     QChar parse(Input &input) {
-        if (input.value.isEmpty())
-            throw ParserException(input.index, "Unexpected end of input");
-        if (!chars_.contains(input.value[0]))
-            throw ParserException(input.index, QStringLiteral("Expected one of '%1' but got '%2'").arg(chars_, input.value.mid(0, 1)));
-        QChar c = input.value[0];
-        input.value.remove(0, 1);
-        input.index += 1;
+        if (input.isEmpty())
+            throw ParserException(input.index(), "Unexpected end of input");
+        if (!chars_.contains(input[0]))
+            throw ParserException(input.index(), QStringLiteral("Expected one of '%1' but got '%2'").arg(chars_, QString(input[0])));
 
+        QChar c = input.consume(1)[0];
         if (out_)
             *out_ = c;
         return c;
@@ -37,14 +35,12 @@ struct ParserNoneOf : Parser<QChar> {
     ParserNoneOf(char* chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
 
     QChar parse(Input &input) {
-        if (input.value.isEmpty())
-            throw ParserException(input.index, "Unexpected end of input");
-        if (chars_.contains(input.value[0]))
-            throw ParserException(input.index, QStringLiteral("Expected none of '%1' but got '%2'").arg(chars_, input.value.mid(0, 1)));
-        QChar c = input.value[0];
-        input.value.remove(0, 1);
-        input.index += 1;
+        if (input.isEmpty())
+            throw ParserException(input.index(), "Unexpected end of input");
+        if (chars_.contains(input[0]))
+            throw ParserException(input.index(), QStringLiteral("Expected none of '%1' but got '%2'").arg(chars_, QString(input[0])));
 
+        QChar c = input.consume(1)[0];
         if (out_)
             *out_ = c;
         return c;
@@ -57,13 +53,12 @@ struct ParserChar : Parser<QChar> {
     ParserChar(QChar c, QChar *out = nullptr) : Parser(out), c_(c) {}
 
     QChar parse(Input &input) {
-        if (input.value.isEmpty())
-            throw ParserException(input.index, "Unexpected end of input");
-        if (input.value[0] != c_)
-            throw ParserException(input.index, QStringLiteral("Expected '%1' but got '%2'").arg(QString(c_), input.value.mid(0, 1)));
+        if (input.isEmpty())
+            throw ParserException(input.index(), "Unexpected end of input");
+        if (input[0] != c_)
+            throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(QString(c_), QString(input[0])));
 
         input.consume(1);
-
         if (out_)
             *out_ = c_;
         return c_;
@@ -76,13 +71,12 @@ struct ParserStr : Parser<QString> {
     ParserStr(QString s, QString *out = nullptr) : Parser(out), s_(s) {}
 
     QString parse(Input &input) {
-        if (input.value.isEmpty())
+        if (input.isEmpty())
             throw ParserException(0, "Empty input");
-        if (!input.value.startsWith(s_))
-            throw ParserException(input.index, QStringLiteral("Expected '%1' but got '%2'").arg(s_, input.value.mid(0, s_.length())));
+        if (!input.str().startsWith(s_))
+            throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(s_, input.str().left(s_.length())));
 
         input.consume(s_.length());
-
         if (out_)
             *out_ = s_;
         return s_;
@@ -93,12 +87,10 @@ struct ParserAnyChar : Parser<QChar> {
     ParserAnyChar(QChar *out = nullptr) : Parser(out) {}
 
     QChar parse(Input &input) {
-        if (input.value.isEmpty())
-            throw ParserException(input.index, "Unexpected end of input");
-        QChar c = input.value[0];
-        input.value.remove(0, 1);
-        input.index += 1;
+        if (input.isEmpty())
+            throw ParserException(input.index(), "Unexpected end of input");
 
+        QChar c = input.consume(1)[0];
         if (out_)
             *out_ = c;
         return c;

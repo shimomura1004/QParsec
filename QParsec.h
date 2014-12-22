@@ -6,35 +6,43 @@
 #include <QStringList>
 #include <QSharedPointer>
 
-// todo: encapsulation
-struct Input {
-    int index;
-    QString value;
+class Input {
+protected:
+    int index_;
+    QString value_;
     QStringList stacks_;
+
+public:
+    Input(const QString &v) : index_(0), value_(v) {}
+
+    bool isEmpty(){ return value_.isEmpty(); }
+    int length(){ return value_.length(); }
+    int index(){ return index_; }
+    QCharRef operator[](int idx) { return value_[idx]; }
+    const QString &str() { return value_; }
 
     void preserve() {
         stacks_.push_back("");
     }
-    void consume(int n) {
-        const QString s = value.left(n);
-        value.remove(0, n);
-        index += s.length();
+    QString consume(int n) {
+        const QString s = value_.left(n);
+        value_.remove(0, n);
+        index_ += s.length();
         if (!stacks_.empty())
             stacks_.last().append(s);
+        return s;
     }
     void restore() {
         assert(!stacks_.empty());
         const QString s = stacks_.last();
-        value.prepend(s);
-        index -= s.length();
+        value_.prepend(s);
+        index_ -= s.length();
         clear();
     }
     void clear() {
         assert(!stacks_.empty());
         stacks_.pop_back();
     }
-
-    Input(QString v) : index(0), value(v) {}
 };
 
 struct ParserException {
@@ -76,7 +84,7 @@ struct ParserFail : Parser<void> {
     ParserFail(QString message) : message_(message) {}
 
     void parse(Input &input) {
-        throw ParserException(input.index, message_);
+        throw ParserException(input.index(), message_);
     }
 };
 

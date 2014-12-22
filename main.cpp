@@ -27,18 +27,18 @@ int main() {
 
 
             p0.parse(input);
-            qDebug() << input.value;
+            qDebug() << input.str();
             p1.parse(input);
-            qDebug() << input.value;
+            qDebug() << input.str();
             p2.parse(input);
-            qDebug() << input.value;
+            qDebug() << input.str();
             //p3.parse(input);
             //qDebug() << input.value;
 
             Input input2("1hoge");
             auto p = S(Seq(Char('1'), Str("hoge"), Char('a')));
             p->parse(input2);
-            qDebug() << input2.value;
+            qDebug() << input2.str();
         }
         catch (const ParserException &e) {
             qDebug() << "ParseError at" << e.index << ":" << e.reason;
