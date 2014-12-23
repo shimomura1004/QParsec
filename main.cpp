@@ -23,8 +23,6 @@ int main() {
             ParserSeq<> p0;
             ParserSeq<QChar> p1(Char('a'));
             ParserSeq<QChar, QString> p2(Char('a'), Str("hello"));
-            //ParserSeq3<QChar, QChar, QString> p3(Char('a'), Char('b'), Str("hoge"));
-
 
             p0.parse(input);
             qDebug() << input.str();
@@ -32,11 +30,9 @@ int main() {
             qDebug() << input.str();
             p2.parse(input);
             qDebug() << input.str();
-            //p3.parse(input);
-            //qDebug() << input.value;
 
             Input input2("1hoge");
-            auto p = S(Seq(Char('1'), Str("hoge"), Char('a')));
+            auto p = S(Seq(Char('1'), Str("hoge"), Help(Char('a'), "hoge")));
             p->parse(input2);
             qDebug() << input2.str();
         }

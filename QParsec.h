@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QSharedPointer>
 
+// todo: inherit QIODevice
 class Input {
 protected:
     int index_;
@@ -112,6 +113,25 @@ struct ParserTry : Parser<T> {
     }
 };
 
+template<typename T>
+struct ParserHelp : Parser<T> {
+    Parser<T> *p_;
+    QString message_;
+
+    ParserHelp(Parser<T> *p, const QString &message) : p_(p), message_(message) {}
+    virtual ~ParserHelp() {delete p_;}
+
+    T parse(Input &input) {
+        try {
+            return p_->parse(input);
+        }
+        catch (const ParserException &e) {
+            ParserException e2(e.index, QStringLiteral("Expected %1").arg(message_));
+            throw e2;
+        }
+    }
+};
+
 template<typename... Ts>
 ParserSeq<Ts...> *Seq(Parser<Ts>*... ps)
 { return new ParserSeq<Ts...>(ps...); }
@@ -122,5 +142,9 @@ ParserFail *Fail(QString message)
 template<typename T>
 ParserTry<T> *Try(Parser<T> *p)
 { return new ParserTry<T>(p); }
+
+template<typename T>
+ParserHelp<T> *Help(Parser<T> *p, const QString &message)
+{ return new ParserHelp<T>(p, message); }
 
 #endif // QPARSEC_H
