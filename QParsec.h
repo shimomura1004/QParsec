@@ -96,7 +96,7 @@ struct ParserTry : Parser<T> {
     Parser<T> *p_;
 
     ParserTry(Parser<T> *p) : p_(p) {}
-    ~ParserTry() {delete p_;}
+    virtual ~ParserTry() {delete p_;}
 
     T parse(Input &input) {
         input.preserve();

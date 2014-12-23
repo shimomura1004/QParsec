@@ -9,7 +9,7 @@ struct ParserMany : Parser< QList<T> > {
     Parser<T> *p_;
 
     ParserMany(Parser<T> *p, QList<T> *out = nullptr) : Parser< QList<T> >(out), p_(p) {}
-    ~ParserMany() {delete p_;}
+    virtual ~ParserMany() {delete p_;}
 
     QList<T> parse(Input &input) {
         QList<T> result;
@@ -31,7 +31,7 @@ struct ParserMany<QChar> : Parser<QString> {
     Parser<QChar> *p_;
 
     ParserMany(Parser<QChar> *p, QString *out = nullptr) : Parser(out), p_(p) {}
-    ~ParserMany() {delete p_;}
+    virtual ~ParserMany() {delete p_;}
 
     QString parse(Input &input) {
         QString result;
@@ -83,7 +83,7 @@ struct ParserSkipMany : Parser<void> {
     Parser<T> *p_;
 
     ParserSkipMany(Parser<T> *p) : p_(p) {}
-    ~ParserSkipMany() {delete p_;}
+    virtual ~ParserSkipMany() {delete p_;}
 
     void parse(Input &input) {
         try {
@@ -112,7 +112,7 @@ struct ParserChoice : Parser<T> {
 
   ParserChoice(QList< Parser<T>* > ps) : ps_(ps) {}
   ParserChoice(std::initializer_list< Parser<T>* > &ps) : ps_(ps) {}
-  ~ParserChoice() {
+  virtual ~ParserChoice() {
       Q_FOREACH(auto &p, ps_) {
           delete p;
       }
@@ -140,7 +140,7 @@ struct ParserSepBy : Parser< QList<T> > {
     Parser<TSep> *sep_;
 
     ParserSepBy(Parser<T> *p, Parser<TSep> *sep) : p_(p), sep_(sep) {}
-    ~ParserSepBy() {
+    virtual ~ParserSepBy() {
         delete p_;
         delete sep_;
     }
