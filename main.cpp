@@ -319,6 +319,72 @@ void test_SepBy1() {
     catch (const ParserException &){}
 }
 
+void test_EndBy() {
+    Input input("123  32 ");
+
+    auto nums = EndBy(Many1(Digit()), Many1(Space()))->parse(input);
+    assert(nums.length() == 2);
+    assert(nums[0] == "123");
+    assert(nums[1] == "32");
+
+    Input multi_fail("123 32");
+    try {
+        EndBy(Many1(Digit()), Many1(Space()))->parse(multi_fail);
+        assert(false);
+    }
+    catch (const ParserException &) {}
+
+    Input single("123 ");
+    auto single_ = EndBy(Many1(Digit()), Many1(Space()))->parse(single);
+    assert(single_.length() == 1);
+    assert(single_[0] == "123");
+
+    Input single_fail("123");
+    try {
+        EndBy(Many1(Digit()), Many1(Space()))->parse(single_fail);
+        assert(false);
+    }
+    catch (const ParserException &) {}
+
+    Input empty("");
+    auto empty_ = EndBy(Many1(Digit()), Many1(Space()))->parse(empty);
+    assert(empty_.length() == 0);
+}
+
+void test_EndBy1() {
+    Input input("123  32 ");
+
+    auto nums = EndBy1(Many1(Digit()), Many1(Space()))->parse(input);
+    assert(nums.length() == 2);
+    assert(nums[0] == "123");
+    assert(nums[1] == "32");
+
+    Input multi_fail("123 32");
+    try {
+        EndBy1(Many1(Digit()), Many1(Space()))->parse(multi_fail);
+        assert(false);
+    }
+    catch (const ParserException &) {}
+
+    Input single("123 ");
+    auto single_ = EndBy(Many1(Digit()), Many1(Space()))->parse(single);
+    assert(single_.length() == 1);
+    assert(single_[0] == "123");
+
+    Input single_fail("123");
+    try {
+        EndBy1(Many1(Digit()), Many1(Space()))->parse(single_fail);
+        assert(false);
+    }
+    catch (const ParserException &) {}
+
+    Input empty("");
+    try {
+        EndBy1(Many1(Digit()), Many1(Space()))->parse(empty);
+        assert(false);
+    }
+    catch (const ParserException &) {}
+}
 
 int main() {
     test_Char();
@@ -339,6 +405,8 @@ int main() {
     test_Choice();
     test_SepBy();
     test_SepBy1();
+    test_EndBy();
+    test_EndBy1();
 
     return 0;
 }

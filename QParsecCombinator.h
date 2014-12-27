@@ -154,48 +154,117 @@ struct ParserSepBy : Parser< QList<T> > {
 
     QList<T> parse(Input &input) {
         QList<T> result;
-        bool endWithSeparator = false;
-        try {
-            Q_FOREVER {
-                result.push_back(p_->parse(input));
-                endWithSeparator = false;
-                sep_->parse(input);
-                endWithSeparator = true;
-            }
-        }
-        catch (const ParserException &exp) {
-            if (endWithSeparator)
-                throw exp;
 
+        try {
+            result.push_back(p_->parse(input));
+        }
+        catch (const ParserException &) {
             if (Parser< QList<T> >::out_)
                 *Parser< QList<T> >::out_ = result;
             return result;
+        }
+
+        Q_FOREVER {
+            try {
+                sep_->parse(input);
+            }
+            catch (const ParserException &) {
+                if (Parser< QList<T> >::out_)
+                    *Parser< QList<T> >::out_ = result;
+                return result;
+            }
+
+            result.push_back(p_->parse(input));
         }
     }
 };
 
 template<typename T, typename TSep>
-struct ParserSepBy1 : ParserSepBy<T, TSep> {
-    ParserSepBy1(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : ParserSepBy<T, TSep>(p, sep, out) {}
+struct ParserSepBy1 : Parser< QList<T> > {
+    Parser<T> *p_;
+    Parser<TSep> *sep_;
+
+    ParserSepBy1(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
+    virtual ~ParserSepBy1() {
+        delete p_;
+        delete sep_;
+    }
 
     QList<T> parse(Input &input) {
         QList<T> result;
-        result += ParserSepBy<T, TSep>::p_->parse(input);
 
-        try {
-            ParserSepBy<T, TSep>::sep_->parse(input);
+        result.push_back(p_->parse(input));
+        Q_FOREVER {
+            try {
+                sep_->parse(input);
+            }
+            catch (const ParserException &) {
+                if (Parser< QList<T> >::out_)
+                    *Parser< QList<T> >::out_ = result;
+                return result;
+            }
+
+            result.push_back(p_->parse(input));
         }
-        catch (const ParserException &) {
-            if (ParserSepBy<T, TSep>::out_)
-                *ParserSepBy<T, TSep>::out_ = result;
-            return result;
+    }
+};
+
+template<typename T, typename TSep>
+struct ParserEndBy : Parser< QList<T> > {
+    Parser<T> *p_;
+    Parser<TSep> *sep_;
+
+    ParserEndBy(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
+    virtual ~ParserEndBy() {
+        delete p_;
+        delete sep_;
+    }
+
+    QList<T> parse(Input &input) {
+        QList<T> result;
+
+        Q_FOREVER {
+            try {
+                result.push_back(p_->parse(input));
+            }
+            catch (const ParserException &exp) {
+                if (Parser< QList<T> >::out_)
+                    *Parser< QList<T> >::out_ = result;
+                return result;
+            }
+            sep_->parse(input);
         }
+    }
+};
 
-        result += ParserSepBy<T, TSep>::parse(input);
+template<typename T, typename TSep>
+struct ParserEndBy1 : Parser< QList<T> > {
+    Parser<T> *p_;
+    Parser<TSep> *sep_;
 
-        if (ParserSepBy<T, TSep>::out_)
-            *ParserSepBy<T, TSep>::out_ = result;
-        return result;
+    ParserEndBy1(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
+    virtual ~ParserEndBy1() {
+        delete p_;
+        delete sep_;
+    }
+
+    QList<T> parse(Input &input) {
+        QList<T> result;
+
+        result.push_back(p_->parse(input));
+        sep_->parse(input);
+
+        Q_FOREVER {
+            try {
+                result.push_back(p_->parse(input));
+            }
+            catch (const ParserException &exp) {
+                if (Parser< QList<T> >::out_)
+                    *Parser< QList<T> >::out_ = result;
+                return result;
+            }
+            sep_->parse(input);
+        }
     }
 };
 
@@ -235,5 +304,13 @@ ParserSepBy<T, TSep> *SepBy(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nu
 template<typename T, typename TSep>
 ParserSepBy1<T, TSep> *SepBy1(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
 { return new ParserSepBy1<T, TSep>(p, psep, out); }
+
+template<typename T, typename TSep>
+ParserEndBy<T, TSep> *EndBy(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
+{ return new ParserEndBy<T, TSep>(p, psep, out); }
+
+template<typename T, typename TSep>
+ParserEndBy1<T, TSep> *EndBy1(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
+{ return new ParserEndBy1<T, TSep>(p, psep, out); }
 
 #endif // QPARSECCOMBINATOR_H
