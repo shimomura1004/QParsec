@@ -272,21 +272,53 @@ void test_SepBy() {
     assert(nums[2] == "2");
     assert(nums[3] == "300");
 
+    Input single("100");
+    auto num = SepBy(Many1(Digit()), Many1(Space()))->parse(single);
+    assert(num.length() == 1);
+    assert(num[0] == "100");
+
     Input empty("");
     auto empty_ = SepBy(Char('a'), Space())->parse(empty);
     assert(empty_.length() == 0);
+
+    Input endWithSep("10 23  ");
+    try {
+        SepBy(Many1(Digit()), Many1(Space()))->parse(endWithSep);
+        assert(false);
+    }
+    catch (const ParserException &){}
 }
 
-struct ParserStruct : Parser<void> {
-  void parse(Input &input) {
-      S(SkipMany(Space()))->parse(input);
-      S(Str("struct"))->parse(input);
-      S(SkipMany(Space()))->parse(input);
-      S(Char('{'));
-      S(Char('}'));
-      S(SkipMany(Space()))->parse(input);
-  }
-};
+void test_SepBy1() {
+    Input input("0 10  2    300");
+
+    auto nums = SepBy1(Many1(Digit()), Many1(Space()))->parse(input);
+    assert(nums.length() == 4);
+    assert(nums[0] == "0");
+    assert(nums[1] == "10");
+    assert(nums[2] == "2");
+    assert(nums[3] == "300");
+
+    Input single("100");
+    auto num = SepBy1(Many1(Digit()), Many1(Space()))->parse(single);
+    assert(num.length() == 1);
+    assert(num[0] == "100");
+
+    Input empty("");
+    try {
+        SepBy1(Char('a'), Space())->parse(empty);
+        assert(false);
+    }
+    catch (const ParserException &){}
+
+    Input endWithSep("10 23  ");
+    try {
+        SepBy1(Many1(Digit()), Many1(Space()))->parse(endWithSep);
+        assert(false);
+    }
+    catch (const ParserException &){}
+}
+
 
 int main() {
     test_Char();
@@ -306,6 +338,7 @@ int main() {
     test_SkipMany1();
     test_Choice();
     test_SepBy();
+    test_SepBy1();
 
     return 0;
 }

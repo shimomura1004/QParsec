@@ -114,8 +114,8 @@ template<typename T>
 struct ParserChoice : Parser<T> {
   QList< Parser<T>* > ps_;
 
-  ParserChoice(QList< Parser<T>* > ps) : ps_(ps) {}
-  ParserChoice(std::initializer_list< Parser<T>* > &ps) : ps_(ps) {}
+  ParserChoice(QList< Parser<T>* > ps, T *out) : Parser<T>(out), ps_(ps) {}
+  ParserChoice(std::initializer_list< Parser<T>* > &ps, T *out) : Parser<T>(out), ps_(ps) {}
   virtual ~ParserChoice() {
       Q_FOREACH(auto &p, ps_) {
           delete p;
@@ -127,7 +127,10 @@ struct ParserChoice : Parser<T> {
       ParserException exp(0, "");
       Q_FOREACH(Parser<T> *p, ps_) {
           try {
-              return p->parse(input);
+              T result = p->parse(input);
+              if(Parser<T>::out_)
+                  *Parser<T>::out_ = result;
+              return result;
           }
           catch (const ParserException &e) {
               exp = e;
@@ -143,7 +146,7 @@ struct ParserSepBy : Parser< QList<T> > {
     Parser<T> *p_;
     Parser<TSep> *sep_;
 
-    ParserSepBy(Parser<T> *p, Parser<TSep> *sep) : p_(p), sep_(sep) {}
+    ParserSepBy(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
     virtual ~ParserSepBy() {
         delete p_;
         delete sep_;
@@ -163,8 +166,36 @@ struct ParserSepBy : Parser< QList<T> > {
         catch (const ParserException &exp) {
             if (endWithSeparator)
                 throw exp;
+
+            if (Parser< QList<T> >::out_)
+                *Parser< QList<T> >::out_ = result;
             return result;
         }
+    }
+};
+
+template<typename T, typename TSep>
+struct ParserSepBy1 : ParserSepBy<T, TSep> {
+    ParserSepBy1(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : ParserSepBy<T, TSep>(p, sep, out) {}
+
+    QList<T> parse(Input &input) {
+        QList<T> result;
+        result += ParserSepBy<T, TSep>::p_->parse(input);
+
+        try {
+            ParserSepBy<T, TSep>::sep_->parse(input);
+        }
+        catch (const ParserException &) {
+            if (ParserSepBy<T, TSep>::out_)
+                *ParserSepBy<T, TSep>::out_ = result;
+            return result;
+        }
+
+        result += ParserSepBy<T, TSep>::parse(input);
+
+        if (ParserSepBy<T, TSep>::out_)
+            *ParserSepBy<T, TSep>::out_ = result;
+        return result;
     }
 };
 
@@ -190,15 +221,19 @@ ParserSkipMany1<T> *SkipMany1(Parser<T> *p)
 { return new ParserSkipMany1<T>(p); }
 
 template<typename T>
-ParserChoice<T> *Choice(QList< Parser<T>* > p)
-{ return new ParserChoice<T>(p); }
+ParserChoice<T> *Choice(QList< Parser<T>* > p, T *out = nullptr)
+{ return new ParserChoice<T>(p, out); }
 
 template<typename T> ParserChoice<T>
-*Choice(std::initializer_list< Parser<T>* > p)
-{ return new ParserChoice<T>(p); }
+*Choice(std::initializer_list< Parser<T>* > p, T *out = nullptr)
+{ return new ParserChoice<T>(p, out); }
 
 template<typename T, typename TSep>
-ParserSepBy<T, TSep> *SepBy(Parser<T> *p, Parser<TSep> *psep)
-{ return new ParserSepBy<T, TSep>(p, psep); }
+ParserSepBy<T, TSep> *SepBy(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
+{ return new ParserSepBy<T, TSep>(p, psep, out); }
+
+template<typename T, typename TSep>
+ParserSepBy1<T, TSep> *SepBy1(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
+{ return new ParserSepBy1<T, TSep>(p, psep, out); }
 
 #endif // QPARSECCOMBINATOR_H
