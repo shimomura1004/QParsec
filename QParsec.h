@@ -113,6 +113,27 @@ struct ParserTry : Parser<T> {
     }
 };
 
+template<>
+struct ParserTry<void> : Parser<void> {
+    Parser<void> *p_;
+
+    ParserTry(Parser<void> *p) : p_(p) {}
+    virtual ~ParserTry() {delete p_;}
+
+    void parse(Input &input) {
+        input.preserve();
+        try {
+            p_->parse(input);
+            input.clear();
+            return;
+        }
+        catch (const ParserException &e) {
+            input.restore();
+            throw e;
+        }
+    }
+};
+
 template<typename T>
 struct ParserHelp : Parser<T> {
     Parser<T> *p_;
