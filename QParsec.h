@@ -147,7 +147,7 @@ struct ParserHelp : Parser<T> {
             return p_->parse(input);
         }
         catch (const ParserException &e) {
-            ParserException e2(e.index, QStringLiteral("Expected %1").arg(message_));
+            ParserException e2(e.index, message_);
             throw e2;
         }
     }
