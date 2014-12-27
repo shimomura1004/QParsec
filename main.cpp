@@ -386,6 +386,22 @@ void test_EndBy1() {
     catch (const ParserException &) {}
 }
 
+void test_Count() {
+    Input input("12345");
+
+    auto digits = Count(Digit(), 5)->parse(input);
+    assert(digits == "12345");
+
+    auto empty = Count(Digit(), 0)->parse(input);
+    assert(empty == "");
+
+    try {
+        Count(Digit(), 3)->parse(input);
+        assert(false);
+    }
+    catch (const ParserException &) {}
+}
+
 int main() {
     test_Char();
     test_Seq();
@@ -407,6 +423,7 @@ int main() {
     test_SepBy1();
     test_EndBy();
     test_EndBy1();
+    test_Count();
 
     return 0;
 }

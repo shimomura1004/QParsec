@@ -247,6 +247,41 @@ struct ParserEndBy1 : Parser< QList<T> > {
     }
 };
 
+template<typename T>
+struct ParserCount : Parser< QList<T> > {
+    Parser<T> *p_;
+    int n_;
+
+    ParserCount(Parser<T> *p, int n, QList<T> *out) : Parser< QList<T> >(out), p_(p), n_(n) {}
+    virtual ~ParserCount() { delete p_; }
+
+    QList<T> parse(Input &input) {
+        QList<T> result;
+
+        for(int i = 0; i < n_; i++) {
+            result.push_back(p_->parse(input));
+        }
+        return setOut(result);
+    }
+};
+
+template<>
+struct ParserCount<QChar> : Parser<QString> {
+    Parser<QChar> *p_;
+    int n_;
+
+    ParserCount(Parser<QChar> *p, int n, QString *out) : Parser<QString>(out), p_(p), n_(n) {}
+    virtual ~ParserCount() { delete p_; }
+
+    QString parse(Input &input) {
+        QString result;
+
+        for(int i = 0; i < n_; i++) {
+            result.push_back(p_->parse(input));
+        }
+        return setOut(result);
+    }
+};
 
 template<typename T>
 ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
@@ -291,5 +326,11 @@ ParserEndBy<T, TSep> *EndBy(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nu
 template<typename T, typename TSep>
 ParserEndBy1<T, TSep> *EndBy1(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
 { return new ParserEndBy1<T, TSep>(p, psep, out); }
+
+template<typename T>
+ParserCount<T> *Count(Parser<T> *p, int n, QList<T> *out = nullptr)
+{ return new ParserCount<T>(p, n, out); }
+ParserCount<QChar> *Count(Parser<QChar> *p, int n, QString *out = nullptr)
+{ return new ParserCount<QChar>(p, n, out); }
 
 #endif // QPARSECCOMBINATOR_H
