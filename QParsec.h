@@ -59,6 +59,18 @@ struct Parser {
     Parser(T *out = nullptr) : out_(out) {}
     virtual ~Parser() {}
     virtual T parse(Input &input) = 0;
+
+    inline T setOut(T result) {
+        if (out_)
+            *out_ = result;
+        return result;
+    }
+};
+
+template<>
+struct Parser<void> {
+    virtual ~Parser() {}
+    virtual void parse(Input &input) = 0;
 };
 
 template<typename T>

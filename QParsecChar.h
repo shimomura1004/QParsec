@@ -19,9 +19,7 @@ struct ParserOneOf : Parser<QChar> {
             throw ParserException(input.index(), QStringLiteral("Expected one of '%1' but got '%2'").arg(chars_, QString(input[0])));
 
         QChar c = input.consume(1)[0];
-        if (out_)
-            *out_ = c;
-        return c;
+        return setOut(c);
     }
 };
 
@@ -37,9 +35,7 @@ struct ParserNoneOf : Parser<QChar> {
             throw ParserException(input.index(), QStringLiteral("Expected none of '%1' but got '%2'").arg(chars_, QString(input[0])));
 
         QChar c = input.consume(1)[0];
-        if (out_)
-            *out_ = c;
-        return c;
+        return setOut(c);
     }
 };
 
@@ -55,9 +51,7 @@ struct ParserChar : Parser<QChar> {
             throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(QString(c_), QString(input[0])));
 
         input.consume(1);
-        if (out_)
-            *out_ = c_;
-        return c_;
+        return setOut(c_);
     }
 };
 
@@ -73,9 +67,7 @@ struct ParserStr : Parser<QString> {
             throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(s_, input.str().left(s_.length())));
 
         input.consume(s_.length());
-        if (out_)
-            *out_ = s_;
-        return s_;
+        return setOut(s_);
     }
 };
 
@@ -87,9 +79,7 @@ struct ParserAnyChar : Parser<QChar> {
             throw ParserException(input.index(), "Unexpected end of input");
 
         QChar c = input.consume(1)[0];
-        if (out_)
-            *out_ = c;
-        return c;
+        return setOut(c);
     }
 };
 
@@ -100,9 +90,7 @@ struct ParserDigit : Parser<QChar> {
 
     QChar parse(Input &input) {
         QChar c = p_.parse(input);
-        if (out_)
-            *out_ = c;
-        return c;
+        return setOut(c);
     }
 };
 ParserOneOf
@@ -115,9 +103,7 @@ struct ParserSpace : Parser<QChar> {
 
     QChar parse(Input &input) {
         QChar c =  p_.parse(input);
-        if (out_)
-            *out_ = c;
-        return c;
+        return setOut(c);
     }
 };
 ParserOneOf

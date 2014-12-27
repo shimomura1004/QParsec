@@ -22,9 +22,7 @@ struct ParserMany : Parser< QList<T> > {
             }
         }
         catch (const ParserException &) {
-            if (Parser< QList<T> >::out_)
-                *Parser< QList<T> >::out_ = result;
-            return result;
+            return Parser< QList<T> >::setOut(result);
         }
     }
 };
@@ -44,9 +42,7 @@ struct ParserMany<QChar> : Parser<QString> {
             }
         }
         catch (const ParserException &) {
-            if (out_)
-                *out_ = result;
-            return result;
+            return setOut(result);
         }
     }
 };
@@ -60,9 +56,7 @@ struct ParserMany1 : ParserMany<T> {
         result.push_back(ParserMany<T>::p_->parse(input));
         result.append(ParserMany<T>::parse(input));
 
-        if (ParserMany<T>::out_)
-            *ParserMany<T>::out_ = result;
-        return result;
+        return ParserMany<T>::setOut(result);
     }
 };
 
@@ -75,9 +69,7 @@ struct ParserMany1<QChar> : ParserMany<QChar> {
         result += ParserMany<QChar>::p_->parse(input);
         result += ParserMany<QChar>::parse(input);
 
-        if (out_)
-            *out_ = result;
-        return result;
+        return setOut(result);
     }
 };
 
@@ -94,8 +86,7 @@ struct ParserSkipMany : Parser<void> {
                 p_->parse(input);
             }
         }
-        catch (const ParserException &) {
-        }
+        catch (const ParserException &) {}
     }
 };
 
@@ -128,9 +119,7 @@ struct ParserChoice : Parser<T> {
       Q_FOREACH(Parser<T> *p, ps_) {
           try {
               T result = p->parse(input);
-              if(Parser<T>::out_)
-                  *Parser<T>::out_ = result;
-              return result;
+              return Parser<T>::setOut(result);
           }
           catch (const ParserException &e) {
               exp = e;
@@ -159,9 +148,7 @@ struct ParserSepBy : Parser< QList<T> > {
             result.push_back(p_->parse(input));
         }
         catch (const ParserException &) {
-            if (Parser< QList<T> >::out_)
-                *Parser< QList<T> >::out_ = result;
-            return result;
+            return Parser< QList<T> >::setOut(result);
         }
 
         Q_FOREVER {
@@ -169,9 +156,7 @@ struct ParserSepBy : Parser< QList<T> > {
                 sep_->parse(input);
             }
             catch (const ParserException &) {
-                if (Parser< QList<T> >::out_)
-                    *Parser< QList<T> >::out_ = result;
-                return result;
+                return Parser< QList<T> >::setOut(result);
             }
 
             result.push_back(p_->parse(input));
@@ -199,9 +184,7 @@ struct ParserSepBy1 : Parser< QList<T> > {
                 sep_->parse(input);
             }
             catch (const ParserException &) {
-                if (Parser< QList<T> >::out_)
-                    *Parser< QList<T> >::out_ = result;
-                return result;
+                return Parser< QList<T> >::setOut(result);
             }
 
             result.push_back(p_->parse(input));
@@ -227,10 +210,8 @@ struct ParserEndBy : Parser< QList<T> > {
             try {
                 result.push_back(p_->parse(input));
             }
-            catch (const ParserException &exp) {
-                if (Parser< QList<T> >::out_)
-                    *Parser< QList<T> >::out_ = result;
-                return result;
+            catch (const ParserException &) {
+                return Parser< QList<T> >::setOut(result);
             }
             sep_->parse(input);
         }
@@ -258,10 +239,8 @@ struct ParserEndBy1 : Parser< QList<T> > {
             try {
                 result.push_back(p_->parse(input));
             }
-            catch (const ParserException &exp) {
-                if (Parser< QList<T> >::out_)
-                    *Parser< QList<T> >::out_ = result;
-                return result;
+            catch (const ParserException &) {
+                return Parser< QList<T> >::setOut(result);
             }
             sep_->parse(input);
         }
