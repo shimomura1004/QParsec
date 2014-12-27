@@ -4,6 +4,9 @@
 #include "QParsec.h"
 #include <QList>
 
+// todo: use Qt default deleting strategy by using setParent
+//       or use sharedpointer for all parsers
+
 template<typename T>
 struct ParserMany : Parser< QList<T> > {
     Parser<T> *p_;
@@ -106,6 +109,7 @@ struct ParserSkipMany1 : ParserSkipMany<T> {
     }
 };
 
+// todo: use variadic template class
 template<typename T>
 struct ParserChoice : Parser<T> {
   QList< Parser<T>* > ps_;

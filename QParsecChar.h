@@ -7,13 +7,10 @@
 #include <QChar>
 #include <QString>
 
-// todo: custom error message
-
 struct ParserOneOf : Parser<QChar> {
     QString chars_;
 
     ParserOneOf(QString chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
-    ParserOneOf(char* chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
 
     QChar parse(Input &input) {
         if (input.isEmpty())
@@ -32,7 +29,6 @@ struct ParserNoneOf : Parser<QChar> {
     QString chars_;
 
     ParserNoneOf(QString chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
-    ParserNoneOf(char* chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
 
     QChar parse(Input &input) {
         if (input.isEmpty())
@@ -130,12 +126,8 @@ ParserSpace::p_(" \v\f\t\r\n");
 
 ParserOneOf *OneOf(QString chars, QChar *out = nullptr)
 { return new ParserOneOf(chars, out); }
-ParserOneOf *OneOf(char* chars, QChar *out = nullptr)
-{ return new ParserOneOf(chars, out); }
 
 ParserNoneOf *NoneOf(QString chars, QChar *out = nullptr)
-{ return new ParserNoneOf(chars, out); }
-ParserNoneOf *NoneOf(char* chars, QChar *out = nullptr)
 { return new ParserNoneOf(chars, out); }
 
 ParserChar *Char(QChar c, QChar *out = nullptr)
