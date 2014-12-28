@@ -60,7 +60,7 @@ struct Parser {
     virtual ~Parser() {}
     virtual T parse(Input &input) = 0;
 
-    inline T setOut(T result) {
+    inline T setOut(T &result) {
         if (out_)
             *out_ = result;
         return result;
