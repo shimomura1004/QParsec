@@ -35,6 +35,8 @@ private Q_SLOTS:
     void testEndBy();
     void testEndBy1();
     void testCount();
+    void testBetween();
+    void testOption();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -354,6 +356,32 @@ void QParsecTestTest::testCount() {
     QVERIFY_EXCEPTION_THROWN(Count(Digit(), 3)->parse(input), ParserException);
 }
 
+void QParsecTestTest::testBetween()
+{
+    Input input("(123)");
+    auto digits = Between(Many1(Digit()), Char('('), Char(')'))->parse(input);
+    QCOMPARE(digits, QString("123"));
+
+    Input left("(123");
+    QVERIFY_EXCEPTION_THROWN(Between(Many1(Digit()), Char('('), Char(')'))->parse(left), ParserException);
+
+    Input right("123)");
+    QVERIFY_EXCEPTION_THROWN(Between(Many1(Digit()), Char('('), Char(')'))->parse(right), ParserException);
+
+    Input hello("(hello)");
+    QVERIFY_EXCEPTION_THROWN(Between(Many1(Digit()), Char('('), Char(')'))->parse(hello), ParserException);
+}
+
+void QParsecTestTest::testOption()
+{
+    Input input("123");
+    auto digit = Option(Many1(Digit()), QString("100"))->parse(input);
+    QCOMPARE(digit, QString("123"));
+
+    Input input2("hello");
+    auto digit2 = Option(Many1(Digit()), QString("100"))->parse(input2);
+    QCOMPARE(digit2, QString("100"));
+}
 
 QTEST_APPLESS_MAIN(QParsecTestTest)
 

@@ -282,6 +282,47 @@ struct ParserCount<QChar> : Parser<QString> {
     }
 };
 
+template<typename T, typename TOpen, typename TClose>
+struct ParserBetween : Parser<T> {
+    Parser<T> *p_;
+    Parser<TOpen> *popen_;
+    Parser<TClose> *pclose_;
+
+    ParserBetween(Parser<T> *p, Parser<TOpen> *popen, Parser<TClose> *pclose, T *out) : Parser<T>(out), p_(p), popen_(popen), pclose_(pclose) {}
+    virtual ~ParserBetween() {
+        delete p_;
+        delete popen_;
+        delete pclose_;
+    }
+
+    T parse(Input &input) {
+        popen_->parse(input);
+        T result = p_->parse(input);
+        pclose_->parse(input);
+
+        return Parser<T>::setOut(result);
+    }
+};
+
+template<typename T>
+struct ParserOption : Parser<T> {
+    Parser<T> *p_;
+    T opt_;
+
+    ParserOption(Parser<T> *p, T opt, T *out) : Parser<T>(out), p_(p), opt_(opt) {}
+    virtual ~ParserOption() { delete p_; }
+
+    T parse(Input &input) {
+        try {
+            T result = p_->parse(input);
+            return Parser<T>::setOut(result);
+        }
+        catch (const ParserException &) {
+            return Parser<T>::setOut(opt_);
+        }
+    }
+};
+
 template<typename T>
 ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
 { return new ParserMany<T>(p, out); }
@@ -307,8 +348,8 @@ ParserChoice<T> *Choice(QList< Parser<T>* > p, T *out = nullptr)
 { return new ParserChoice<T>(p, out); }
 
 template<typename T> ParserChoice<T>
-*Choice(std::initializer_list< Parser<T>* > p, T *out = nullptr)
-{ return new ParserChoice<T>(p, out); }
+*Choice(std::initializer_list< Parser<T>* > ps, T *out = nullptr)
+{ return new ParserChoice<T>(ps, out); }
 
 template<typename T, typename TSep>
 ParserSepBy<T, TSep> *SepBy(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
@@ -331,5 +372,13 @@ ParserCount<T> *Count(Parser<T> *p, int n, QList<T> *out = nullptr)
 { return new ParserCount<T>(p, n, out); }
 ParserCount<QChar> *Count(Parser<QChar> *p, int n, QString *out = nullptr)
 { return new ParserCount<QChar>(p, n, out); }
+
+template<typename T, typename TOpen, typename TClose>
+ParserBetween<T, TOpen, TClose> *Between(Parser<T> *p, Parser<TOpen> *popen, Parser<TClose> *pclose, T *out = nullptr)
+{ return new ParserBetween<T, TOpen, TClose>(p, popen, pclose, out); }
+
+template<typename T>
+ParserOption<T> *Option(Parser<T> *p, T opt, T *out = nullptr)
+{ return new ParserOption<T>(p, opt, out); }
 
 #endif // QPARSECCOMBINATOR_H
