@@ -386,6 +386,99 @@ struct ParserChainl : Parser<T> {
 };
 
 template<typename T>
+struct ParserChainl1 : Parser<T> {
+    Parser<T> *p_;
+    Parser<T(*)(T, T)> *poperator_;
+
+    ParserChainl1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out) : Parser<T>(out), p_(p), poperator_(poperator) {}
+    ~ParserChainl1() {
+        delete p_;
+        delete poperator_;
+    }
+
+    T parse(Input &input) {
+        T accum = p_->parse(input);
+        T(*op)(T, T);
+
+        Q_FOREVER {
+            try {
+                op = poperator_->parse(input);
+            }
+            catch (const ParserException &) {
+                return Parser<T>::setOut(accum);
+            }
+
+            T t = p_->parse(input);
+            accum = op(accum, t);
+        }
+    }
+};
+
+template<typename T>
+struct ParserChainr : Parser<T> {
+    Parser<T> *p_;
+    Parser<T(*)(T, T)> *poperator_;
+    T opt_;
+
+    ParserChainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out) : Parser<T>(out), p_(p), poperator_(poperator), opt_(opt) {}
+    ~ParserChainr() {
+        delete p_;
+        delete poperator_;
+    }
+
+    T parse(Input &input) {
+        T left;
+        T(*op)(T, T);
+
+        try {
+            left = p_->parse(input);
+        }
+        catch (const ParserException &) {
+            return opt_;
+        }
+
+        try {
+            op = poperator_->parse(input);
+        }
+        catch (const ParserException &) {
+            return Parser<T>::setOut(left);
+        }
+
+        T rights = op(left, parse(input));
+        return Parser<T>::setOut(rights);
+    }
+};
+
+template<typename T>
+struct ParserChainr1 : Parser<T> {
+    Parser<T> *p_;
+    Parser<T(*)(T, T)> *poperator_;
+
+    ParserChainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out) : Parser<T>(out), p_(p), poperator_(poperator) {}
+    ~ParserChainr1() {
+        delete p_;
+        delete poperator_;
+    }
+
+    T parse(Input &input) {
+        T left;
+        T(*op)(T, T);
+
+        left = p_->parse(input);
+
+        try {
+            op = poperator_->parse(input);
+        }
+        catch (const ParserException &) {
+            return Parser<T>::setOut(left);
+        }
+
+        T rights = op(left, parse(input));
+        return Parser<T>::setOut(rights);
+    }
+};
+
+template<typename T>
 ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
 { return new ParserMany<T>(p, out); }
 ParserMany<QChar> *Many(Parser<QChar> *p, QString *out = nullptr)
@@ -450,5 +543,17 @@ ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *ou
 template<typename T>
 ParserChainl<T> *Chainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out = nullptr)
 { return new ParserChainl<T>(p, poperator, opt, out); }
+
+template<typename T>
+ParserChainl1<T> *Chainl1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out = nullptr)
+{ return new ParserChainl1<T>(p, poperator, out); }
+
+template<typename T>
+ParserChainr<T> *Chainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out = nullptr)
+{ return new ParserChainr<T>(p, poperator, opt, out); }
+
+template<typename T>
+ParserChainr1<T> *Chainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out = nullptr)
+{ return new ParserChainr1<T>(p, poperator, out); }
 
 #endif // QPARSECCOMBINATOR_H

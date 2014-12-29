@@ -10,6 +10,25 @@ class QParsecTestTest : public QObject
 {
     Q_OBJECT
 
+    struct ParserNumber : Parser<int> {
+        int parse(Input &input) {
+            int result = Many1(Digit())->parse(input).toInt();
+            return setOut(result);
+        }
+    };
+    struct ParserPlus : Parser<int(*)(int,int)> {
+        int (*parse(Input &input))(int, int) {
+            Char('+')->parse(input);
+            return [](int x, int y){ return x + y; };
+        }
+    };
+    struct ParserDiv : Parser<int(*)(int,int)> {
+        int (*parse(Input &input))(int, int) {
+            Char('/')->parse(input);
+            return [](int x, int y){ return x / y; };
+        }
+    };
+
 public:
     QParsecTestTest();
 
@@ -39,6 +58,9 @@ private Q_SLOTS:
     void testOption();
     void testManyTill();
     void testChainl();
+    void testChaninl1();
+    void testChainr();
+    void testChainr1();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -407,20 +429,6 @@ void QParsecTestTest::testManyTill()
 
 void QParsecTestTest::testChainl()
 {
-    struct ParserNumber : Parser<int> {
-        int parse(Input &input) {
-            int result = Many1(Digit())->parse(input).toInt();
-            return setOut(result);
-        }
-    };
-    typedef int(*intoperator)(int, int);
-    struct ParserPlus : Parser<int(*)(int,int)> {
-        int (*parse(Input &input))(int, int) {
-            Char('+')->parse(input);
-            return [](int x, int y){ return x + y; };
-        }
-    };
-
     Input input("12+34+56");
     auto result = Chainl(new ParserNumber(), new ParserPlus(), 0)->parse(input);
     QCOMPARE(result, 12 + 34 + 56);
@@ -435,6 +443,74 @@ void QParsecTestTest::testChainl()
 
     Input input4("12+");
     QVERIFY_EXCEPTION_THROWN(Chainl(new ParserNumber(), new ParserPlus(), 0)->parse(input4), ParserException);
+
+    Input input5("8/4/2");
+    auto result5 = Chainl(new ParserNumber(), new ParserDiv(), 0)->parse(input5);
+    QCOMPARE(result5, (8 / 4) / 2);
+}
+
+void QParsecTestTest::testChaninl1()
+{
+    Input input("12+34+56");
+    auto result = Chainl1(new ParserNumber(), new ParserPlus())->parse(input);
+    QCOMPARE(result, 12 + 34 + 56);
+
+    Input input2("");
+    QVERIFY_EXCEPTION_THROWN(Chainl1(new ParserNumber(), new ParserPlus())->parse(input2), ParserException);
+
+    Input input3("12");
+    auto result3 = Chainl1(new ParserNumber(), new ParserPlus())->parse(input3);
+    QCOMPARE(result3, 12);
+
+    Input input4("12+");
+    QVERIFY_EXCEPTION_THROWN(Chainl1(new ParserNumber(), new ParserPlus())->parse(input4), ParserException);
+
+    Input input5("8/4/2");
+    auto result5 = Chainl1(new ParserNumber(), new ParserDiv())->parse(input5);
+    QCOMPARE(result5, (8 / 4) / 2);
+}
+
+void QParsecTestTest::testChainr()
+{
+    Input input("12+34+56");
+    auto result = Chainr(new ParserNumber(), new ParserPlus(), 0)->parse(input);
+    QCOMPARE(result, 12 + 34 + 56);
+
+    Input input2("");
+    auto result2 = Chainr(new ParserNumber(), new ParserPlus(), 0)->parse(input2);
+    QCOMPARE(result2, 0);
+
+    Input input3("12");
+    auto result3 = Chainr(new ParserNumber(), new ParserPlus(), 0)->parse(input3);
+    QCOMPARE(result3, 12);
+
+    Input input4("12+");
+    QVERIFY_EXCEPTION_THROWN(Chainl(new ParserNumber(), new ParserPlus(), 0)->parse(input4), ParserException);
+
+    Input input5("8/4/2");
+    auto result5 = Chainr(new ParserNumber(), new ParserDiv(), 0)->parse(input5);
+    QCOMPARE(result5, 8 / (4 / 2));
+}
+
+void QParsecTestTest::testChainr1()
+{
+    Input input("12+34+56");
+    auto result = Chainr1(new ParserNumber(), new ParserPlus())->parse(input);
+    QCOMPARE(result, 12 + 34 + 56);
+
+    Input input2("");
+    QVERIFY_EXCEPTION_THROWN(Chainr1(new ParserNumber(), new ParserPlus())->parse(input2), ParserException);
+
+    Input input3("12");
+    auto result3 = Chainr1(new ParserNumber(), new ParserPlus())->parse(input3);
+    QCOMPARE(result3, 12);
+
+    Input input4("12+");
+    QVERIFY_EXCEPTION_THROWN(Chainr1(new ParserNumber(), new ParserPlus())->parse(input4), ParserException);
+
+    Input input5("8/4/2");
+    auto result5 = Chainr1(new ParserNumber(), new ParserDiv())->parse(input5);
+    QCOMPARE(result5, 8 / (4 / 2));
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)
