@@ -37,6 +37,7 @@ private Q_SLOTS:
     void testCount();
     void testBetween();
     void testOption();
+    void testManyTill();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -381,6 +382,26 @@ void QParsecTestTest::testOption()
     Input input2("hello");
     auto digit2 = Option(Many1(Digit()), QString("100"))->parse(input2);
     QCOMPARE(digit2, QString("100"));
+}
+
+void QParsecTestTest::testManyTill()
+{
+    Input input("<!-- this is comment -->body");
+
+    Str("<!--")->parse(input);
+    auto rawcomment = ManyTill(AnyChar(), Str("-->"))->parse(input);
+    QString comment;
+    Q_FOREACH(QChar c, rawcomment)
+        comment.push_back(c);
+    QCOMPARE(comment, QString(" this is comment "));
+
+    Input input2("<!---->");
+    Str("<!--")->parse(input2);
+    auto rawcomment2 = ManyTill(AnyChar(), Str("-->"))->parse(input2);
+    QCOMPARE(rawcomment2.length(), 0);
+
+    Input input3("<!-- hello");
+    QVERIFY_EXCEPTION_THROWN(ManyTill(AnyChar(), Str("-->"))->parse(input3), ParserException);
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)

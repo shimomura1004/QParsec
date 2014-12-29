@@ -99,7 +99,6 @@ struct ParserSkipMany1 : ParserSkipMany<T> {
     }
 };
 
-// todo: use variadic template class
 template<typename T>
 struct ParserChoice : Parser<T> {
   QList< Parser<T>* > ps_;
@@ -323,6 +322,32 @@ struct ParserOption : Parser<T> {
     }
 };
 
+template<typename T, typename TEnd>
+struct ParserManyTill : Parser< QList<T> > {
+    Parser<T> *p_;
+    Parser<TEnd> *pend_;
+
+    ParserManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *out) : Parser< QList<T> >(out), p_(p), pend_(pend) {}
+    virtual ~ParserManyTill(){
+        delete p_;
+        delete pend_;
+    }
+
+    QList<T> parse(Input &input) {
+        QList<T> result;
+
+        Q_FOREVER {
+            try {
+                pend_->parse(input);
+                return Parser< QList<T> >::setOut(result);
+            }
+            catch (const ParserException &) {
+                result.push_back(p_->parse(input));
+            }
+        }
+    }
+};
+
 template<typename T>
 ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
 { return new ParserMany<T>(p, out); }
@@ -380,5 +405,9 @@ ParserBetween<T, TOpen, TClose> *Between(Parser<T> *p, Parser<TOpen> *popen, Par
 template<typename T>
 ParserOption<T> *Option(Parser<T> *p, T opt, T *out = nullptr)
 { return new ParserOption<T>(p, opt, out); }
+
+template<typename T, typename TEnd>
+ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *out = nullptr)
+{ return new ParserManyTill<T, TEnd>(p, pend, out); }
 
 #endif // QPARSECCOMBINATOR_H
