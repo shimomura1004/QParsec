@@ -349,6 +349,43 @@ struct ParserManyTill : Parser< QList<T> > {
 };
 
 template<typename T>
+struct ParserChainl : Parser<T> {
+    Parser<T> *p_;
+    Parser<T(*)(T, T)> *poperator_;
+    T opt_;
+
+    ParserChainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out) : Parser<T>(out), p_(p), poperator_(poperator), opt_(opt) {}
+    ~ParserChainl() {
+        delete p_;
+        delete poperator_;
+    }
+
+    T parse(Input &input) {
+        T accum;
+        T(*op)(T, T);
+
+        try {
+            accum = p_->parse(input);
+        }
+        catch (const ParserException &) {
+            return opt_;
+        }
+
+        Q_FOREVER {
+            try {
+                op = poperator_->parse(input);
+            }
+            catch (const ParserException &) {
+                return Parser<T>::setOut(accum);
+            }
+
+            T t = p_->parse(input);
+            accum = op(accum, t);
+        }
+    }
+};
+
+template<typename T>
 ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
 { return new ParserMany<T>(p, out); }
 ParserMany<QChar> *Many(Parser<QChar> *p, QString *out = nullptr)
@@ -409,5 +446,9 @@ ParserOption<T> *Option(Parser<T> *p, T opt, T *out = nullptr)
 template<typename T, typename TEnd>
 ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *out = nullptr)
 { return new ParserManyTill<T, TEnd>(p, pend, out); }
+
+template<typename T>
+ParserChainl<T> *Chainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out = nullptr)
+{ return new ParserChainl<T>(p, poperator, opt, out); }
 
 #endif // QPARSECCOMBINATOR_H

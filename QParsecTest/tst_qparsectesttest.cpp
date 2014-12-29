@@ -38,6 +38,7 @@ private Q_SLOTS:
     void testBetween();
     void testOption();
     void testManyTill();
+    void testChainl();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -402,6 +403,38 @@ void QParsecTestTest::testManyTill()
 
     Input input3("<!-- hello");
     QVERIFY_EXCEPTION_THROWN(ManyTill(AnyChar(), Str("-->"))->parse(input3), ParserException);
+}
+
+void QParsecTestTest::testChainl()
+{
+    struct ParserNumber : Parser<int> {
+        int parse(Input &input) {
+            int result = Many1(Digit())->parse(input).toInt();
+            return setOut(result);
+        }
+    };
+    typedef int(*intoperator)(int, int);
+    struct ParserPlus : Parser<int(*)(int,int)> {
+        int (*parse(Input &input))(int, int) {
+            Char('+')->parse(input);
+            return [](int x, int y){ return x + y; };
+        }
+    };
+
+    Input input("12+34+56");
+    auto result = Chainl(new ParserNumber(), new ParserPlus(), 0)->parse(input);
+    QCOMPARE(result, 12 + 34 + 56);
+
+    Input input2("");
+    auto result2 = Chainl(new ParserNumber(), new ParserPlus(), 0)->parse(input2);
+    QCOMPARE(result2, 0);
+
+    Input input3("12");
+    auto result3 = Chainl(new ParserNumber(), new ParserPlus(), 0)->parse(input3);
+    QCOMPARE(result3, 12);
+
+    Input input4("12+");
+    QVERIFY_EXCEPTION_THROWN(Chainl(new ParserNumber(), new ParserPlus(), 0)->parse(input4), ParserException);
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)

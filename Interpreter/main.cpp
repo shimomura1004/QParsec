@@ -27,7 +27,7 @@ struct ParserTerm : Parser<int> {
 int main(int argc, char *argv[])
 {
     Input input("(12 34 (56 78) 10 (20))");
-    auto sum = (new ParserTerm())->parse(input);
+    auto sum = S(new ParserTerm())->parse(input);
     qDebug() << sum;
 
     return 0;
