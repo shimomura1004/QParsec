@@ -16,7 +16,8 @@ SOURCES +=
 HEADERS += \
     QParsec.h \
     QParsecChar.h \
-    QParsecCombinator.h
+    QParsecCombinator.h \
+    QParsecToken.h
 
 unix {
     target.path = /usr/lib

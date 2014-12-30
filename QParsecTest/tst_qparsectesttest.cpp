@@ -5,6 +5,7 @@
 #include <QParsec.h>
 #include <QParsecChar.h>
 #include <QParsecCombinator.h>
+#include <QParsecToken.h>
 
 class QParsecTestTest : public QObject
 {
@@ -44,6 +45,7 @@ private Q_SLOTS:
     void testAnyChar();
     void testDigit();
     void testSpace();
+
     void testMany();
     void testMany1();
     void testSkipMany();
@@ -61,6 +63,18 @@ private Q_SLOTS:
     void testChaninl1();
     void testChainr();
     void testChainr1();
+
+    void testWhiteSpace();
+    void testLexeme();
+    void testSymbol();
+    void testParens();
+    void testBraces();
+    void testBrackets();
+    void testSquares();
+    void testSemiSep();
+    void testSemiSep1();
+    void testCommaSep();
+    void testCommaSep1();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -511,6 +525,201 @@ void QParsecTestTest::testChainr1()
     Input input5("8/4/2");
     auto result5 = Chainr1(new ParserNumber(), new ParserDiv())->parse(input5);
     QCOMPARE(result5, 8 / (4 / 2));
+}
+
+void QParsecTestTest::testWhiteSpace()
+{
+    Input input("   ");
+    WhiteSpace()->parse(input);
+    QCOMPARE(input.str(), QString(""));
+
+    Input input2(" hello");
+    WhiteSpace()->parse(input2);
+    QCOMPARE(input2.str(), QString("hello"));
+    WhiteSpace()->parse(input2);
+    QCOMPARE(input2.str(), QString("hello"));
+    auto hello = Str("hello")->parse(input2);
+    QCOMPARE(hello, QString("hello"));
+}
+
+void QParsecTestTest::testLexeme()
+{
+    Input input("a   b");
+    auto a = Lexeme(Char('a'))->parse(input);
+    QCOMPARE(a, QChar('a'));
+    QCOMPARE(input.str(), QString("b"));
+    auto b = Lexeme(Char('b'))->parse(input);
+    QCOMPARE(b, QChar('b'));
+    QVERIFY_EXCEPTION_THROWN(Lexeme(Char('c'))->parse(input), ParserException);
+}
+
+void QParsecTestTest::testSymbol()
+{
+    Input input("+ 1");
+    auto plus = Symbol("+")->parse(input);
+    QCOMPARE(plus, QString("+"));
+    QCOMPARE(input.str(), QString("1"));
+    auto one = Symbol("1")->parse(input);
+    QCOMPARE(one, QString("1"));
+    QVERIFY_EXCEPTION_THROWN(Symbol("2")->parse(input), ParserException);
+}
+
+void QParsecTestTest::testParens()
+{
+    Input input("(hello)");
+    auto hello = Parens(Str("hello"))->parse(input);
+    QCOMPARE(hello, QString("hello"));
+
+    Input input2("(hello");
+    QVERIFY_EXCEPTION_THROWN(Parens(Str("hello"))->parse(input2), ParserException);
+    Input input3("hello)");
+    QVERIFY_EXCEPTION_THROWN(Parens(Str("hello"))->parse(input3), ParserException);
+    Input input4("()");
+    QVERIFY_EXCEPTION_THROWN(Parens(Str("hello"))->parse(input4), ParserException);
+    Input input5("hello");
+    QVERIFY_EXCEPTION_THROWN(Parens(Str("hello"))->parse(input5), ParserException);
+}
+
+void QParsecTestTest::testBraces()
+{
+    Input input("{hello}");
+    auto hello = Braces(Str("hello"))->parse(input);
+    QCOMPARE(hello, QString("hello"));
+
+    Input input2("{hello");
+    QVERIFY_EXCEPTION_THROWN(Braces(Str("hello"))->parse(input2), ParserException);
+    Input input3("hello}");
+    QVERIFY_EXCEPTION_THROWN(Braces(Str("hello"))->parse(input3), ParserException);
+    Input input4("{}");
+    QVERIFY_EXCEPTION_THROWN(Braces(Str("hello"))->parse(input4), ParserException);
+    Input input5("hello");
+    QVERIFY_EXCEPTION_THROWN(Braces(Str("hello"))->parse(input5), ParserException);
+}
+
+void QParsecTestTest::testBrackets()
+{
+    Input input("<hello>");
+    auto hello = Brackets(Str("hello"))->parse(input);
+    QCOMPARE(hello, QString("hello"));
+
+    Input input2("<hello");
+    QVERIFY_EXCEPTION_THROWN(Brackets(Str("hello"))->parse(input2), ParserException);
+    Input input3("hello>");
+    QVERIFY_EXCEPTION_THROWN(Brackets(Str("hello"))->parse(input3), ParserException);
+    Input input4("<>");
+    QVERIFY_EXCEPTION_THROWN(Brackets(Str("hello"))->parse(input4), ParserException);
+    Input input5("hello");
+    QVERIFY_EXCEPTION_THROWN(Brackets(Str("hello"))->parse(input5), ParserException);
+}
+
+void QParsecTestTest::testSquares()
+{
+    Input input("[hello]");
+    auto hello = Squares(Str("hello"))->parse(input);
+    QCOMPARE(hello, QString("hello"));
+
+    Input input2("[hello");
+    QVERIFY_EXCEPTION_THROWN(Squares(Str("hello"))->parse(input2), ParserException);
+    Input input3("hello]");
+    QVERIFY_EXCEPTION_THROWN(Squares(Str("hello"))->parse(input3), ParserException);
+    Input input4("[]");
+    QVERIFY_EXCEPTION_THROWN(Squares(Str("hello"))->parse(input4), ParserException);
+    Input input5("hello");
+    QVERIFY_EXCEPTION_THROWN(Squares(Str("hello"))->parse(input5), ParserException);
+}
+
+void QParsecTestTest::testSemiSep()
+{
+    Input input("0; 10;  2;  300");
+
+    auto nums = SemiSep(Many1(Digit()))->parse(input);
+    QCOMPARE(nums.length(), 4);
+    QCOMPARE(nums[0], QString("0"));
+    QCOMPARE(nums[1], QString("10"));
+    QCOMPARE(nums[2], QString("2"));
+    QCOMPARE(nums[3], QString("300"));
+
+    Input single("100");
+    auto num = SemiSep(Many1(Digit()))->parse(single);
+    QCOMPARE(num.length(), 1);
+    QCOMPARE(num[0], QString("100"));
+
+    Input empty("");
+    auto empty_ = SemiSep(Many1(Digit()))->parse(empty);
+    QCOMPARE(empty_.length(), 0);
+
+    Input endWithSep("10; 23;  ");
+    QVERIFY_EXCEPTION_THROWN(SemiSep(Many1(Digit()))->parse(endWithSep), ParserException);
+}
+
+void QParsecTestTest::testSemiSep1()
+{
+    Input input("0; 10;  2;  300");
+
+    auto nums = SemiSep1(Many1(Digit()))->parse(input);
+    QCOMPARE(nums.length(), 4);
+    QCOMPARE(nums[0], QString("0"));
+    QCOMPARE(nums[1], QString("10"));
+    QCOMPARE(nums[2], QString("2"));
+    QCOMPARE(nums[3], QString("300"));
+
+    Input single("100");
+    auto num = SemiSep1(Many1(Digit()))->parse(single);
+    QCOMPARE(num.length(), 1);
+    QCOMPARE(num[0], QString("100"));
+
+    Input empty("");
+    QVERIFY_EXCEPTION_THROWN(SemiSep1(Many1(Digit()))->parse(empty), ParserException);
+
+    Input endWithSep("10; 23;  ");
+    QVERIFY_EXCEPTION_THROWN(SemiSep1(Many1(Digit()))->parse(endWithSep), ParserException);
+}
+
+void QParsecTestTest::testCommaSep()
+{
+    Input input("0, 10,  2,  300");
+
+    auto nums = CommaSep(Many1(Digit()))->parse(input);
+    QCOMPARE(nums.length(), 4);
+    QCOMPARE(nums[0], QString("0"));
+    QCOMPARE(nums[1], QString("10"));
+    QCOMPARE(nums[2], QString("2"));
+    QCOMPARE(nums[3], QString("300"));
+
+    Input single("100");
+    auto num = CommaSep(Many1(Digit()))->parse(single);
+    QCOMPARE(num.length(), 1);
+    QCOMPARE(num[0], QString("100"));
+
+    Input empty("");
+    auto empty_ = CommaSep(Many1(Digit()))->parse(empty);
+    QCOMPARE(empty_.length(), 0);
+
+    Input endWithSep("10, 23,  ");
+    QVERIFY_EXCEPTION_THROWN(CommaSep(Many1(Digit()))->parse(endWithSep), ParserException);
+}
+
+void QParsecTestTest::testCommaSep1()
+{
+    Input input("0, 10,  2,  300");
+
+    auto nums = CommaSep1(Many1(Digit()))->parse(input);
+    QCOMPARE(nums.length(), 4);
+    QCOMPARE(nums[0], QString("0"));
+    QCOMPARE(nums[1], QString("10"));
+    QCOMPARE(nums[2], QString("2"));
+    QCOMPARE(nums[3], QString("300"));
+
+    Input single("100");
+    auto num = CommaSep1(Many1(Digit()))->parse(single);
+    QCOMPARE(num.length(), 1);
+    QCOMPARE(num[0], QString("100"));
+
+    Input empty("");
+    QVERIFY_EXCEPTION_THROWN(CommaSep1(Many1(Digit()))->parse(empty), ParserException);
+
+    Input endWithSep("10, 23,  ");
+    QVERIFY_EXCEPTION_THROWN(CommaSep1(Many1(Digit()))->parse(endWithSep), ParserException);
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)
