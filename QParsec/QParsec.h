@@ -146,6 +146,76 @@ struct ParserTry<void> : Parser<void> {
     }
 };
 
+template<typename T1, typename T2>
+struct ParserLeft : Parser<T1> {
+    Parser<T1> *p1_;
+    Parser<T2> *p2_;
+
+    ParserLeft(Parser<T1> *p1, Parser<T2> *p2, T1 *out) : Parser<T1>(out), p1_(p1), p2_(p2) {}
+    ~ParserLeft() {
+        delete p1_;
+        delete p2_;
+    }
+
+    T1 parse(Input &input) {
+        T1 result = p1_->parse(input);
+        p2_->parse(input);
+        return Parser<T1>::setOut(result);
+    }
+};
+template<typename T>
+struct ParserLeft<T, void> : Parser<T> {
+    Parser<T> *p1_;
+    Parser<void> *p2_;
+
+    ParserLeft(Parser<T> *p1, Parser<void> *p2, T *out) : Parser<T>(out), p1_(p1), p2_(p2) {}
+    ~ParserLeft() {
+        delete p1_;
+        delete p2_;
+    }
+
+    T parse(Input &input) {
+        T result = p1_->parse(input);
+        p2_->parse(input);
+        return Parser<T>::setOut(result);
+    }
+};
+
+template<typename T1, typename T2>
+struct ParserRight : Parser<T2> {
+    Parser<T1> *p1_;
+    Parser<T2> *p2_;
+
+    ParserRight(Parser<T1> *p1, Parser<T2> *p2, T2 *out) : Parser<T2>(out), p1_(p1), p2_(p2) {}
+    ~ParserRight() {
+        delete p1_;
+        delete p2_;
+    }
+
+    T2 parse(Input &input) {
+        p1_->parse(input);
+        T2 result = p2_->parse(input);
+        return Parser<T2>::setOut(result);
+    }
+};
+template<typename T>
+struct ParserRight<void, T> : Parser<T> {
+    Parser<void> *p1_;
+    Parser<T> *p2_;
+
+    ParserRight(Parser<void> *p1, Parser<T> *p2, T *out) : Parser<T>(out), p1_(p1), p2_(p2) {}
+    ~ParserRight() {
+        delete p1_;
+        delete p2_;
+    }
+
+    T parse(Input &input) {
+        p1_->parse(input);
+        T result = p2_->parse(input);
+        return Parser<T>::setOut(result);
+    }
+};
+
 template<typename T>
 struct ParserHelp : Parser<T> {
     Parser<T> *p_;
@@ -197,5 +267,13 @@ ParserHelp<T> *Help(Parser<T> *p, const QString &message)
 template<typename T1, typename T2>
 ParserApply<T1, T2> *Apply(Parser<T1> *p, T2(*func)(T1), T2 *out = nullptr)
 { return new ParserApply<T1, T2>(p, func, out); }
+
+template<typename T1, typename T2>
+ParserLeft<T1, T2> *Left(Parser<T1> *p1, Parser<T2> *p2, T1 *out = nullptr)
+{ return new ParserLeft<T1, T2>(p1, p2, out); }
+
+template<typename T1, typename T2>
+ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2, T2 *out = nullptr)
+{ return new ParserRight<T1, T2>(p1, p2, out); }
 
 #endif // QPARSEC_H

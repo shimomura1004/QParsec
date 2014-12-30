@@ -36,6 +36,8 @@ public:
 private Q_SLOTS:
     void testSeq();
     void testTry();
+    void testLeft();
+    void testRight();
     void testFail();
     void testHelp();
     void testApply();
@@ -105,6 +107,23 @@ void QParsecTestTest::testTry() {
     QCOMPARE(a, QChar('a'));
     QCOMPARE(b, QChar('b'));
     QCOMPARE(c, QChar('c'));
+}
+
+void QParsecTestTest::testLeft()
+{
+    Input input1("123abc");
+    auto num = Left(Decimal(), Str("abc"))->parse(input1);
+    QCOMPARE(num, 123);
+}
+
+void QParsecTestTest::testRight()
+{
+    Input input("var x = 1;");
+    auto varname = Right(Symbol("var"), ManyTill(AnyChar(), Space()))->parse(input);
+    QString name;
+    Q_FOREACH(auto n, varname)
+        name += n;
+    QCOMPARE(name, QString("x"));
 }
 
 void QParsecTestTest::testFail() {
