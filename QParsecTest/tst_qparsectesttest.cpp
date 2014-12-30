@@ -79,6 +79,8 @@ private Q_SLOTS:
     void testSemiSep1();
     void testCommaSep();
     void testCommaSep1();
+    void testDecimal();
+    void testHexadecimal();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -757,6 +759,39 @@ void QParsecTestTest::testCommaSep1()
 
     Input endWithSep("10, 23,  ");
     QVERIFY_EXCEPTION_THROWN(CommaSep1(Many1(Digit()))->parse(endWithSep), ParserException);
+}
+
+void QParsecTestTest::testDecimal()
+{
+    Input input1("123");
+    auto result1 = Decimal()->parse(input1);
+    QCOMPARE(result1, 123);
+
+    Input input2("-123");
+    QVERIFY_EXCEPTION_THROWN(Decimal()->parse(input2), ParserException);
+
+    Input input3("");
+    QVERIFY_EXCEPTION_THROWN(Decimal()->parse(input3), ParserException);
+
+    Input input4("deadbeaf");
+    QVERIFY_EXCEPTION_THROWN(Decimal()->parse(input4), ParserException);
+}
+
+void QParsecTestTest::testHexadecimal()
+{
+    Input input1("0x123");
+    auto result1 = Hexadecimal()->parse(input1);
+    QCOMPARE(result1, 0x123);
+
+    Input input2("-123");
+    QVERIFY_EXCEPTION_THROWN(Hexadecimal()->parse(input2), ParserException);
+
+    Input input3("");
+    QVERIFY_EXCEPTION_THROWN(Hexadecimal()->parse(input3), ParserException);
+
+    Input input4("0xbeaf");
+    auto result4 = Hexadecimal()->parse(input4);
+    QCOMPARE(result4, 0xbeaf);
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)
