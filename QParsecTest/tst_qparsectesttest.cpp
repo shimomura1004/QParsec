@@ -34,13 +34,15 @@ public:
     QParsecTestTest();
 
 private Q_SLOTS:
-    void testChar();
     void testSeq();
     void testTry();
     void testFail();
     void testHelp();
+    void testApply();
+
     void testOneOf();
     void testNoneOf();
+    void testChar();
     void testStr();
     void testAnyChar();
     void testDigit();
@@ -79,23 +81,6 @@ private Q_SLOTS:
 
 QParsecTestTest::QParsecTestTest()
 {
-}
-
-void QParsecTestTest::testChar() {
-    Input input("abc");
-    auto a = Char('a')->parse(input);
-    QCOMPARE(a, QChar('a'));
-
-    QChar b;
-    Char('b', &b)->parse(input);
-    QCOMPARE(b, QChar('b'));
-
-    QVERIFY_EXCEPTION_THROWN(Char('a')->parse(input), ParserException);
-
-    auto c = Char(QChar('c'))->parse(input);
-    QCOMPARE(c, QChar('c'));
-
-    QVERIFY_EXCEPTION_THROWN(Char('a')->parse(input), ParserException);
 }
 
 void QParsecTestTest::testSeq() {
@@ -150,6 +135,22 @@ void QParsecTestTest::testHelp() {
     }
 }
 
+void QParsecTestTest::testApply()
+{
+    Input input("hello");
+    // you can't omit template arguments
+    auto result = Apply<QString, QString>(Str("hello"), [](QString s){return s.toUpper();})->parse(input);
+    QCOMPARE(result, QString("HELLO"));
+
+    Input input2("123");
+    auto result2 = Apply<QString, int>(Many1(Digit()), [](QString s){return s.toInt();})->parse(input2);
+    QCOMPARE(result2, 123);
+
+    Input input3("abc");
+    auto p = Apply<QString, int>(Many1(Digit()), [](QString s){return s.toInt();});
+    QVERIFY_EXCEPTION_THROWN(p->parse(input3), ParserException);
+}
+
 void QParsecTestTest::testOneOf() {
     Input input("a0");
 
@@ -166,6 +167,23 @@ void QParsecTestTest::testNoneOf() {
     QCOMPARE(a, QChar('a'));
 
     QVERIFY_EXCEPTION_THROWN(NoneOf("0123456789")->parse(input), ParserException);
+}
+
+void QParsecTestTest::testChar() {
+    Input input("abc");
+    auto a = Char('a')->parse(input);
+    QCOMPARE(a, QChar('a'));
+
+    QChar b;
+    Char('b', &b)->parse(input);
+    QCOMPARE(b, QChar('b'));
+
+    QVERIFY_EXCEPTION_THROWN(Char('a')->parse(input), ParserException);
+
+    auto c = Char(QChar('c'))->parse(input);
+    QCOMPARE(c, QChar('c'));
+
+    QVERIFY_EXCEPTION_THROWN(Char('a')->parse(input), ParserException);
 }
 
 void QParsecTestTest::testStr() {

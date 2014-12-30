@@ -165,6 +165,20 @@ struct ParserHelp : Parser<T> {
     }
 };
 
+template<typename T1, typename T2>
+struct ParserApply : Parser<T2> {
+    Parser<T1> *p_;
+    T2 (*func_)(T1);
+
+    ParserApply(Parser<T1> *p, T2 (*func)(T1), T2 *out) : Parser<T2>(out), p_(p), func_(func) {}
+    virtual ~ParserApply() { delete p_; }
+
+    T2 parse(Input &input) {
+        T2 result = func_(p_->parse(input));
+        return Parser<T2>::setOut(result);
+    }
+};
+
 template<typename... Ts>
 ParserSeq<Ts...> *Seq(Parser<Ts>*... ps)
 { return new ParserSeq<Ts...>(ps...); }
@@ -179,5 +193,9 @@ ParserTry<T> *Try(Parser<T> *p)
 template<typename T>
 ParserHelp<T> *Help(Parser<T> *p, const QString &message)
 { return new ParserHelp<T>(p, message); }
+
+template<typename T1, typename T2>
+ParserApply<T1, T2> *Apply(Parser<T1> *p, T2(*func)(T1), T2 *out = nullptr)
+{ return new ParserApply<T1, T2>(p, func, out); }
 
 #endif // QPARSEC_H
