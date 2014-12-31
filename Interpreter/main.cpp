@@ -6,18 +6,6 @@
 
 #include <QDebug>
 
-ParserApply<QString, int> *Num() {
-    return Apply<QString, int>(Many1(Digit()), [](QString digit){ return digit.toInt(); });
-}
-
-struct ParserNum : Parser<int> {
-    int parse(Input &input) {
-        int result = Many1(Digit())->parse(input).toInt();
-        return setOut(result);
-    }
-};
-
-typedef int(*intoperator)(int, int);
 struct ParserPlus : Parser<int(*)(int,int)> {
     int (*parse(Input &input))(int, int) {
         Symbol("+")->parse(input);
@@ -25,16 +13,13 @@ struct ParserPlus : Parser<int(*)(int,int)> {
     }
 };
 
-struct ParserTerm : Parser<int> {
-    int parse(Input &input) {
-        auto sum = Lexeme( Between( Chainl( Choice({ Lexeme(Num()), new ParserTerm() }),
-                                            new ParserPlus(),
-                                            0),
-                                    Char('('),
-                                    Char(')')))->parse(input);
-        return setOut(sum);
-    }
-};
+Parser<int> *Term() {
+    Parser<int>*(*self)() = [](){return Term();};
+    return  Lexeme( Parens( Chainl( Choice({ Lexeme(Decimal()), Lazy(self) }),
+                                    new ParserPlus(),
+                                    0)
+                           ));
+}
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +28,7 @@ int main(int argc, char *argv[])
 
     try {
         Input input("(12 + 34 + (56 + 78) + 10 + (20))");
-        auto sum = S(new ParserTerm())->parse(input);
+        auto sum = S(Term())->parse(input);
         qDebug() << sum;
     }
     catch (const ParserException &e) {

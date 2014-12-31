@@ -249,6 +249,18 @@ struct ParserApply : Parser<T2> {
     }
 };
 
+template<typename T>
+struct ParserLazy : Parser<T> {
+    Parser<T>*(*p_)();
+
+    ParserLazy(Parser<T>* (*p)(), T *out) : Parser<T>(out), p_(p) {}
+
+    T parse(Input &input) {
+        T result = p_()->parse(input);
+        return Parser<T>::setOut(result);
+    }
+};
+
 template<typename... Ts>
 ParserSeq<Ts...> *Seq(Parser<Ts>*... ps)
 { return new ParserSeq<Ts...>(ps...); }
@@ -275,5 +287,9 @@ ParserLeft<T1, T2> *Left(Parser<T1> *p1, Parser<T2> *p2, T1 *out = nullptr)
 template<typename T1, typename T2>
 ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2, T2 *out = nullptr)
 { return new ParserRight<T1, T2>(p1, p2, out); }
+
+template<typename T>
+ParserLazy<T> *Lazy(Parser<T>* (*p)(), T *out = nullptr)
+{ return new ParserLazy<T>(p, out); }
 
 #endif // QPARSEC_H

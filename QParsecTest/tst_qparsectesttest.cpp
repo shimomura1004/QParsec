@@ -41,6 +41,7 @@ private Q_SLOTS:
     void testFail();
     void testHelp();
     void testApply();
+    void testLazy();
 
     void testOneOf();
     void testNoneOf();
@@ -170,6 +171,22 @@ void QParsecTestTest::testApply()
     Input input3("abc");
     auto p = Apply<QString, int>(Many1(Digit()), [](QString s){return s.toInt();});
     QVERIFY_EXCEPTION_THROWN(p->parse(input3), ParserException);
+}
+
+Parser<QString> *HelloInNestedParens(){
+    return Choice({Str("hello"), Parens(HelloInNestedParens())});
+}
+Parser<QString> *HelloInLazyNestedParens(){
+    Parser<QString>*(*child)() = [](){return Parens(HelloInLazyNestedParens());};
+    return Choice({Str("hello"), Lazy(child)});
+}
+void QParsecTestTest::testLazy()
+{
+    Input input("(((hello)))");
+    // cause stack overflow
+    // auto hello = HelloInNestedParens()->parse(input);
+    auto hello = HelloInLazyNestedParens()->parse(input);
+    QCOMPARE(hello, QString("hello"));
 }
 
 void QParsecTestTest::testOneOf() {
