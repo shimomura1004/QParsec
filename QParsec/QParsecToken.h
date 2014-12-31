@@ -69,13 +69,22 @@ Parser<QList<T>> *CommaSep1(Parser<T> *p, QList<T> *out = nullptr)
 
 
 Parser<int> *Decimal() {
-    return Apply<QString, int>(Many1(Digit()), [](QString s){return s.toInt();});
+    return Apply<QString, int>(Lexeme(Many1(Digit())), [](QString s){return s.toInt();});
 }
 
 Parser<int> *Hexadecimal() {
-    return Apply<QString, int>(Right(Seq(Char('0'), OneOf("xX")),
-                                     Many1(OneOf("0123456789abcdefABCDEF"))),
+    return Apply<QString, int>(Lexeme(Right(Seq(Char('0'), OneOf("xX")),
+                                            Many1(OneOf("0123456789abcdefABCDEF")))),
                                [](QString s){return s.toInt(0, 16);});
 }
 
+Parser<int> *Octal() {
+    return Apply<QString, int>(Lexeme(Right(Seq(Char('0'), OneOf("oO")),
+                                            Many1(OneOf("01234567")))),
+                               [](QString s){return s.toInt(0, 8);});
+}
+
+Parser<int> *Natural() {
+    return Choice({Try(Hexadecimal()), Try(Octal()), Try(Decimal())});
+}
 #endif // QPARSECTOKEN_H

@@ -82,6 +82,8 @@ private Q_SLOTS:
     void testCommaSep1();
     void testDecimal();
     void testHexadecimal();
+    void testOctal();
+    void testNatural();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -800,7 +802,7 @@ void QParsecTestTest::testHexadecimal()
     auto result1 = Hexadecimal()->parse(input1);
     QCOMPARE(result1, 0x123);
 
-    Input input2("-123");
+    Input input2("0x-123");
     QVERIFY_EXCEPTION_THROWN(Hexadecimal()->parse(input2), ParserException);
 
     Input input3("");
@@ -809,6 +811,40 @@ void QParsecTestTest::testHexadecimal()
     Input input4("0xbeaf");
     auto result4 = Hexadecimal()->parse(input4);
     QCOMPARE(result4, 0xbeaf);
+}
+
+void QParsecTestTest::testOctal()
+{
+    Input input1("0o123");
+    auto result1 = Octal()->parse(input1);
+    QCOMPARE(result1, 0123);
+
+    Input input2("Oo-123");
+    QVERIFY_EXCEPTION_THROWN(Octal()->parse(input2), ParserException);
+
+    Input input3("");
+    QVERIFY_EXCEPTION_THROWN(Octal()->parse(input3), ParserException);
+
+    Input input4("0o9");
+    QVERIFY_EXCEPTION_THROWN(Octal()->parse(input4), ParserException);
+}
+
+void QParsecTestTest::testNatural()
+{
+    Input dec("12345");
+    QCOMPARE(Natural()->parse(dec), 12345);
+
+    Input hex("0x123");
+    QCOMPARE(Natural()->parse(hex), 0x123);
+
+    Input oct("0o123");
+    QCOMPARE(Natural()->parse(oct), 0123);
+
+    Input empty("");
+    QVERIFY_EXCEPTION_THROWN(Natural()->parse(empty), ParserException);
+
+    Input err("hello");
+    QVERIFY_EXCEPTION_THROWN(Natural()->parse(err), ParserException);
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)
