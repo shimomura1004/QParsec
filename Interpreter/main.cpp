@@ -4,7 +4,11 @@
 #include <QParsecCombinator.h>
 #include <QParsecToken.h>
 
+#include <ast/AST.h>
+
 #include <QDebug>
+
+using namespace QParsec;
 
 struct ParserPlus : Parser<int(*)(int,int)> {
     int (*parse(Input &input))(int, int) {

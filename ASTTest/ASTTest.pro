@@ -1,24 +1,21 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2014-12-29T01:23:18
+# Project created by QtCreator 2015-01-01T16:10:26
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += testlib
 
 QT       -= gui
 
-TARGET = Interpreter
+TARGET = tst_asttesttest
 CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += tst_asttesttest.cpp
+DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-INCLUDEPATH += ../QParsec
 CONFIG += c++11
-
-HEADERS += \
-    ast/AST.h

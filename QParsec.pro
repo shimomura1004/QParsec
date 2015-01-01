@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     QParsec \
     QParsecTest \
-    Interpreter
+    Interpreter \
+    ASTTest

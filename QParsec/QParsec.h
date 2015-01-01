@@ -6,6 +6,8 @@
 #include <QStringList>
 #include <QSharedPointer>
 
+namespace QParsec {
+
 // todo: inherit QIODevice
 class Input {
 protected:
@@ -304,5 +306,7 @@ ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2, T2 *out = nullptr)
 template<typename T>
 ParserLazy<T> *Lazy(Parser<T>* (*p)(), T *out = nullptr)
 { return new ParserLazy<T>(p, out); }
+
+}
 
 #endif // QPARSEC_H

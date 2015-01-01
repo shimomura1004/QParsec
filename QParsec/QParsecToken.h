@@ -4,6 +4,8 @@
 #include "QParsecChar.h"
 #include "QParsecCombinator.h"
 
+namespace QParsec {
+
 Parser<void> *WhiteSpace() { return SkipMany(Space()); }
 
 template<typename T>
@@ -128,4 +130,6 @@ struct ParserDouble : Parser<double> {
     }
 };
 ParserDouble *Double() { return new ParserDouble(); }
+}
+
 #endif // QPARSECTOKEN_H

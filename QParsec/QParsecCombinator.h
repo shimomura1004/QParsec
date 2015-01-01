@@ -6,6 +6,8 @@
 
 // todo: use sharedpointer for all parsers
 
+namespace QParsec {
+
 template<typename T>
 struct ParserMany : Parser< QList<T> > {
     Parser<T> *p_;
@@ -555,5 +557,7 @@ ParserChainr<T> *Chainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *o
 template<typename T>
 ParserChainr1<T> *Chainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out = nullptr)
 { return new ParserChainr1<T>(p, poperator, out); }
+
+}
 
 #endif // QPARSECCOMBINATOR_H
