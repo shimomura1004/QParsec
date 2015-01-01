@@ -84,6 +84,7 @@ private Q_SLOTS:
     void testHexadecimal();
     void testOctal();
     void testNatural();
+    void testInteger();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -845,6 +846,20 @@ void QParsecTestTest::testNatural()
 
     Input err("hello");
     QVERIFY_EXCEPTION_THROWN(Natural()->parse(err), ParserException);
+}
+
+void QParsecTestTest::testInteger()
+{
+    Input input1("123");
+    QCOMPARE(Integer()->parse(input1), 123);
+    Input input2("+123");
+    QCOMPARE(Integer()->parse(input2), 123);
+    Input input3("-123");
+    QCOMPARE(Integer()->parse(input3), -123);
+    Input input4("+0x123");
+    QCOMPARE(Integer()->parse(input4), 0x123);
+    Input input5("-0x123");
+    QCOMPARE(Integer()->parse(input5), -0x123);
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)

@@ -87,4 +87,15 @@ Parser<int> *Octal() {
 Parser<int> *Natural() {
     return Choice({Try(Hexadecimal()), Try(Octal()), Try(Decimal())});
 }
+
+struct ParserInteger : Parser<int> {
+    int parse(Input &input) {
+        auto sign = Choice({ Char('-'),
+                             Option(Char('+'), QChar('+'))
+                           })->parse(input);
+        auto num = Natural()->parse(input);
+        return (sign == '+' ? 1 : -1) * num;
+    }
+};
+ParserInteger *Integer() { return new ParserInteger(); }
 #endif // QPARSECTOKEN_H
