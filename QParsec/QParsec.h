@@ -248,6 +248,19 @@ struct ParserApply : Parser<T2> {
         return Parser<T2>::setOut(result);
     }
 };
+template<typename T2>
+struct ParserApply<void, T2> : Parser<T2> {
+    Parser<void> *p_;
+    T2 (*func_)();
+
+    ParserApply(Parser<void> *p, T2 (*func)(), T2 *out) : Parser<T2>(out), p_(p), func_(func) {}
+    virtual ~ParserApply() { delete p_; }
+
+    T2 parse(Input &input) {
+        p_->parse(input);
+        return Parser<T2>::setOut(func_());
+    }
+};
 
 template<typename T>
 struct ParserLazy : Parser<T> {
