@@ -6,7 +6,7 @@
 #include <QStringList>
 #include <QSharedPointer>
 
-namespace QParsec {
+namespace qparsec {
 
 // todo: inherit QIODevice
 class Input {

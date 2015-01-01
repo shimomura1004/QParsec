@@ -7,7 +7,7 @@
 #include <QChar>
 #include <QString>
 
-namespace QParsec {
+namespace qparsec {
 
 struct ParserOneOf : Parser<QChar> {
     QString chars_;

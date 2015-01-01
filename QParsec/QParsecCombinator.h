@@ -6,7 +6,7 @@
 
 // todo: use sharedpointer for all parsers
 
-namespace QParsec {
+namespace qparsec {
 
 template<typename T>
 struct ParserMany : Parser< QList<T> > {

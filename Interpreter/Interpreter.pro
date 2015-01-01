@@ -21,4 +21,5 @@ INCLUDEPATH += ../QParsec
 CONFIG += c++11
 
 HEADERS += \
-    ast/AST.h
+    lisp/Ast.h \
+    lisp/Parser.h

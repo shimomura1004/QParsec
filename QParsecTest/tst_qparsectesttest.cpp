@@ -7,7 +7,7 @@
 #include <QParsecCombinator.h>
 #include <QParsecToken.h>
 
-using namespace QParsec;
+using namespace qparsec;
 
 class QParsecTestTest : public QObject
 {

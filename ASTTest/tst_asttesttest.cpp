@@ -1,10 +1,10 @@
 #include <QString>
 #include <QtTest>
 
-#include <../Interpreter/ast/AST.h>
+#include <lisp/Ast.h>
 #include <QDebug>
 
-using namespace AST;
+using namespace lisp::ast;
 
 class ASTTestTest : public QObject
 {
@@ -23,32 +23,32 @@ ASTTestTest::ASTTestTest()
 
 void ASTTestTest::testCreate()
 {
-    qDebug() << LispSymbol::create("hello")->toString();
-    qDebug() << LispChar::create('a')->toString();
-    qDebug() << LispString::create("hello")->toString();
-    qDebug() << LispBool::create(true)->toString();
-    qDebug() << LispInt::create(123)->toString();
-    qDebug() << LispUndef::create()->toString();
-    qDebug() << LispList::create({LispBool::create(true),
-                                  LispUndef::create(),
-                                  LispInt::create(10)})->toString();
-    qDebug() << LispApply::create(LispUndef::create(), {
-                                      LispString::create("hello"),
-                                      LispBool::create(true)})->toString();
-    qDebug() << LispLambda::create({"a", "b"},
-                                   LispBool::create(false),
-                                   Env())->toString();
-    qDebug() << LispDefine::create("plus1",
-                                   LispLambda::create({"n"},
-                                                      LispList::create({LispSymbol::create("+"),
-                                                                        LispInt::create(1)}),
-                                                      Env()))->toString();
-    qDebug() << LispIf::create(LispBool::create(true), LispString::create("true"), LispString::create("false"))->toString();
-    qDebug() << LispLet::create({ QPair<QString, QSharedPointer<LispVal>>("x", LispInt::create(3)),
-                                  QPair<QString, QSharedPointer<LispVal>>("y", LispString::create("hello"))
-                                },
-                                LispSymbol::create("x"))->toString();
-    qDebug() << LispSequence::create({LispInt::create(3), LispString::create("hello")})->toString();
+    qDebug() << Symbol::create("hello")->toString();
+    qDebug() << Char::create('a')->toString();
+    qDebug() << String::create("hello")->toString();
+    qDebug() << Bool::create(true)->toString();
+    qDebug() << Int::create(123)->toString();
+    qDebug() << Undef::create()->toString();
+    qDebug() << List::create({Bool::create(true),
+                              Undef::create(),
+                              Int::create(10)})->toString();
+    qDebug() << Apply::create(Undef::create(), {
+                                  String::create("hello"),
+                                  Bool::create(true)})->toString();
+    qDebug() << Lambda::create({"a", "b"},
+                               Bool::create(false),
+                               Env())->toString();
+    qDebug() << Define::create("plus1",
+                               Lambda::create({"n"},
+                                              List::create({Symbol::create("+"),
+                                                            Int::create(1)}),
+                                              Env()))->toString();
+    qDebug() << If::create(Bool::create(true), String::create("true"), String::create("false"))->toString();
+    qDebug() << Let::create({ QPair<QString, QSharedPointer<Val>>("x", Int::create(3)),
+                              QPair<QString, QSharedPointer<Val>>("y", String::create("hello"))
+                            },
+                            Symbol::create("x"))->toString();
+    qDebug() << Sequence::create({Int::create(3), String::create("hello")})->toString();
 }
 
 QTEST_APPLESS_MAIN(ASTTestTest)

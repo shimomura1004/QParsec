@@ -4,7 +4,7 @@
 #include "QParsecChar.h"
 #include "QParsecCombinator.h"
 
-namespace QParsec {
+namespace qparsec {
 
 Parser<void> *WhiteSpace() { return SkipMany(Space()); }
 

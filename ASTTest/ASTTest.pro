@@ -19,3 +19,4 @@ SOURCES += tst_asttesttest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 CONFIG += c++11
+INCLUDEPATH += ../Interpreter
