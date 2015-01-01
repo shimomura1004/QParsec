@@ -85,6 +85,7 @@ private Q_SLOTS:
     void testOctal();
     void testNatural();
     void testInteger();
+    void testDouble();
 };
 
 QParsecTestTest::QParsecTestTest()
@@ -860,6 +861,34 @@ void QParsecTestTest::testInteger()
     QCOMPARE(Integer()->parse(input4), 0x123);
     Input input5("-0x123");
     QCOMPARE(Integer()->parse(input5), -0x123);
+}
+
+void QParsecTestTest::testDouble()
+{
+    Input input1("123.45");
+    QCOMPARE(Double()->parse(input1), 123.45);
+    Input input2("-123.45");
+    QCOMPARE(Double()->parse(input2), -123.45);
+    Input input3("123e2");
+    QCOMPARE(Double()->parse(input3), 123e2);
+    Input input4("-123e2");
+    QCOMPARE(Double()->parse(input4), -123e2);
+    Input input5("123e-2");
+    QCOMPARE(Double()->parse(input5), 123e-2);
+    Input input6("-123E-2");
+    QCOMPARE(Double()->parse(input6), -123E-2);
+    Input input7("123.");
+    QVERIFY_EXCEPTION_THROWN(Double()->parse(input7), ParserException);
+    Input input8("123E");
+    QVERIFY_EXCEPTION_THROWN(Double()->parse(input8), ParserException);
+    Input input9("123.e2");
+    QVERIFY_EXCEPTION_THROWN(Double()->parse(input9), ParserException);
+    Input input10("123.-2");
+    QVERIFY_EXCEPTION_THROWN(Double()->parse(input10), ParserException);
+    Input input11(".5");
+    QCOMPARE(Double()->parse(input11), .5);
+    Input input12("-.5");
+    QCOMPARE(Double()->parse(input12), -.5);
 }
 
 QTEST_APPLESS_MAIN(QParsecTestTest)
