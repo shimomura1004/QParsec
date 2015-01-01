@@ -111,13 +111,15 @@ struct LispLambda : LispVal {
     QStringList args;
     QSharedPointer<LispVal> body;
     Env env;
+    static QSharedPointer<LispLambda> create(QList<QString> a, QSharedPointer<LispVal> b, Env e) { return QSharedPointer<LispLambda>(new LispLambda(a, b, e)); }
     static QSharedPointer<LispLambda> create(std::initializer_list<QString> a, QSharedPointer<LispVal> b, Env e) { return QSharedPointer<LispLambda>(new LispLambda(a, b, e)); }
+    LispLambda(QList<QString> a, QSharedPointer<LispVal> b, Env e) : args(a), body(b), env(e) {}
     LispLambda(std::initializer_list<QString> a, QSharedPointer<LispVal> b, Env e) : args(a), body(b), env(e) {}
     QString toString() {
         QStringList envs;
         Q_FOREACH(const auto& e, env)
             envs.push_back(QStringLiteral("%1=%2").arg(e.first, e.second->toString()));
-        return QStringLiteral("<Lambda:(%1) -> %2[%3]>").arg(args.join(", "), body->toString(), envs.join(", "));
+        return QStringLiteral("<Lambda:(%1) -> %2 [%3]>").arg(args.join(", "), body->toString(), envs.join(", "));
     }
 };
 
