@@ -8,6 +8,9 @@
 #include <QParsecToken.h>
 
 using namespace qparsec;
+using namespace qparsec::chars;
+using namespace qparsec::combinators;
+using namespace qparsec::tokens;
 
 class QParsecTestTest : public QObject
 {

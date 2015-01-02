@@ -8,6 +8,7 @@
 #include <QString>
 
 namespace qparsec {
+namespace chars {
 
 struct ParserOneOf : Parser<QChar> {
     QString chars_;
@@ -133,6 +134,7 @@ ParserDigit *Digit(QChar *out = nullptr)
 ParserSpace *Space(QChar *out = nullptr)
 { return new ParserSpace(out); }
 
+}
 }
 
 #endif // QPARSECCHAR_H

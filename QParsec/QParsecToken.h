@@ -5,6 +5,9 @@
 #include "QParsecCombinator.h"
 
 namespace qparsec {
+namespace tokens {
+using namespace chars;
+using namespace combinators;
 
 Parser<void> *WhiteSpace() { return SkipMany(Space()); }
 
@@ -130,6 +133,8 @@ struct ParserDouble : Parser<double> {
     }
 };
 ParserDouble *Double() { return new ParserDouble(); }
+
+}
 }
 
 #endif // QPARSECTOKEN_H

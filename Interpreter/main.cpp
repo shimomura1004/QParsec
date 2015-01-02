@@ -12,6 +12,7 @@
 #include <QDebug>
 
 using namespace qparsec;
+using namespace qparsec::tokens;
 
 struct ParserPlus : Parser<int(*)(int,int)> {
     int (*parse(Input &input))(int, int) {
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
         Input input(line);
 
         try {
+            WhiteSpace()->parse(input);
             qDebug() << lisp::parser::Val()->parse(input)->toString();
         }
         catch (const ParserException &e) {

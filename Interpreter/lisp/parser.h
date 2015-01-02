@@ -11,6 +11,7 @@ using namespace qparsec;
 
 namespace lisp {
 namespace parser {
+using namespace qparsec::tokens;
 
 Parser<ast::SharedVal> *Val();
 
