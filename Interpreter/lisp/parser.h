@@ -16,7 +16,12 @@ Parser<ast::SharedVal> *Val();
 
 Parser<ast::SharedVal> *Int() {
     ast::SharedVal(*f)(int) = [](int n){ return ast::Int::create(n); };
-    return Apply(Natural(), f);
+    return Apply(Integer(), f);
+}
+
+Parser<ast::SharedVal> *List() {
+    ast::SharedVal(*f)(QList<ast::SharedVal>) = [](QList<ast::SharedVal> list){ return ast::List::create(list); };
+    return Right(Char('\''), Apply(Lexeme(Parens(Many(Val()))), f));
 }
 
 struct ParserLambda : Parser<ast::SharedVal> {
@@ -28,6 +33,7 @@ struct ParserLambda : Parser<ast::SharedVal> {
         WhiteSpace()->parse(input);
         auto body = Val()->parse(input);
         Char(')')->parse(input);
+        WhiteSpace()->parse(input);
         return ast::Lambda::create(vars, body, ast::Env());
     }
 };
@@ -37,10 +43,11 @@ Parser<ast::SharedVal> *Val();
 struct ParserVal : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         ast::SharedVal val =
-                Choice({ Int(),
-                         Lambda(),
-                         Val()
-                       })->parse(input);
+                Lexeme(Choice({ Int(),
+                                Try(List()),
+                                Try(Lambda()),
+                                Parens(Val())
+                              }))->parse(input);
         return val;
     }
 };

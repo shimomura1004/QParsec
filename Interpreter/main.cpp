@@ -32,9 +32,15 @@ int main(int argc, char *argv[])
     Q_UNUSED(argc);
     Q_UNUSED(argv);
 
-    {
-        Input input("(lambda (x) 123)");
+    try {
+        Input i("'(1  2 3)");
+        qDebug() << lisp::parser::Val()->parse(i)->toString();
+
+        Input input("(lambda (x) '(123 45))");
         qDebug() << lisp::parser::Val()->parse(input)->toString();
+    }
+    catch (const ParserException &e) {
+        qDebug() << e.index << e.reason;
     }
 
     try {
