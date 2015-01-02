@@ -1,4 +1,6 @@
 #include <QCoreApplication>
+#include <iostream>
+
 #include <QParsec.h>
 #include <QParsecChar.h>
 #include <QParsecCombinator.h>
@@ -32,24 +34,24 @@ int main(int argc, char *argv[])
     Q_UNUSED(argc);
     Q_UNUSED(argv);
 
-    try {
-        Input i("'(1  2 3)");
-        qDebug() << lisp::parser::Val()->parse(i)->toString();
+    QTextStream in(stdin, QIODevice::ReadOnly);
+    Q_FOREVER {
+        std::cout << "> ";
+        std::cout.flush();
 
-        Input input("(lambda (x) '(123 45))");
-        qDebug() << lisp::parser::Val()->parse(input)->toString();
-    }
-    catch (const ParserException &e) {
-        qDebug() << e.index << e.reason;
-    }
+        QString line = in.readLine();
+        if (line.isEmpty())
+            break;
 
-    try {
-        Input input("(12 + 34 + (56 + 78) + 10 + (20))");
-        auto sum = S(Term())->parse(input);
-        qDebug() << sum;
-    }
-    catch (const ParserException &e) {
-        qDebug() << e.index << e.reason;
+        Input input(line);
+
+        try {
+            qDebug() << lisp::parser::Val()->parse(input)->toString();
+        }
+        catch (const ParserException &e) {
+            qDebug() << "ParseError at" << e.index;
+            qDebug("%s", e.reason.toLatin1().constData());
+        }
     }
 
     return 0;

@@ -2,9 +2,11 @@
 #include <QtTest>
 
 #include <lisp/ast.h>
+#include <lisp/parser.h>
 #include <QDebug>
 
 using namespace lisp::ast;
+using namespace qparsec;
 
 class ASTTestTest : public QObject
 {
@@ -15,6 +17,7 @@ public:
 
 private Q_SLOTS:
     void testCreate();
+    void testBasic();
 };
 
 ASTTestTest::ASTTestTest()
@@ -49,6 +52,15 @@ void ASTTestTest::testCreate()
                             },
                             Symbol::create("x"))->toString();
     qDebug() << Sequence::create({Int::create(3), String::create("hello")})->toString();
+}
+
+void ASTTestTest::testBasic()
+{
+    Input list("'(1  2 3)");
+    qDebug() << lisp::parser::Val()->parse(list)->toString();
+
+    Input lambda("(lambda (x) '(123 45))");
+    qDebug() << lisp::parser::Val()->parse(lambda)->toString();
 }
 
 QTEST_APPLESS_MAIN(ASTTestTest)
