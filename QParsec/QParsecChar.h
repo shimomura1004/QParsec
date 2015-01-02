@@ -86,33 +86,6 @@ struct ParserAnyChar : Parser<QChar> {
     }
 };
 
-struct ParserDigit : Parser<QChar> {
-    static ParserOneOf p_;
-
-    ParserDigit(QChar *out = nullptr) : Parser(out) {}
-
-    QChar parse(Input &input) {
-        QChar c = p_.parse(input);
-        return setOut(c);
-    }
-};
-ParserOneOf
-ParserDigit::p_("0123456789");
-
-struct ParserSpace : Parser<QChar> {
-    static ParserOneOf p_;
-
-    ParserSpace(QChar *out = nullptr) : Parser(out) {}
-
-    QChar parse(Input &input) {
-        QChar c =  p_.parse(input);
-        return setOut(c);
-    }
-};
-ParserOneOf
-ParserSpace::p_(" \v\f\t\r\n");
-
-
 ParserOneOf *OneOf(QString chars, QChar *out = nullptr)
 { return new ParserOneOf(chars, out); }
 
@@ -128,11 +101,57 @@ ParserStr *Str(QString s, QString *out = nullptr)
 ParserAnyChar *AnyChar(QChar *out = nullptr)
 { return new ParserAnyChar(out); }
 
-ParserDigit *Digit(QChar *out = nullptr)
-{ return new ParserDigit(out); }
+Parser<QChar> *Space(QChar *out = nullptr)
+{ return OneOf(" \v\f\t\r\n", out); }
 
-ParserSpace *Space(QChar *out = nullptr)
-{ return new ParserSpace(out); }
+Parser<QString> *Spaces(QString *out = nullptr)
+{ return combinators::Many(Space(), out); }
+
+Parser<QChar> *Newline(QChar *out = nullptr)
+{ return Char('\n', out); }
+
+Parser<QChar> *Tab(QChar *out = nullptr)
+{ return Char('\t', out); }
+
+Parser<QChar> *Upper(QChar *out = nullptr)
+{ return OneOf("ABCDEFGHIJKLMNOPQRSTUVWXYZ", out); }
+
+Parser<QChar> *Lower(QChar *out = nullptr)
+{ return OneOf("abcdefghijklmnopqrstuvwxyz", out); }
+
+Parser<QChar> *Alphanum(QChar *out = nullptr)
+{ return OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", out); }
+
+Parser<QChar> *Letter(QChar *out = nullptr)
+{ return OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", out); }
+
+Parser<QChar> *Digit(QChar *out = nullptr)
+{ return OneOf("0123456789", out); }
+
+Parser<QChar> *Hexdigit(QChar *out = nullptr)
+{ return OneOf("0123456789abcdefABCDEF", out); }
+
+Parser<QChar> *Octdigit(QChar *out = nullptr)
+{ return OneOf("01234567", out); }
+
+struct ParserSatisfy : Parser<QChar> {
+    bool(*judge_)(QChar);
+
+    ParserSatisfy(bool(*judge)(QChar), QChar *out) : Parser<QChar>(out), judge_(judge) {}
+
+    QChar parse(Input &input) {
+        if (input.isEmpty())
+            throw ParserException(input.index(), "Unexpected end of input");
+        if (!judge_(input[0]))
+            throw ParserException(input.index(), QStringLiteral("Not satisfied: %1").arg(input[0]));
+
+        QChar c = input.consume(1)[0];
+        return setOut(c);
+    }
+};
+
+Parser<QChar> *Satisfy(bool(*judge)(QChar), QChar *out = nullptr)
+{ return new ParserSatisfy(judge, out); }
 
 }
 }

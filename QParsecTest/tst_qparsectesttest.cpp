@@ -47,8 +47,18 @@ private Q_SLOTS:
     void testChar();
     void testStr();
     void testAnyChar();
-    void testDigit();
     void testSpace();
+    void testSpaces();
+    void testNewline();
+    void testTab();
+    void testUpper();
+    void testLower();
+    void testAlphanum();
+    void testLetter();
+    void testDigit();
+    void testHexdigit();
+    void testOctdigit();
+    void testSatisfy();
 
     void testMany();
     void testMany1();
@@ -249,15 +259,6 @@ void QParsecTestTest::testAnyChar() {
     QVERIFY_EXCEPTION_THROWN(AnyChar()->parse(input), ParserException);
 }
 
-void QParsecTestTest::testDigit() {
-    Input input("1a");
-
-    auto n = Digit()->parse(input);
-    QCOMPARE(n, QChar('1'));
-
-    QVERIFY_EXCEPTION_THROWN(Digit()->parse(input), ParserException);
-}
-
 void QParsecTestTest::testSpace() {
     Input input(" \ta");
 
@@ -267,6 +268,142 @@ void QParsecTestTest::testSpace() {
     QCOMPARE(tab, QChar('\t'));
 
     QVERIFY_EXCEPTION_THROWN(Space()->parse(input), ParserException);
+}
+
+void QParsecTestTest::testSpaces()
+{
+    Input input("   ");
+    Spaces()->parse(input);
+    QCOMPARE(input.str(), QString(""));
+
+    Input input2(" hello");
+    Spaces()->parse(input2);
+    QCOMPARE(input2.str(), QString("hello"));
+    Spaces()->parse(input2);
+    QCOMPARE(input2.str(), QString("hello"));
+    auto hello = Str("hello")->parse(input2);
+    QCOMPARE(hello, QString("hello"));
+}
+
+void QParsecTestTest::testNewline()
+{
+    Input input("\n");
+    auto result1 = Newline()->parse(input);
+    QCOMPARE(result1, QChar('\n'));
+
+    Input input2("\nhello");
+    auto result2 = Newline()->parse(input2);
+    QCOMPARE(result2, QChar('\n'));
+    QCOMPARE(input2.str(), QString("hello"));
+
+    QVERIFY_EXCEPTION_THROWN(Newline()->parse(input2), ParserException);
+}
+
+void QParsecTestTest::testTab()
+{
+    Input input("\t");
+    auto result1 = Tab()->parse(input);
+    QCOMPARE(result1, QChar('\t'));
+
+    Input input2("\thello");
+    auto result2 = Tab()->parse(input2);
+    QCOMPARE(result2, QChar('\t'));
+    QCOMPARE(input2.str(), QString("hello"));
+
+    QVERIFY_EXCEPTION_THROWN(Tab()->parse(input2), ParserException);
+}
+
+void QParsecTestTest::testUpper()
+{
+    Input input1("Aa");
+    auto A = Upper()->parse(input1);
+    QCOMPARE(A, QChar('A'));
+
+    QVERIFY_EXCEPTION_THROWN(Upper()->parse(input1), ParserException);
+
+    Input input2("0");
+    QVERIFY_EXCEPTION_THROWN(Upper()->parse(input2), ParserException);
+}
+
+void QParsecTestTest::testLower()
+{
+    Input input1("aA");
+    auto a = Lower()->parse(input1);
+    QCOMPARE(a, QChar('a'));
+
+    QVERIFY_EXCEPTION_THROWN(Lower()->parse(input1), ParserException);
+
+    Input input2("0");
+    QVERIFY_EXCEPTION_THROWN(Lower()->parse(input2), ParserException);
+}
+
+void QParsecTestTest::testAlphanum()
+{
+    Input input1("aA0*");
+    auto a = Alphanum()->parse(input1);
+    QCOMPARE(a, QChar('a'));
+    auto A = Alphanum()->parse(input1);
+    QCOMPARE(A, QChar('A'));
+    auto zero = Alphanum()->parse(input1);
+    QCOMPARE(zero, QChar('0'));
+
+    QVERIFY_EXCEPTION_THROWN(Alphanum()->parse(input1), ParserException);
+}
+
+void QParsecTestTest::testLetter()
+{
+    Input input1("aA0");
+    auto a = Letter()->parse(input1);
+    QCOMPARE(a, QChar('a'));
+    auto A = Letter()->parse(input1);
+    QCOMPARE(A, QChar('A'));
+
+    QVERIFY_EXCEPTION_THROWN(Letter()->parse(input1), ParserException);
+}
+
+void QParsecTestTest::testDigit() {
+    Input input("1a");
+
+    auto n = Digit()->parse(input);
+    QCOMPARE(n, QChar('1'));
+
+    QVERIFY_EXCEPTION_THROWN(Digit()->parse(input), ParserException);
+}
+
+void QParsecTestTest::testHexdigit()
+{
+    Input input1("aA0G");
+    auto a = Hexdigit()->parse(input1);
+    QCOMPARE(a, QChar('a'));
+    auto A = Hexdigit()->parse(input1);
+    QCOMPARE(A, QChar('A'));
+    auto zero = Hexdigit()->parse(input1);
+    QCOMPARE(zero, QChar('0'));
+
+    QVERIFY_EXCEPTION_THROWN(Hexdigit()->parse(input1), ParserException);
+}
+
+void QParsecTestTest::testOctdigit()
+{
+    Input input1("078");
+    auto zero = Octdigit()->parse(input1);
+    QCOMPARE(zero, QChar('0'));
+    auto seven = Octdigit()->parse(input1);
+    QCOMPARE(seven, QChar('7'));
+
+    QVERIFY_EXCEPTION_THROWN(Octdigit()->parse(input1), ParserException);
+}
+
+void QParsecTestTest::testSatisfy()
+{
+    Input input1("0a");
+    bool(*isDigit)(QChar) = [](QChar c){
+        return c.isDigit();
+    };
+    auto zero = Satisfy(isDigit)->parse(input1);
+    QCOMPARE(zero, QChar('0'));
+
+    QVERIFY_EXCEPTION_THROWN(Satisfy(isDigit)->parse(input1), ParserException);
 }
 
 void QParsecTestTest::testMany() {
