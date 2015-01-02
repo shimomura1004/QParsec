@@ -325,6 +325,13 @@ struct ParserOption : Parser<T> {
     }
 };
 
+struct ParserEof : Parser<void> {
+    void parse(Input &input) {
+        if (!input.isEmpty())
+            throw ParserException(input.index(), "Isn't at the end of input");
+    }
+};
+
 template<typename T, typename TEnd>
 struct ParserManyTill : Parser< QList<T> > {
     Parser<T> *p_;
@@ -542,6 +549,9 @@ ParserOption<T> *Option(Parser<T> *p, T opt, T *out = nullptr)
 template<typename T, typename TEnd>
 ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *out = nullptr)
 { return new ParserManyTill<T, TEnd>(p, pend, out); }
+
+ParserEof *Eof()
+{ return new ParserEof(); }
 
 template<typename T>
 ParserChainl<T> *Chainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out = nullptr)

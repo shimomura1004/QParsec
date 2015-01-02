@@ -72,6 +72,7 @@ private Q_SLOTS:
     void testCount();
     void testBetween();
     void testOption();
+    void testEof();
     void testManyTill();
     void testChainl();
     void testChaninl1();
@@ -615,6 +616,17 @@ void QParsecTestTest::testOption()
     Input input2("hello");
     auto digit2 = Option(Many1(Digit()), QString("100"))->parse(input2);
     QCOMPARE(digit2, QString("100"));
+}
+
+void QParsecTestTest::testEof()
+{
+    Input input("a");
+    QVERIFY_EXCEPTION_THROWN(Eof()->parse(input), ParserException);
+
+    auto a = AnyChar()->parse(input);
+    QCOMPARE(a, QChar('a'));
+
+    Eof()->parse(input);
 }
 
 void QParsecTestTest::testManyTill()
