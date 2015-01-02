@@ -1,7 +1,7 @@
 #include <QString>
 #include <QtTest>
 
-#include <lisp/Ast.h>
+#include <lisp/ast.h>
 #include <QDebug>
 
 using namespace lisp::ast;

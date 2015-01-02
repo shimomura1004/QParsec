@@ -4,8 +4,8 @@
 #include <QParsecCombinator.h>
 #include <QParsecToken.h>
 
-#include <lisp/Ast.h>
-#include <lisp/Parser.h>
+#include <lisp/ast.h>
+#include <lisp/parser.h>
 
 #include <QDebug>
 
