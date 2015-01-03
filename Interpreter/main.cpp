@@ -4,7 +4,7 @@
 #include <QParsec.h>
 #include <QParsecChar.h>
 #include <QParsecCombinator.h>
-#include <token/lisp.h>
+#include <token/scheme.h>
 
 #include <lisp/ast.h>
 #include <lisp/parser.h>
@@ -12,7 +12,9 @@
 #include <QDebug>
 
 using namespace qparsec;
-using namespace qparsec::tokens::lisp;
+using namespace qparsec::tokens;
+using namespace qparsec::tokens::scheme;
+
 // todo: parser should return wheather it consumes input
 // todo: fails parser should return expected characters
 // propose: return ParserResult<T> instead of using exception

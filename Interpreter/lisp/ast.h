@@ -24,6 +24,15 @@ struct Symbol : Val {
     }
 };
 
+struct Var : Val {
+    QString val;
+    static SharedVal create(QString s) { return QSharedPointer<Var>(new Var(s)); }
+    Var(QString s) : val(s) {}
+    QString toString() {
+        return QStringLiteral("<Var:\"%1\">").arg(val);
+    }
+};
+
 struct Char : Val {
     QChar val;
     static SharedVal create(QChar c) { return QSharedPointer<Char>(new Char(c)); }
@@ -52,8 +61,8 @@ struct Bool : Val {
 };
 
 struct Int : Val {
-    int val;
-    static SharedVal create(int i) { return QSharedPointer<Int>(new Int(i)); }
+    int64_t val;
+    static SharedVal create(int64_t i) { return QSharedPointer<Int>(new Int(i)); }
     Int(int i) : val(i) {}
     QString toString() {
         return QStringLiteral("<Int:%1>").arg(val);

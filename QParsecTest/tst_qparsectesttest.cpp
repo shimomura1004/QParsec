@@ -5,12 +5,15 @@
 #include <QParsec.h>
 #include <QParsecChar.h>
 #include <QParsecCombinator.h>
-#include <token/lisp.h>
+#include <token/clang.h>
+#include <token/scheme.h>
 
 using namespace qparsec;
 using namespace qparsec::chars;
 using namespace qparsec::combinators;
-using namespace qparsec::tokens::lisp;
+using namespace qparsec::tokens;
+using namespace qparsec::tokens::clang;
+using namespace qparsec::tokens::scheme;
 
 class QParsecTestTest : public QObject
 {

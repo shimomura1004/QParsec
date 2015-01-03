@@ -4,7 +4,8 @@
 #include <QSharedPointer>
 #include <QParsec.h>
 #include <QParsecCombinator.h>
-#include <token/lisp.h>
+#include <token/scheme.h>
+#include <token/clang.h>
 #include "ast.h"
 
 using namespace qparsec;
@@ -12,13 +13,15 @@ using namespace qparsec;
 namespace lisp {
 namespace parser {
 using namespace qparsec::combinators;
-using namespace qparsec::tokens::lisp;
+using namespace qparsec::tokens;
+using namespace qparsec::tokens::clang;
+using namespace qparsec::tokens::scheme;
 
 Parser<ast::SharedVal> *Val();
 
 Parser<ast::SharedVal> *Int() {
-    ast::SharedVal(*f)(int) = [](int n){ return ast::Int::create(n); };
-    return Apply(Integer(), f);
+    ast::SharedVal(*f)(int64_t) = [](int64_t n){ return ast::Int::create(n); };
+    return Apply(scheme::Num(), f);
 }
 
 Parser<ast::SharedVal> *List() {
@@ -43,14 +46,9 @@ struct ParserLambda : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Lambda() { return new ParserLambda(); }
 
-struct ParserVar : Parser<ast::SharedVal> {
-    ast::SharedVal parse(Input &input) {
-        auto c = Letter()->parse(input);
-        auto cs = Many(Alphanum())->parse(input);
-        return ast::Symbol::create(c + cs);
-    }
-};
-Parser<ast::SharedVal> *Var() { return new ParserVar(); }
+Parser<ast::SharedVal> *Variable() {
+    return Apply(qparsec::tokens::scheme::Identifier(), ast::Var::create);
+}
 
 struct ParserApply : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
@@ -64,11 +62,11 @@ Parser<ast::SharedVal> *Val();
 struct ParserVal : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         ast::SharedVal val =
-                Lexeme(Choice({ Int(),
-                                Var(),
+                Lexeme(Choice({ Try(Int()),
+                                Variable(),
                                 Try(List()),
-                                Try(Apply()),
                                 Try(Lambda()),
+                                Try(Apply()),
                                 Parens(Val())
                               }))->parse(input);
         return val;
