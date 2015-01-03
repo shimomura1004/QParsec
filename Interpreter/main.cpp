@@ -13,6 +13,10 @@
 
 using namespace qparsec;
 using namespace qparsec::tokens::lisp;
+// todo: parser should return wheather it consumes input
+// todo: fails parser should return expected characters
+// propose: return ParserResult<T> instead of using exception
+// propose: remove 'out' argument
 
 int main(int argc, char *argv[])
 {
@@ -32,7 +36,7 @@ int main(int argc, char *argv[])
 
         try {
             WhiteSpace()->parse(input);
-            qDebug() << lisp::parser::Val()->parse(input)->toString();
+            std::cout << lisp::parser::Val()->parse(input)->toString().toLatin1().constData() << std::endl;
         }
         catch (const ParserException &e) {
             qDebug() << "ParseError at" << e.index;

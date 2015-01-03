@@ -128,7 +128,7 @@ Parser<QChar> *Letter(QChar *out = nullptr)
 Parser<QChar> *Digit(QChar *out = nullptr)
 { return OneOf("0123456789", out); }
 
-Parser<QChar> *Hexdigit(QChar *out = nullptr)
+Parser<QChar> *Hexadigit(QChar *out = nullptr)
 { return OneOf("0123456789abcdefABCDEF", out); }
 
 Parser<QChar> *Octdigit(QChar *out = nullptr)

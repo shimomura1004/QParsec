@@ -374,14 +374,14 @@ void QParsecTestTest::testDigit() {
 void QParsecTestTest::testHexdigit()
 {
     Input input1("aA0G");
-    auto a = Hexdigit()->parse(input1);
+    auto a = Hexadigit()->parse(input1);
     QCOMPARE(a, QChar('a'));
-    auto A = Hexdigit()->parse(input1);
+    auto A = Hexadigit()->parse(input1);
     QCOMPARE(A, QChar('A'));
-    auto zero = Hexdigit()->parse(input1);
+    auto zero = Hexadigit()->parse(input1);
     QCOMPARE(zero, QChar('0'));
 
-    QVERIFY_EXCEPTION_THROWN(Hexdigit()->parse(input1), ParserException);
+    QVERIFY_EXCEPTION_THROWN(Hexadigit()->parse(input1), ParserException);
 }
 
 void QParsecTestTest::testOctdigit()
