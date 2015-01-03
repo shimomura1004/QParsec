@@ -18,7 +18,8 @@ HEADERS += \
     QParsecChar.h \
     QParsecCombinator.h \
     token/scheme.h \
-    token/clang.h
+    token/clang.h \
+    token/tokens.h
 
 unix {
     target.path = /usr/lib

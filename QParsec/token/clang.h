@@ -3,7 +3,7 @@
 
 #include <QParsecChar.h>
 #include <QParsecCombinator.h>
-#include <token/scheme.h>
+#include <token/tokens.h>
 
 namespace qparsec {
 namespace tokens {
