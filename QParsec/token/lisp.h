@@ -1,11 +1,13 @@
-#ifndef QPARSECTOKEN_H
-#define QPARSECTOKEN_H
+#ifndef LISP_H
+#define LISP_H
 
 #include "QParsecChar.h"
 #include "QParsecCombinator.h"
 
 namespace qparsec {
 namespace tokens {
+namespace lisp {
+
 using namespace chars;
 using namespace combinators;
 
@@ -137,4 +139,4 @@ ParserDouble *Double() { return new ParserDouble(); }
 }
 }
 
-#endif // QPARSECTOKEN_H
+#endif // LISP_H

@@ -4,14 +4,15 @@
 #include <QSharedPointer>
 #include <QParsec.h>
 #include <QParsecCombinator.h>
-#include <QParsecToken.h>
+#include <token/lisp.h>
 #include "ast.h"
 
 using namespace qparsec;
 
 namespace lisp {
 namespace parser {
-using namespace qparsec::tokens;
+using namespace qparsec::combinators;
+using namespace qparsec::tokens::lisp;
 
 Parser<ast::SharedVal> *Val();
 

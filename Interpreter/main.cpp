@@ -4,7 +4,7 @@
 #include <QParsec.h>
 #include <QParsecChar.h>
 #include <QParsecCombinator.h>
-#include <QParsecToken.h>
+#include <token/lisp.h>
 
 #include <lisp/ast.h>
 #include <lisp/parser.h>
@@ -29,6 +29,7 @@ Parser<int> *Term() {
                            ));
 }
 
+using namespace qparsec::tokens::lisp;
 
 int main(int argc, char *argv[])
 {
