@@ -12,23 +12,6 @@
 #include <QDebug>
 
 using namespace qparsec;
-using namespace qparsec::tokens;
-
-struct ParserPlus : Parser<int(*)(int,int)> {
-    int (*parse(Input &input))(int, int) {
-        Symbol("+")->parse(input);
-        return [](int x, int y){ return x + y; };
-    }
-};
-
-Parser<int> *Term() {
-    Parser<int>*(*self)() = [](){return Term();};
-    return  Lexeme( Parens( Chainl( Choice({ Lexeme(Decimal()), Lazy(self) }),
-                                    new ParserPlus(),
-                                    0)
-                           ));
-}
-
 using namespace qparsec::tokens::lisp;
 
 int main(int argc, char *argv[])
