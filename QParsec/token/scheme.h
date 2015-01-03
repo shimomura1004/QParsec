@@ -18,28 +18,26 @@ struct ParserIdentifier : Parser<QString> {
     Parser<QChar> *SpecialSubsequent() { return OneOf("+-.@"); }
     Parser<QString> *PeculiarIdentifier() { return Choice({Str("+"), Str("-"), Str("...")}); }
 
-    ParserIdentifier(QString *out) : Parser<QString>(out) {}
+    ParserIdentifier() : Parser<QString>() {}
 
     QString parse(Input &input) {
         try {
             auto c = Initial()->parse(input);
             auto cs = Many(Subsequent())->parse(input);
-            QString result = c + cs;
-            return setOut(result);
+            return c + cs;
         }
         catch (const ParserException &) {
-            auto cs = PeculiarIdentifier()->parse(input);
-            return setOut(cs);
+            return PeculiarIdentifier()->parse(input);
         }
     }
 };
-Parser<QString> *Identifier(QString *out = nullptr) { return new ParserIdentifier(out); }
+Parser<QString> *Identifier() { return new ParserIdentifier(); }
 
 
-Parser<bool> *Boolean(bool *out = nullptr) {
+Parser<bool> *Boolean() {
     bool(*convertTrue)(QString) = [](QString s){ return s == "#t"; };
     bool(*convertFalse)(QString) = [](QString s){ return s != "#f"; };
-    return Choice({Apply(Str("#t"), convertTrue), Apply(Str("#f"), convertFalse)}, out);
+    return Choice({Apply(Str("#t"), convertTrue), Apply(Str("#f"), convertFalse)});
 }
 
 
@@ -84,9 +82,9 @@ Parser<int64_t> *UReal<10>() {
 }
 
 template<int n>
-Parser<int64_t> *Real(int64_t *out = nullptr) {
+Parser<int64_t> *Real() {
     int64_t(*f)(QChar, int64_t) = [](QChar sign, int64_t num){return (sign == '+' ? 1 : -1) * num;};
-    return Apply2(Sign(), UReal<n>(), f, out);
+    return Apply2(Sign(), UReal<n>(), f);
 }
 
 template<int n>
@@ -97,17 +95,18 @@ Parser<int64_t> *Complex() {
 }
 
 template<int n>
-Parser<int64_t> *Num(int64_t *out = nullptr) {
-    return Right(Radix<n>(), Complex<n>(), out);
+Parser<int64_t> *Num() {
+    return Right(Radix<n>(), Complex<n>());
 }
 
-Parser<int64_t> *Num (int64_t *out = nullptr) {
-    return Choice({Num<2>(), Num<8>(), Num<10>(), Num<16>()}, out);
+Parser<int64_t> *Num () {
+    return Choice({Num<2>(), Num<8>(), Num<10>(), Num<16>()});
 }
 
 
 struct ParserCharacter : Parser<QChar> {
     Parser<QString> *CharacterName() { return Choice({Str("space"), Str("newline")}); }
+
     QChar parse(Input &input) {
         Str("#\\")->parse(input);
 
@@ -125,6 +124,24 @@ struct ParserCharacter : Parser<QChar> {
     }
 };
 Parser<QChar> *Character() { return new ParserCharacter(); }
+
+
+Parser<QString> *String() {
+    QString(*charToStr)(QChar) = [](QChar c){return QString(c);};
+    QString(*join)(QList<QString>) = [](QList<QString> strs){
+        QString result;
+        Q_FOREACH(const QString &str, strs)
+            result += str;
+        return result;
+    };
+
+    return Apply( Between( Many(Choice({ Apply(NoneOf("\\\""), charToStr),
+                                         Str("\\\""),
+                                         Str("\\\\") })),
+                           Char('"'),
+                           Char('"')),
+                  join);
+}
 
 
 }

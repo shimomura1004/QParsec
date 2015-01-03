@@ -4,28 +4,27 @@
 #include <QSharedPointer>
 #include <QParsec.h>
 #include <QParsecCombinator.h>
+#include <token/tokens.h>
 #include <token/scheme.h>
-#include <token/clang.h>
+
 #include "ast.h"
 
-using namespace qparsec;
 
 namespace lisp {
 namespace parser {
+using namespace qparsec;
+using namespace qparsec::chars;
 using namespace qparsec::combinators;
 using namespace qparsec::tokens;
-using namespace qparsec::tokens::clang;
 
 Parser<ast::SharedVal> *Val();
 
 Parser<ast::SharedVal> *Int() { return Apply(scheme::Num(), ast::Int::create); }
 Parser<ast::SharedVal> *Boolean() { return Apply(scheme::Boolean(), ast::Bool::create); }
 Parser<ast::SharedVal> *Character() { return Apply(scheme::Character(), ast::Char::create); }
+Parser<ast::SharedVal> *String() { return Apply(scheme::String(), ast::String::create); }
 Parser<ast::SharedVal> *List() { return Right(Char('\''), Apply(Lexeme(Parens(Many(Val()))), ast::List::create)); }
 
-/**
- * (lambda (x y) (+ x y))
- */
 struct ParserLambda : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         Char('(')->parse(input);
@@ -57,6 +56,7 @@ struct ParserVal : Parser<ast::SharedVal> {
                 Lexeme(Choice({ Try(Int()),
                                 Try(Boolean()),
                                 Try(Character()),
+                                String(),
                                 Variable(),
                                 Try(List()),
                                 Try(Lambda()),
