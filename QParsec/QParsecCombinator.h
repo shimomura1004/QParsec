@@ -324,6 +324,18 @@ struct ParserOption : Parser<T> {
         }
     }
 };
+template<typename T>
+struct ParserOption_ : Parser<void> {
+    Parser<T> *p_;
+
+    ParserOption_(Parser<T> *p) : Parser<void>(), p_(p) {}
+    virtual ~ParserOption_() { delete p_; }
+
+    void parse(Input &input) {
+        try { p_->parse(input); }
+        catch (const ParserException &) {}
+    }
+};
 
 struct ParserEof : Parser<void> {
     void parse(Input &input) {
@@ -512,8 +524,8 @@ template<typename T>
 ParserChoice<T> *Choice(QList< Parser<T>* > p, T *out = nullptr)
 { return new ParserChoice<T>(p, out); }
 
-template<typename T> ParserChoice<T>
-*Choice(std::initializer_list< Parser<T>* > ps, T *out = nullptr)
+template<typename T>
+ParserChoice<T> *Choice(std::initializer_list< Parser<T>* > ps, T *out = nullptr)
 { return new ParserChoice<T>(ps, out); }
 
 template<typename T, typename TSep>
@@ -545,6 +557,10 @@ ParserBetween<T, TOpen, TClose> *Between(Parser<T> *p, Parser<TOpen> *popen, Par
 template<typename T>
 ParserOption<T> *Option(Parser<T> *p, T opt, T *out = nullptr)
 { return new ParserOption<T>(p, opt, out); }
+
+template<typename T>
+Parser<void> *Option_(Parser<T> *p)
+{ return new ParserOption_<T>(p); }
 
 template<typename T, typename TEnd>
 ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *out = nullptr)
