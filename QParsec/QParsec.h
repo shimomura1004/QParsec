@@ -79,6 +79,22 @@ template<typename T>
 QSharedPointer< Parser<T> > S(Parser<T> *p)
 { return QSharedPointer< Parser<T> >(p);}
 
+struct ParserEmpty : Parser<void> {
+    void parse(Input &) {}
+};
+
+template<typename T>
+struct ParserIgnore : Parser<void> {
+    Parser<T> *p_;
+
+    ParserIgnore(Parser<T> *p) : Parser<void>(), p_(p) {}
+    ~ParserIgnore() { delete p_; }
+
+    void parse(Input &input) {
+        p_->parse(input);
+    }
+};
+
 template<typename... Ts>
 struct ParserSeq : Parser<void> {
     void parse(Input&) {}
@@ -264,6 +280,26 @@ struct ParserApply<void, T2> : Parser<T2> {
     }
 };
 
+template<typename T1, typename T2, typename T3>
+struct ParserApply2 : Parser<T2> {
+    Parser<T1> *p1_;
+    Parser<T2> *p2_;
+    T3(*func_)(T1, T2);
+
+    ParserApply2(Parser<T1> *p1, Parser<T2> *p2, T3 (*func)(T1, T2), T3 *out) : Parser<T3>(out), p1_(p1), p2_(p2), func_(func) {}
+    virtual ~ParserApply2() {
+        delete p1_;
+        delete p2_;
+    }
+
+    T3 parse(Input &input) {
+        auto r1 = p1_->parse(input);
+        auto r2 = p2_->parse(input);
+        auto result = func_(r1, r2);
+        return Parser<T3>::setOut(result);
+    }
+};
+
 template<typename T>
 struct ParserLazy : Parser<T> {
     Parser<T>*(*p_)();
@@ -275,6 +311,13 @@ struct ParserLazy : Parser<T> {
         return Parser<T>::setOut(result);
     }
 };
+
+ParserEmpty *Empty()
+{ return new ParserEmpty(); }
+
+template<typename T>
+ParserIgnore<T> *Ignore(Parser<T> *p)
+{ return new ParserIgnore<T>(p); }
 
 template<typename... Ts>
 ParserSeq<Ts...> *Seq(Parser<Ts>*... ps)
@@ -294,6 +337,10 @@ ParserHelp<T> *Help(Parser<T> *p, const QString &message)
 template<typename T1, typename T2>
 ParserApply<T1, T2> *Apply(Parser<T1> *p, T2(*func)(T1), T2 *out = nullptr)
 { return new ParserApply<T1, T2>(p, func, out); }
+
+template<typename T1, typename T2, typename T3>
+ParserApply2<T1, T2, T3> *Apply2(Parser<T1> *p1, Parser<T2> *p2, T3(*func)(T1, T2), T3 *out = nullptr)
+{ return new ParserApply2<T1, T2, T3>(p1, p2, func, out); }
 
 template<typename T1, typename T2>
 ParserLeft<T1, T2> *Left(Parser<T1> *p1, Parser<T2> *p2, T1 *out = nullptr)
