@@ -35,6 +35,7 @@ struct ParserIdentifier : Parser<QString> {
 };
 Parser<QString> *Identifier(QString *out = nullptr) { return new ParserIdentifier(out); }
 
+
 Parser<bool> *Boolean(bool *out = nullptr) {
     bool(*convertTrue)(QString) = [](QString s){ return s == "#t"; };
     bool(*convertFalse)(QString) = [](QString s){ return s != "#f"; };
@@ -42,15 +43,15 @@ Parser<bool> *Boolean(bool *out = nullptr) {
 }
 
 
+Parser<QChar> *Sign() {
+    return Option(Choice({ Char('+'), Char('-') }), QChar('+'));
+}
+
 template<int n> Parser<void> *Radix();
 template<> Parser<void> *Radix<2>(){ return Ignore(Str("#b")); }
 template<> Parser<void> *Radix<8>(){ return Ignore(Str("#o")); }
 template<> Parser<void> *Radix<10>(){ return Option_(Str("#d")); }
 template<> Parser<void> *Radix<16>(){ return Ignore(Str("#x")); }
-
-Parser<QChar> *Sign() {
-    return Option(Choice({ Char('+'), Char('-') }), QChar('+'));
-}
 
 template<int n> Parser<QChar> *SDigit();
 template<> Parser<QChar> *SDigit<2>(){ return OneOf("01"); }
@@ -59,6 +60,7 @@ template<> Parser<QChar> *SDigit<10>(){ return Digit(); }
 template<> Parser<QChar> *SDigit<16>(){ return Hexadigit(); }
 
 Parser<int64_t> *Decimal10() {
+    // todo
 }
 
 template<int n>
@@ -102,6 +104,27 @@ Parser<int64_t> *Num(int64_t *out = nullptr) {
 Parser<int64_t> *Num (int64_t *out = nullptr) {
     return Choice({Num<2>(), Num<8>(), Num<10>(), Num<16>()}, out);
 }
+
+
+struct ParserCharacter : Parser<QChar> {
+    Parser<QString> *CharacterName() { return Choice({Str("space"), Str("newline")}); }
+    QChar parse(Input &input) {
+        Str("#\\")->parse(input);
+
+        try {
+            auto name = Try(CharacterName())->parse(input);
+            if (name == "space")
+                return QChar(' ');
+            if (name == "newline")
+                return QChar('\n');
+        }
+        catch (const ParserException &) {}
+
+        auto c = AnyChar()->parse(input);
+        return QChar(c);
+    }
+};
+Parser<QChar> *Character() { return new ParserCharacter(); }
 
 
 }
