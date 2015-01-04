@@ -3,6 +3,7 @@
 
 #include <QSharedPointer>
 #include <QPair>
+#include <QString>
 
 namespace lisp {
 namespace ast {
@@ -66,6 +67,35 @@ struct Int : Val {
     Int(int i) : val(i) {}
     QString toString() {
         return QStringLiteral("<Int:%1>").arg(val);
+    }
+};
+
+struct Real : Val {
+    double val;
+    static SharedVal create(double d) { return QSharedPointer<Real>(new Real(d)); }
+    Real(double d) : val(d) {}
+    QString toString() {
+        return QStringLiteral("<Real:%1>").arg(val);
+    }
+};
+
+struct Rational : Val {
+    int64_t numerator;
+    uint64_t denominator;
+    static SharedVal create(int64_t n, uint64_t d) { return QSharedPointer<Rational>(new Rational(n, d)); }
+    Rational(int64_t n, uint64_t d) : numerator(n), denominator(d) {}
+    QString toString() {
+        return QStringLiteral("<Rational:%1/%2>").arg(numerator, denominator);
+    }
+};
+
+struct Complex : Val {
+    double real;
+    double imagnary;
+    static SharedVal create(double r, double i) { return QSharedPointer<Complex>(new Complex(r, i)); }
+    Complex(double r, double i) : real(r), imagnary(i) {}
+    QString toString() {
+        return QStringLiteral("<Complex:%1+%2i>").arg(real, imagnary);
     }
 };
 

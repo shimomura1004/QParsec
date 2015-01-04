@@ -18,20 +18,17 @@ using namespace qparsec::tokens;
 
 Parser<ast::SharedVal> *Val();
 
-Parser<ast::SharedVal> *Int() {
+Parser<ast::SharedVal> *Number() {
     ast::SharedVal(*f)(scheme::SchemeNumber) = [](scheme::SchemeNumber num){
         switch(num.numtype) {
         case scheme::SchemeNumber::INTEGER:
             return ast::Int::create(num.integer);
         case scheme::SchemeNumber::REAL:
-            num.real;
-            break;
+            return ast::Real::create(num.real);
         case scheme::SchemeNumber::RATIONAL:
-            num.rational;
-            break;
+            return ast::Rational::create(num.rational.first, num.rational.second);
         case scheme::SchemeNumber::COMPLEX:
-            num.complex;
-            break;
+            return ast::Complex::create(num.complex.first, num.complex.second);
         }
     };
 
@@ -70,7 +67,7 @@ Parser<ast::SharedVal> *Val();
 struct ParserVal : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         ast::SharedVal val =
-                Lexeme(Choice({ Try(Int()),
+                Lexeme(Choice({ Try(Number()),
                                 Try(Boolean()),
                                 Try(Character()),
                                 String(),
