@@ -9,7 +9,6 @@
 
 #include "ast.h"
 
-
 namespace lisp {
 namespace parser {
 using namespace qparsec;
@@ -19,7 +18,25 @@ using namespace qparsec::tokens;
 
 Parser<ast::SharedVal> *Val();
 
-Parser<ast::SharedVal> *Int() { return Apply(scheme::Num(), ast::Int::create); }
+Parser<ast::SharedVal> *Int() {
+    ast::SharedVal(*f)(scheme::SchemeNumber) = [](scheme::SchemeNumber num){
+        switch(num.numtype) {
+        case scheme::SchemeNumber::INTEGER:
+            return ast::Int::create(num.integer);
+        case scheme::SchemeNumber::REAL:
+            num.real;
+            break;
+        case scheme::SchemeNumber::RATIONAL:
+            num.rational;
+            break;
+        case scheme::SchemeNumber::COMPLEX:
+            num.complex;
+            break;
+        }
+    };
+
+    return Apply(scheme::Number(), f);
+}
 Parser<ast::SharedVal> *Boolean() { return Apply(scheme::Boolean(), ast::Bool::create); }
 Parser<ast::SharedVal> *Character() { return Apply(scheme::Character(), ast::Char::create); }
 Parser<ast::SharedVal> *String() { return Apply(scheme::String(), ast::String::create); }
