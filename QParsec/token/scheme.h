@@ -65,6 +65,25 @@ struct SchemeNumber {
         default: break;
         }
     }
+
+    SchemeNumber operator*=(int64_t x){
+        switch (numtype) {
+        case INTEGER:
+            integer *= x;
+            break;
+        case REAL:
+            real *= x;
+            break;
+        case RATIONAL:
+            rational.first *= x;
+            break;
+        case COMPLEX:
+            complex.first *= x;
+            complex.second *= x;
+            break;
+        }
+        return *this;
+    }
 };
 
 Parser<QChar> *Sign() {
@@ -83,98 +102,95 @@ template<> Parser<QChar> *SDigit<8>(){ return Octdigit(); }
 template<> Parser<QChar> *SDigit<10>(){ return Digit(); }
 template<> Parser<QChar> *SDigit<16>(){ return Hexadigit(); }
 
-struct ParserSuffix : Parser<QPair<QString, QChar>> {
+struct ParserSuffix : Parser<QString> {
     Parser<QChar> *ExponentMarker() { return OneOf("esfdl"); }
 
-    QPair<QString, QChar> parse(Input &input) {
+    QString parse(Input &input) {
         try {
             auto exp = ExponentMarker()->parse(input);
             auto sign = Sign()->parse(input);
             auto digit = Many1(SDigit<10>())->parse(input);
-            return QPair<QString, QChar>(QStringLiteral("") + sign + digit, exp);
+
+            // short, float, double and long precision specifiers are all converted to default(double)
+            Q_UNUSED(exp);
+            return QStringLiteral("e%1%2").arg(sign, digit);
         }
         catch (const ParserException &) {}
-        return QPair<QString, QChar>(QStringLiteral(""), QChar());
+        return QStringLiteral("");
     }
 };
-Parser<QPair<QString, QChar>> *Suffix() { return new ParserSuffix(); }
+Parser<QString> *Suffix() { return new ParserSuffix(); }
 
 template<int n>
-Parser<SchemeNumber> *UInteger() {
-    SchemeNumber(*f)(QString) = [](QString s){
-        SchemeNumber num(static_cast<int64_t>(s.toLongLong(0, n)));
-        return num;
-    };
-    return Apply(Many1(SDigit<n>()), f);
-}
+struct ParserUReal : Parser<SchemeNumber> {
+    SchemeNumber parse(Input &input) {}
+};
+template<>
+struct ParserUReal<10> : Parser<SchemeNumber> {
+    Parser<QString> *SchemeDigit(){return Many1(SDigit<10>());}
+    Parser<QString> *Placeholders(){
+        // '#' is just replaced to '0'
+        QString(*sharpToZero)(QString) = [](QString str){return str.replace('#', '0');};
+        return Apply(Many(Char('#')), sharpToZero);
+    }
 
-struct ParserDecimal10 : Parser<SchemeNumber>  {
     SchemeNumber parse(Input &input) {
         try {
-            auto integral = UInteger<10>()->parse(input);
+            Try(Char('.'))->parse(input);
+
+            // e.g. ".123##e-23"
+            auto digit = SchemeDigit()->parse(input);
+            auto placeholders = Placeholders()->parse(input);
             auto suffix = Suffix()->parse(input);
+            double result = QStringLiteral(".%1%2%3").arg(digit, placeholders, suffix).toDouble();
+            return SchemeNumber(result);
+        }
+        catch (const ParserException &) {}
+
+        auto digit = SchemeDigit()->parse(input);
+        auto placeholders = Placeholders()->parse(input);
+
+        try {
+            Char('.')->parse(input);
+
+            // e.g. "123##.23"
+            auto decimal = SchemeDigit()->parse(input);
+            auto decimalplaceholder = Placeholders()->parse(input);
+            auto suffix = Suffix()->parse(input);
+
+            double result = QStringLiteral("%1%2.%3%4%5").arg(digit, placeholders, decimal, decimalplaceholder, suffix).toDouble();
+            return SchemeNumber(result);
         }
         catch (const ParserException &) {}
 
         try {
-            Char('.')->parse(input);
-            Many1(SDigit<10>())->parse(input);
-            Many(Char('#'))->parse(input);
-            Suffix()->parse(input);
+            Char('/')->parse(input);
+
+            // e.g. "12/34"
+            auto digitDenom = SchemeDigit()->parse(input);
+            auto placeholdersDenom = Placeholders()->parse(input);
+
+            int64_t num = QStringLiteral("%1%2").arg(digit, placeholders).toLongLong();
+            uint64_t denom = QStringLiteral("%1%2").arg(digitDenom, placeholdersDenom).toLongLong();
+            return SchemeNumber(QPair<int64_t, uint64_t>(num, denom));
         }
         catch (const ParserException &) {}
 
-        try {
-            Many1(SDigit<10>())->parse(input);
-            Char('.')->parse(input);
-            Many(SDigit<10>())->parse(input);
-            Many(Char('#'))->parse(input);
-            Suffix()->parse(input);
-        }
-        catch (const ParserException &) {}
+        // e.g. 123e45
+        auto suffix = Suffix()->parse(input);
 
-        Many1(SDigit<10>())->parse(input);
-        Many1(Char('#'))->parse(input);
-        Char('.')->parse(input);
-        Many(Char('#'))->parse(input);
-        Suffix()->parse(input);
+        double result = QStringLiteral("%1%2%3").arg(digit, placeholders, suffix).toDouble();
+        return SchemeNumber(result);
     }
 };
-Parser<SchemeNumber> *Decimal10(){ return new ParserDecimal10(); }
-
-template<int n>
-Parser<SchemeNumber> *UReal() {
-    return Choice({ UInteger<n>(),
-                    // UInteger<n>() '/' UInteger<n>(),
-                  });
-}
-template<>
-Parser<SchemeNumber> *UReal<10>() {
-    return Choice({ UInteger<10>(),
-                    // UInteger<n>() '/' UInteger<n>(),
-                    Decimal10()
-                  });
-}
+template<int n> Parser<SchemeNumber> *UReal() { return new ParserUReal<n>(); }
 
 template<int n>
 Parser<SchemeNumber> *Real() {
     SchemeNumber(*f)(QChar, SchemeNumber) = [](QChar sign, SchemeNumber num){
         assert(num.numtype != SchemeNumber::COMPLEX);
 
-        switch(num.numtype) {
-        case SchemeNumber::INTEGER:
-            num.integer *= (sign == '+') ? 1 : -1;
-            break;
-        case SchemeNumber::REAL:
-            num.real *= (sign == '+') ? 1 : -1;
-            break;
-        case SchemeNumber::RATIONAL:
-            num.rational.first *= (sign == '+') ? 1 : -1;
-            break;
-        case SchemeNumber::COMPLEX:
-            break;
-        }
-
+        num *= (sign == '+') ? 1 : -1;
         return num;
     };
     return Apply2(Sign(), UReal<n>(), f);

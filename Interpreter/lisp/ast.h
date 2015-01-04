@@ -85,7 +85,7 @@ struct Rational : Val {
     static SharedVal create(int64_t n, uint64_t d) { return QSharedPointer<Rational>(new Rational(n, d)); }
     Rational(int64_t n, uint64_t d) : numerator(n), denominator(d) {}
     QString toString() {
-        return QStringLiteral("<Rational:%1/%2>").arg(numerator, denominator);
+        return QStringLiteral("<Rational:%1/%2>").arg(numerator).arg(denominator);
     }
 };
 
@@ -95,7 +95,9 @@ struct Complex : Val {
     static SharedVal create(double r, double i) { return QSharedPointer<Complex>(new Complex(r, i)); }
     Complex(double r, double i) : real(r), imagnary(i) {}
     QString toString() {
-        return QStringLiteral("<Complex:%1+%2i>").arg(real, imagnary);
+        if (imagnary > 0.0)
+            return QStringLiteral("<Complex:%1+%2i>").arg(real).arg(imagnary);
+        return QStringLiteral("<Complex:%1%2i>").arg(real).arg(imagnary);
     }
 };
 
