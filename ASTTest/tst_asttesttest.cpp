@@ -30,11 +30,11 @@ void ASTTestTest::testCreate()
     qDebug() << Char::create('a')->toString();
     qDebug() << String::create("hello")->toString();
     qDebug() << Bool::create(true)->toString();
-    qDebug() << Int::create(123)->toString();
+    qDebug() << Integer::create(123)->toString();
     qDebug() << Undef::create()->toString();
     qDebug() << List::create({Bool::create(true),
                               Undef::create(),
-                              Int::create(10)})->toString();
+                              Integer::create(10)})->toString();
     qDebug() << Apply::create(Undef::create(), {
                                   String::create("hello"),
                                   Bool::create(true)})->toString();
@@ -44,14 +44,14 @@ void ASTTestTest::testCreate()
     qDebug() << Define::create("plus1",
                                Lambda::create({"n"},
                                               List::create({Symbol::create("+"),
-                                                            Int::create(1)}),
+                                                            Integer::create(1)}),
                                               Env()))->toString();
     qDebug() << If::create(Bool::create(true), String::create("true"), String::create("false"))->toString();
-    qDebug() << Let::create({ QPair<QString, QSharedPointer<Val>>("x", Int::create(3)),
+    qDebug() << Let::create({ QPair<QString, QSharedPointer<Val>>("x", Integer::create(3)),
                               QPair<QString, QSharedPointer<Val>>("y", String::create("hello"))
                             },
                             Symbol::create("x"))->toString();
-    qDebug() << Sequence::create({Int::create(3), String::create("hello")})->toString();
+    qDebug() << Sequence::create({Integer::create(3), String::create("hello")})->toString();
 }
 
 void ASTTestTest::testBasic()

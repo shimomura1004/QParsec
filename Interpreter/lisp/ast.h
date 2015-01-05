@@ -60,10 +60,10 @@ struct Bool : Val {
     }
 };
 
-struct Int : Val {
+struct Integer : Val {
     int64_t val;
-    static SharedVal create(int64_t i) { return QSharedPointer<Int>(new Int(i)); }
-    Int(int i) : val(i) {}
+    static SharedVal create(int64_t i) { return QSharedPointer<Integer>(new Integer(i)); }
+    Integer(int i) : val(i) {}
     QString toString() {
         return QStringLiteral("<Int:%1>").arg(val);
     }
@@ -131,6 +131,19 @@ struct DList : Val {
             result.push_back(car->toString());
 
         return QStringLiteral("<DList:(%1 | %2)>").arg(result.join(", "), cdr->toString());
+    }
+};
+
+struct Vector : Val {
+    QList<SharedVal> elems;
+    static SharedVal create(QList<SharedVal> e) { return QSharedPointer<Vector>(new Vector(e)); }
+    Vector(QList<SharedVal> e) : elems(e) {}
+    QString toString() {
+        QStringList result;
+        Q_FOREACH(const SharedVal& e, elems)
+            result.push_back(e->toString());
+
+        return QStringLiteral("<Vector:#(%1)>").arg(result.join(", "));
     }
 };
 
