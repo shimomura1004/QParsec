@@ -15,6 +15,15 @@ using namespace qparsec::chars;
 using namespace qparsec::combinators;
 using namespace qparsec::tokens;
 
+
+const QStringList ExpressionKeyword = {
+    "quote", "lambda", "if", "set!", "begin", "cond", "and", "or", "case",
+    "let", "let*", "letrec", "do", "delay", "quasiquote"
+};
+const QStringList SyntacticKeyword = {
+    "else", "=>", "define", "unquote", "unquote-splicing"
+};
+
 Parser<ast::SharedVal> *Boolean() { return Apply(scheme::Boolean(), ast::Bool::create); }
 Parser<ast::SharedVal> *Character() { return Apply(scheme::Character(), ast::Char::create); }
 Parser<ast::SharedVal> *String() { return Apply(scheme::String(), ast::String::create); }
@@ -34,8 +43,14 @@ Parser<ast::SharedVal> *Number() {
 
     return Apply(scheme::Number(), f);
 }
-// todo: return syntactic keyword or variable
-Parser<ast::SharedVal> *Identifier() { return Apply(scheme::Identifier(), ast::Var::create); }
+Parser<ast::SharedVal> *Identifier() {
+    ast::SharedVal(*f)(QString) = [](QString ident){
+        if (SyntacticKeyword.contains(ident) || ExpressionKeyword.contains(ident))
+            return ast::Symbol::create(ident);
+        return ast::Var::create(ident);
+    };
+    return Apply(scheme::Identifier(), f);
+}
 
 namespace datum {
 Parser<ast::SharedVal> *Datum();
