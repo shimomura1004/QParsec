@@ -5,7 +5,6 @@
 #include <QPair>
 #include <QString>
 
-namespace lisp {
 namespace ast {
 
 struct Val {
@@ -13,7 +12,7 @@ struct Val {
     virtual QString toString() = 0;
 };
 
-typedef QSharedPointer<lisp::ast::Val> SharedVal;
+typedef QSharedPointer<Val> SharedVal;
 typedef QList<QPair<QString, SharedVal>> Env;
 
 struct Symbol : Val {
@@ -209,7 +208,6 @@ struct Sequence : Val {
     }
 };
 
-}
 }
 
 #endif // AST_H

@@ -9,7 +9,6 @@
 
 #include "ast.h"
 
-namespace lisp {
 namespace parser {
 using namespace qparsec;
 using namespace qparsec::chars;
@@ -82,7 +81,6 @@ struct ParserVal : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Val() { return new ParserVal(); }
 
-}
 }
 
 #endif // PARSER_H

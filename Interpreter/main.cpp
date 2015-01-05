@@ -12,8 +12,6 @@
 #include <QDebug>
 
 using namespace qparsec;
-using namespace qparsec::tokens;
-using namespace qparsec::tokens::scheme;
 
 // todo: parser should return wheather it consumes input
 // todo: fails parser should return expected characters
@@ -37,8 +35,9 @@ int main(int argc, char *argv[])
         Input input(line);
 
         try {
-            WhiteSpace()->parse(input);
-            std::cout << lisp::parser::Val()->parse(input)->toString().toLatin1().constData() << std::endl;
+            tokens::WhiteSpace()->parse(input);
+            auto result = Left(parser::Val(), tokens::Eof())->parse(input);
+            std::cout << result->toString().toLatin1().constData() << std::endl;
         }
         catch (const ParserException &e) {
             qDebug() << "ParseError at" << e.index;

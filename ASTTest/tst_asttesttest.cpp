@@ -5,7 +5,7 @@
 #include <lisp/parser.h>
 #include <QDebug>
 
-using namespace lisp::ast;
+using namespace ast;
 using namespace qparsec;
 
 class ASTTestTest : public QObject
@@ -57,10 +57,10 @@ void ASTTestTest::testCreate()
 void ASTTestTest::testBasic()
 {
     Input list("'(1  2 3)");
-    qDebug() << lisp::parser::Val()->parse(list)->toString();
+    qDebug() << parser::Val()->parse(list)->toString();
 
     Input lambda("(lambda (x) '(123 45))");
-    qDebug() << lisp::parser::Val()->parse(lambda)->toString();
+    qDebug() << parser::Val()->parse(lambda)->toString();
 }
 
 QTEST_APPLESS_MAIN(ASTTestTest)
