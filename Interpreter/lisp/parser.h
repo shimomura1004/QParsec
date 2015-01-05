@@ -225,6 +225,19 @@ struct ParserLambda : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Lambda() { return new ParserLambda(); }
 
+struct ParserCondition : Parser<ast::SharedVal> {
+    ast::SharedVal parse(Input &input) {
+        Lexeme(Char('('))->parse(input);
+        Lexeme(Str("if"))->parse(input);
+        auto condition = Expression()->parse(input);
+        auto consequence = Expression()->parse(input);
+        auto alternate = Option(Expression(), ast::Undef::create())->parse(input);
+        Lexeme(Char(')'))->parse(input);
+        return ast::If::create(condition, consequence, alternate);
+    }
+};
+Parser<ast::SharedVal> *Condition() { return new ParserCondition(); }
+
 Parser<ast::SharedVal> *Expression() {
     // variable
     // literal
@@ -238,7 +251,8 @@ Parser<ast::SharedVal> *Expression() {
 
     return Lexeme(Choice({ Try(Literal()),
                            Try(Lambda()),
-                           ProcedureCall(),
+                           Try(ProcedureCall()),
+                           Condition(),
                          }));
 }
 
