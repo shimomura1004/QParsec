@@ -174,15 +174,7 @@ Parser<ast::SharedVal> *ProcedureCall() {
 
 struct ParserLambda : Parser<ast::SharedVal> {
     struct ParserFormals : Parser<QPair<QStringList, QString>> {
-        Parser<QString> *Variable() {
-            QString(*f)(QString) = [](QString str){
-                if (SyntacticKeyword.contains(str) || ExpressionKeyword.contains(str)) {
-                    throw ParserException(-1, QStringLiteral("%1 is reserved keyword").arg(str));
-                }
-                return str;
-            };
-            return Apply(scheme::Identifier(), f);
-        }
+        Parser<QString> *Variable() { return scheme::Identifier(); }
 
         QPair<QStringList, QString> parse(Input &input) {
             try {
@@ -238,13 +230,22 @@ struct ParserCondition : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Condition() { return new ParserCondition(); }
 
+struct ParserAssignment : Parser<ast::SharedVal> {
+    Parser<QString> *Variable() { return scheme::Identifier(); }
+
+    ast::SharedVal parse(Input &input) {
+        Lexeme(Char('('))->parse(input);
+        Lexeme(Str("set!"))->parse(input);
+        auto var = Lexeme(Variable())->parse(input);
+        auto exp = Lexeme(Expression())->parse(input);
+        Lexeme(Char(')'))->parse(input);
+        return ast::Set::create(var, exp);
+    }
+};
+Parser<ast::SharedVal> *Assignment() { return new ParserAssignment(); }
+
 Parser<ast::SharedVal> *Expression() {
     // variable
-    // literal
-    // procedure call
-    // lambda expression
-    // conditional
-    // assignment
     // derived expression
     // macro use
     // macro block
@@ -252,7 +253,8 @@ Parser<ast::SharedVal> *Expression() {
     return Lexeme(Choice({ Try(Literal()),
                            Try(Lambda()),
                            Try(ProcedureCall()),
-                           Condition(),
+                           Try(Condition()),
+                           Assignment(),
                          }));
 }
 

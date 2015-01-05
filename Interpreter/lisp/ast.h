@@ -116,6 +116,16 @@ struct Quote : Val {
     }
 };
 
+struct Set : Val {
+    QString var;
+    SharedVal exp;
+    static SharedVal create(QString v, SharedVal e) { return QSharedPointer<Set>(new Set(v, e)); }
+    Set(QString v, SharedVal e) : var(v), exp(e) {}
+    QString toString() {
+        return QStringLiteral("<Set!:%1 %2>").arg(var, exp->toString());
+    }
+};
+
 struct List : Val {
     QList<SharedVal> val;
     static SharedVal create(QList<SharedVal> l) { return QSharedPointer<List>(new List(l)); }
