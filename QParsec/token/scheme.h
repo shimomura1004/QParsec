@@ -46,6 +46,8 @@ Parser<bool> *Boolean() {
 
 
 struct SchemeNumber {
+    int64_t gcd(int64_t n, int64_t m){return m==0?n:gcd(m,n%m);}
+
     enum Type { INTEGER, REAL, RATIONAL, COMPLEX } numtype;
     union {
         int64_t integer;
@@ -56,7 +58,10 @@ struct SchemeNumber {
 
     SchemeNumber(int64_t i) : numtype(INTEGER), integer(i) {}
     SchemeNumber(double r) : numtype(REAL), real(r) {}
-    SchemeNumber(QPair<int64_t, uint64_t> r) : numtype(RATIONAL), rational(r) {}
+    SchemeNumber(QPair<int64_t, uint64_t> r) : numtype(RATIONAL) {
+        int64_t n = gcd(r.first, r.second);
+        rational = QPair<int64_t, uint64_t>(r.first / n, r.second / n);
+    }
     SchemeNumber(QPair<double, double> c) : numtype(COMPLEX), complex(c) {}
     ~SchemeNumber() {
         switch(numtype) {
@@ -83,6 +88,68 @@ struct SchemeNumber {
             break;
         }
         return *this;
+    }
+
+    SchemeNumber operator +(SchemeNumber num) {
+        switch(this->numtype) {
+        case INTEGER: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(integer + num.integer);
+            case REAL:     return SchemeNumber(1.0 * integer + num.real);
+            case RATIONAL: return SchemeNumber(QPair<int64_t, uint64_t>(integer * num.rational.second + num.rational.first, num.rational.second));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>(1.0 * integer + num.complex.first, num.complex.second));
+            }
+        case REAL: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(real + num.integer);
+            case REAL:     return SchemeNumber(real + num.real);
+            case RATIONAL: return SchemeNumber(QPair<int64_t, uint64_t>(real * num.rational.second + num.rational.first, num.rational.second));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>(real + num.complex.first, num.complex.second));
+            }
+        case RATIONAL: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(QPair<int64_t, uint64_t>(rational.first + num.integer * rational.second, rational.second));
+            case REAL:     return SchemeNumber(QPair<int64_t, uint64_t>(rational.first + num.real * rational.second, rational.second));
+            case RATIONAL: return SchemeNumber(QPair<int64_t, uint64_t>(rational.first * num.rational.second + num.rational.first * rational.second,
+                                                                        rational.second * num.rational.second));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>((1.0 * rational.first / rational.second) + num.complex.first, num.complex.second));
+            }
+        case COMPLEX: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(QPair<double, double>(complex.first + num.integer, complex.second));
+            case REAL:     return SchemeNumber(QPair<double, double>(complex.first + num.real, complex.second));
+            case RATIONAL: return SchemeNumber(QPair<double, double>(complex.first + (1.0 * num.rational.first / num.rational.second), complex.second));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>(complex.first + num.complex.first, complex.second + num.complex.second));
+            }
+        }
+    }
+
+    SchemeNumber operator *(SchemeNumber num) {
+        switch(this->numtype) {
+        case INTEGER: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(integer * num.integer);
+            case REAL:     return SchemeNumber(1.0 * integer * num.real);
+            case RATIONAL: return SchemeNumber(QPair<int64_t, uint64_t>(integer * num.rational.first, num.rational.second));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>(1.0 * integer * num.complex.first, 1.0 * integer * num.complex.second));
+            }
+        case REAL: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(real * num.integer);
+            case REAL:     return SchemeNumber(real * num.real);
+            case RATIONAL: return SchemeNumber(QPair<int64_t, uint64_t>(real * num.rational.first, num.rational.second));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>(real * num.complex.first, real * num.complex.second));
+            }
+        case RATIONAL: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(QPair<int64_t, uint64_t>(rational.first * num.integer, rational.second));
+            case REAL:     return SchemeNumber(QPair<int64_t, uint64_t>(rational.first * num.real, rational.second));
+            case RATIONAL: return SchemeNumber(QPair<int64_t, uint64_t>(rational.first * num.rational.first, rational.second * num.rational.second));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>((1.0 * rational.first / rational.second) * num.complex.first,
+                                                                     (1.0 * rational.first / rational.second) * num.complex.second));
+            }
+        case COMPLEX: switch(num.numtype) {
+            case INTEGER:  return SchemeNumber(QPair<double, double>(complex.first * num.integer, complex.second * num.integer));
+            case REAL:     return SchemeNumber(QPair<double, double>(complex.first * num.real, complex.second * num.real));
+            case RATIONAL: return SchemeNumber(QPair<double, double>(complex.first * (1.0 * num.rational.first / num.rational.second),
+                                                                     complex.second * (1.0 * num.rational.first / num.rational.second)));
+            case COMPLEX:  return SchemeNumber(QPair<double, double>(complex.first * num.complex.first - complex.second * num.complex.second,
+                                                                     complex.first * num.complex.second + complex.second * num.complex.first));
+            }
+        }
     }
 };
 
