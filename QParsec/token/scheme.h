@@ -48,7 +48,7 @@ Parser<bool> *Boolean() {
 struct SchemeNumber {
     int64_t gcd(int64_t n, int64_t m){return m==0?n:gcd(m,n%m);}
 
-    enum Type { INTEGER, REAL, RATIONAL, COMPLEX } numtype;
+    enum Type { INTEGER = 0, REAL, RATIONAL, COMPLEX } numtype;
     union {
         int64_t integer;
         double real;
@@ -69,25 +69,6 @@ struct SchemeNumber {
         case COMPLEX: complex.~QPair(); break;
         default: break;
         }
-    }
-
-    SchemeNumber operator*=(int64_t x){
-        switch (numtype) {
-        case INTEGER:
-            integer *= x;
-            break;
-        case REAL:
-            real *= x;
-            break;
-        case RATIONAL:
-            rational.first *= x;
-            break;
-        case COMPLEX:
-            complex.first *= x;
-            complex.second *= x;
-            break;
-        }
-        return *this;
     }
 
     SchemeNumber operator +(SchemeNumber num) {
@@ -190,7 +171,18 @@ Parser<QString> *Suffix() { return new ParserSuffix(); }
 
 template<int n>
 struct ParserUReal : Parser<SchemeNumber> {
-    SchemeNumber parse(Input &input) {}
+    Parser<QString> *SchemeDigit(){return Many1(SDigit<n>());}
+    SchemeNumber parse(Input &input) {
+        auto real = SchemeDigit()->parse(input);
+
+        try {
+            Char('/')->parse(input);
+            auto denom = SchemeDigit()->parse(input);
+            return SchemeNumber(QPair<int64_t, uint64_t>(real.toLongLong(0, n), denom.toLongLong(0, n)));
+        } catch (const ParserException &) {}
+
+        return SchemeNumber(real.toLongLong(0, n));
+    }
 };
 template<>
 struct ParserUReal<10> : Parser<SchemeNumber> {
@@ -243,11 +235,16 @@ struct ParserUReal<10> : Parser<SchemeNumber> {
         }
         catch (const ParserException &) {}
 
-        // e.g. 123e45
         auto suffix = Suffix()->parse(input);
 
-        double result = QStringLiteral("%1%2%3").arg(digit, placeholders, suffix).toDouble();
-        return SchemeNumber(result);
+        if (suffix.isEmpty()) {
+            // e.g. "123", "-12"
+            return SchemeNumber(QStringLiteral("%1%2").arg(digit, placeholders).toLongLong());
+        }
+        else {
+            // e.g. 123e45
+            return SchemeNumber(QStringLiteral("%1%2%3").arg(digit, placeholders, suffix).toDouble());
+        }
     }
 };
 template<int n> Parser<SchemeNumber> *UReal() { return new ParserUReal<n>(); }
@@ -257,18 +254,61 @@ Parser<SchemeNumber> *Real() {
     SchemeNumber(*f)(QChar, SchemeNumber) = [](QChar sign, SchemeNumber num){
         assert(num.numtype != SchemeNumber::COMPLEX);
 
-        num *= (sign == '+') ? 1 : -1;
-        return num;
+        return num * static_cast<int64_t>((sign == '+') ? 1 : -1);
     };
     return Apply2(Sign(), UReal<n>(), f);
 }
 
 template<int n>
-Parser<SchemeNumber> *Complex() {
-    return Choice({ Real<n>()
-                  // ...
-                  });
-}
+struct ParserComplex : Parser<SchemeNumber> {
+    Parser<SchemeNumber> *ImaginaryNum() {
+        SchemeNumber(*f)(QChar, SchemeNumber) = [](QChar c, SchemeNumber num){
+            assert(num.numtype != SchemeNumber::RATIONAL && num.numtype != SchemeNumber::COMPLEX);
+
+            int sign = (c == '+') ? 1 : -1;
+            switch(num.numtype) {
+            case SchemeNumber::INTEGER:
+                return SchemeNumber(QPair<double, double>(0, num.integer * sign));
+            case SchemeNumber::REAL:
+                return SchemeNumber(QPair<double, double>(0, num.real * sign));
+            default:
+                return num;
+            }
+        };
+        return Left(Apply2(OneOf("+-"), Option(UReal<n>(), SchemeNumber(1.0)), f), Char('i'));
+    }
+
+    SchemeNumber parse(Input &input) {
+        try {
+            // e.g. "+2.3i", "-3i", "+i"
+            return Try(ImaginaryNum())->parse(input);
+        } catch (const ParserException &) {}
+
+        auto real = Real<n>()->parse(input);
+
+        try {
+            // what the '@' means?
+            Char('@')->parse(input);
+            auto real2 = Real<n>()->parse(input);
+            Q_UNUSED(real2);
+            return real;
+        } catch (const ParserException &) {}
+
+        try {
+            // e.g. "12.3+4i"
+            auto imaginary = Try(ImaginaryNum())->parse(input);
+
+            assert(real.numtype != SchemeNumber::COMPLEX);
+
+            return real + imaginary;
+        } catch (const ParserException &) {}
+
+        // e.g. "12.3", "-23"
+        return real;
+    }
+};
+template<int n>
+Parser<SchemeNumber> *Complex() { return new ParserComplex<n>(); }
 
 template<int n>
 Parser<SchemeNumber> *Num() {
