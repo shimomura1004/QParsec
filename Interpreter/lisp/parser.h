@@ -184,7 +184,7 @@ struct ParserLambda : Parser<ast::SharedVal> {
 
             try {
                 auto var = Lexeme(Variable())->parse(input);
-                return QPair<QStringList, QString>(QStringList({var}), "");
+                return QPair<QStringList, QString>(QStringList(), var);
             } catch (const ParserException &) {}
 
             Lexeme(Char('('))->parse(input);
