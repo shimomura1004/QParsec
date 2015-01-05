@@ -43,6 +43,7 @@ Parser<ast::SharedVal> *Number() {
 
     return Apply(scheme::Number(), f);
 }
+
 Parser<ast::SharedVal> *Identifier() {
     ast::SharedVal(*f)(QString) = [](QString ident){
         if (SyntacticKeyword.contains(ident) || ExpressionKeyword.contains(ident))
@@ -171,6 +172,59 @@ Parser<ast::SharedVal> *ProcedureCall() {
     return Apply(Parens(Many1(Lazy(Expression))), f);
 }
 
+struct ParserLambda : Parser<ast::SharedVal> {
+    struct ParserFormals : Parser<QPair<QStringList, QString>> {
+        Parser<QString> *Variable() {
+            QString(*f)(QString) = [](QString str){
+                if (SyntacticKeyword.contains(str) || ExpressionKeyword.contains(str)) {
+                    throw ParserException(-1, QStringLiteral("%1 is reserved keyword").arg(str));
+                }
+                return str;
+            };
+            return Apply(scheme::Identifier(), f);
+        }
+
+        QPair<QStringList, QString> parse(Input &input) {
+            try {
+                auto vars = Try(Parens(Many(Lexeme(Variable()))))->parse(input);
+                return QPair<QStringList, QString>(vars, "");
+            } catch (const ParserException &) {}
+
+            try {
+                auto var = Lexeme(Variable())->parse(input);
+                return QPair<QStringList, QString>(QStringList({var}), "");
+            } catch (const ParserException &) {}
+
+            Lexeme(Char('('))->parse(input);
+            auto vars = Many1(Lexeme(Variable()))->parse(input);
+            Lexeme(Char('.'))->parse(input);
+            auto var = Lexeme(Variable())->parse(input);
+            Lexeme(Char(')'))->parse(input);
+
+            return QPair<QStringList, QString>(vars, var);
+        }
+    };
+    Parser<QPair<QStringList, QString>> *Formals() { return new ParserFormals(); }
+
+    Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Expression()); }
+    Parser<QList<ast::SharedVal>> *Body() {
+        // todo: support definition inside lambda
+        // Many(Definition())
+        return Sequence();
+    }
+
+    ast::SharedVal parse(Input &input) {
+        Lexeme(Char('('))->parse(input);
+        Lexeme(Str("lambda"))->parse(input);
+        QPair<QStringList, QString> formals = Lexeme(Formals())->parse(input);
+        auto body = Lexeme(Body())->parse(input);
+        Lexeme(Char(')'))->parse(input);
+
+        return ast::Lambda::create(formals.first, formals.second, body, ast::Env());
+    }
+};
+Parser<ast::SharedVal> *Lambda() { return new ParserLambda(); }
+
 Parser<ast::SharedVal> *Expression() {
     // variable
     // literal
@@ -183,6 +237,7 @@ Parser<ast::SharedVal> *Expression() {
     // macro block
 
     return Lexeme(Choice({ Try(Literal()),
+                           Try(Lambda()),
                            ProcedureCall(),
                          }));
 }

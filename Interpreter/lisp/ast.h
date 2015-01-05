@@ -171,15 +171,22 @@ struct Apply : Val {
 
 struct Lambda : Val {
     QStringList args;
-    SharedVal body;
+    QString listarg;
+    QList<SharedVal> bodies;
     Env env;
-    static SharedVal create(QList<QString> a, SharedVal b, Env e) { return QSharedPointer<Lambda>(new Lambda(a, b, e)); }
-    Lambda(QList<QString> a, SharedVal b, Env e) : args(a), body(b), env(e) {}
+    static SharedVal create(QList<QString> a, QString l, QList<SharedVal> b, Env e) { return QSharedPointer<Lambda>(new Lambda(a, l, b, e)); }
+    Lambda(QList<QString> a, QString l, QList<SharedVal> b, Env e) : args(a), listarg(l), bodies(b), env(e) {}
     QString toString() {
         QStringList envs;
         Q_FOREACH(const auto& e, env)
             envs.push_back(QStringLiteral("%1=%2").arg(e.first, e.second->toString()));
-        return QStringLiteral("<Lambda:(%1) -> %2 [%3]>").arg(args.join(", "), body->toString(), envs.join(", "));
+        QStringList bs;
+        Q_FOREACH(const auto& b, bodies)
+            bs.push_back(b->toString());
+
+        if (listarg.isEmpty())
+            return QStringLiteral("<Lambda:(%1) -> %2 [%3]>").arg(args.join(", "), bs.join(", "), envs.join(", "));
+        return QStringLiteral("<Lambda:(%1 . %2) -> %3 [%4]>").arg(args.join(", "), listarg, bs.join(", "), envs.join(", "));
     }
 };
 

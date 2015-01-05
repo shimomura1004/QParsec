@@ -39,12 +39,13 @@ void ASTTestTest::testCreate()
                                   String::create("hello"),
                                   Bool::create(true)})->toString();
     qDebug() << Lambda::create({"a", "b"},
-                               Bool::create(false),
+                               "",
+                               QList<SharedVal>({Bool::create(false)}),
                                Env())->toString();
     qDebug() << Define::create("plus1",
                                Lambda::create({"n"},
-                                              List::create({Symbol::create("+"),
-                                                            Integer::create(1)}),
+                                              "rest-of-argument",
+                                              QList<SharedVal>({List::create({Symbol::create("+"), Integer::create(1)})}),
                                               Env()))->toString();
     qDebug() << If::create(Bool::create(true), String::create("true"), String::create("false"))->toString();
     qDebug() << Let::create({ QPair<QString, QSharedPointer<Val>>("x", Integer::create(3)),
