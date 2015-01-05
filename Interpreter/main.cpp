@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         try {
             tokens::WhiteSpace()->parse(input);
             //auto result = Left(parser::Val(), tokens::Eof())->parse(input);
-            auto result = Left(parser::datum::Datum(), tokens::Eof())->parse(input);
+            auto result = Left(parser::expression::Expression(), tokens::Eof())->parse(input);
             std::cout << result->toString().toLatin1().constData() << std::endl;
         }
         catch (const ParserException &e) {

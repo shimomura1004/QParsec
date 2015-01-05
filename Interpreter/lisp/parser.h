@@ -47,7 +47,7 @@ Parser<ast::SharedVal> *Identifier() {
     ast::SharedVal(*f)(QString) = [](QString ident){
         if (SyntacticKeyword.contains(ident) || ExpressionKeyword.contains(ident))
             return ast::Symbol::create(ident);
-        return ast::Var::create(ident);
+        return ast::Variable::create(ident);
     };
     return Apply(scheme::Identifier(), f);
 }
@@ -69,27 +69,27 @@ struct ParserList : Parser<ast::SharedVal> {
         ast::SharedVal parse(Input &input) {
             try {
                 Char('\'')->parse(input);
-                auto q = ast::Var::create("quote");
+                auto q = ast::Variable::create("quote");
                 auto datum = Datum()->parse(input);
                 return ast::List::create(QList<ast::SharedVal>({q, datum}));
             } catch (const ParserException &) {}
 
             try {
                 Char('`')->parse(input);
-                auto q = ast::Var::create("quasiquote");
+                auto q = ast::Variable::create("quasiquote");
                 auto datum = Datum()->parse(input);
                 return ast::List::create(QList<ast::SharedVal>({q, datum}));
             } catch (const ParserException &) {}
 
             try {
                 Str(",@")->parse(input);
-                auto q = ast::Var::create("unquote-splicing");
+                auto q = ast::Variable::create("unquote-splicing");
                 auto datum = Datum()->parse(input);
                 return ast::List::create(QList<ast::SharedVal>({q, datum}));
             } catch (const ParserException &) {}
 
             Char(',')->parse(input);
-            auto q = ast::Var::create("unquote");
+            auto q = ast::Variable::create("unquote");
             auto datum = Datum()->parse(input);
             return ast::List::create(QList<ast::SharedVal>({q, datum}));
         }
@@ -141,56 +141,35 @@ Parser<ast::SharedVal> *Datum() { return new ParserDatum(); }
 
 
 
+namespace expression {
+Parser<ast::SharedVal> *Expression();
 
-
-Parser<ast::SharedVal> *Val();
-
-Parser<ast::SharedVal> *List() { return Right(Char('\''), Apply(Lexeme(Parens(Many(Val()))), ast::List::create)); }
-
-
-struct ParserLambda : Parser<ast::SharedVal> {
+struct ParserQuotation : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
-        Char('(')->parse(input);
-        Symbol("lambda")->parse(input);
-        auto vars = Parens(SepBy(Many1(OneOf("abcdefghijklmnopqrstuvwxyz")), SkipMany1(Space())))->parse(input);
-        WhiteSpace()->parse(input);
-        auto body = Val()->parse(input);
-        Char(')')->parse(input);
-        WhiteSpace()->parse(input);
-        return ast::Lambda::create(vars, body, ast::Env());
+        try {
+            auto datum = Parens(Right(Lexeme(Str("quote")), datum::Datum()))->parse(input);
+            return ast::Quote::create(datum);
+        } catch (const ParserException &) {}
+
+        Char('\'')->parse(input);
+        auto datum = datum::Datum()->parse(input);
+        return ast::Quote::create(datum);
     }
 };
-Parser<ast::SharedVal> *Lambda() { return new ParserLambda(); }
+Parser<ast::SharedVal> *Quotation() { return new ParserQuotation(); }
+Parser<ast::SharedVal> *SelfEvaluating() {
+    return Choice({ Try(Boolean()), Try(Number()), Try(Character()), String() });
+}
+Parser<ast::SharedVal> *Literal() {
+    return Choice({ Try(Quotation()), SelfEvaluating()});
+}
 
-Parser<ast::SharedVal> *Variable() { return Apply(qparsec::tokens::scheme::Identifier(), ast::Var::create); }
-
-struct ParserApply : Parser<ast::SharedVal> {
-    ast::SharedVal parse(Input &input) {
-        auto es = Lexeme(Parens(Many1(Val())))->parse(input);
-        return ast::Apply::create(es.first(), es.mid(1));
-    }
-};
-Parser<ast::SharedVal> *Apply() { return new ParserApply(); }
-
-Parser<ast::SharedVal> *Val();
-struct ParserVal : Parser<ast::SharedVal> {
-    ast::SharedVal parse(Input &input) {
-        ast::SharedVal val =
-                Lexeme(Choice({ Try(Number()),
-                                Try(Boolean()),
-                                Try(Character()),
-                                String(),
-                                Variable(),
-                                Try(List()),
-                                Try(Lambda()),
-                                Try(Apply()),
-                                Parens(Val())
-                              }))->parse(input);
-        return val;
-    }
-};
-Parser<ast::SharedVal> *Val() { return new ParserVal(); }
-
+Parser<ast::SharedVal> *ProcedureCall() {
+    ast::SharedVal(*f)(QList<ast::SharedVal>) = [](QList<ast::SharedVal> ops){
+        return ast::Apply::create(ops.first(), ops.mid(1));
+    };
+    return Apply(Parens(Many1(Lazy(Expression))), f);
+}
 
 Parser<ast::SharedVal> *Expression() {
     // variable
@@ -203,21 +182,13 @@ Parser<ast::SharedVal> *Expression() {
     // macro use
     // macro block
 
-    return Choice({
-
-                      Try(Number()),
-                    Try(Boolean()),
-                    Try(Character()),
-                    String(),
-                    Variable(),
-                    Try(List()),
-                    Try(Lambda()),
-                    Try(Apply()),
-                  });
+    return Lexeme(Choice({ Try(Literal()),
+                           ProcedureCall(),
+                         }));
 }
 
 
-
+}
 
 }
 

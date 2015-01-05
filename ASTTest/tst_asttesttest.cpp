@@ -57,10 +57,10 @@ void ASTTestTest::testCreate()
 void ASTTestTest::testBasic()
 {
     Input list("'(1  2 3)");
-    qDebug() << parser::Val()->parse(list)->toString();
+    //qDebug() << parser::Val()->parse(list)->toString();
 
     Input lambda("(lambda (x) '(123 45))");
-    qDebug() << parser::Val()->parse(lambda)->toString();
+    //qDebug() << parser::Val()->parse(lambda)->toString();
 }
 
 QTEST_APPLESS_MAIN(ASTTestTest)

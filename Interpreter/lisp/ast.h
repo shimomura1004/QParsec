@@ -24,10 +24,10 @@ struct Symbol : Val {
     }
 };
 
-struct Var : Val {
+struct Variable : Val {
     QString val;
-    static SharedVal create(QString s) { return QSharedPointer<Var>(new Var(s)); }
-    Var(QString s) : val(s) {}
+    static SharedVal create(QString s) { return QSharedPointer<Variable>(new Variable(s)); }
+    Variable(QString s) : val(s) {}
     QString toString() {
         return QStringLiteral("<Var:\"%1\">").arg(val);
     }
@@ -104,6 +104,15 @@ struct Undef : Val {
     static SharedVal create() { return QSharedPointer<Undef>(new Undef()); }
     QString toString() {
         return QStringLiteral("<Undefined>");
+    }
+};
+
+struct Quote : Val {
+    SharedVal val;
+    static SharedVal create(SharedVal v) { return QSharedPointer<Quote>(new Quote(v)); }
+    Quote(SharedVal v) : val(v) {}
+    QString toString() {
+        return QStringLiteral("<Quote:%1>").arg(val->toString());
     }
 };
 
