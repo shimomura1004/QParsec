@@ -13,38 +13,32 @@ class Input {
 protected:
     int index_;
     QString str_;
-    QStringList stacks_;
+    QList<uint64_t> indexes_;
 
 public:
     Input(const QString &v) : index_(0), str_(v) {}
 
-    bool isEmpty(){ return str_.isEmpty(); }
-    int length(){ return str_.length(); }
-    int index(){ return index_; }
-    QCharRef operator[](int idx) { return str_[idx]; }
-    const QString &str() { return str_; }
+    bool isEmpty() { return index_ >= str_.length(); }
+    int length() { return str_.length() - index_; }
+    int index() { return index_; }
 
-    void preserve() {
-        stacks_.push_back("");
-    }
+    QCharRef operator[](int idx) { return str_[index_ + idx]; }
+    const QString str() { return mid(0); }
+    const QString mid(int position, int n = -1) { return str_.mid(index_ + position, n); }
+    const QStringRef midRef(int position, int n = -1) { return str_.midRef(index_ + position, n); }
+    const QString left(int n) { return mid(n); }
+
+    void preserve() { indexes_.push_back(index_); }
     QString consume(int n) {
-        const QString s = str_.left(n);
-        str_.remove(0, n);
+        const QString s = str_.mid(index_, n);
         index_ += s.length();
-        if (!stacks_.empty())
-            stacks_.last().append(s);
         return s;
     }
     void restore() {
-        assert(!stacks_.empty());
-        const QString s = stacks_.last();
-        str_.prepend(s);
-        index_ -= s.length();
-        clear();
+        index_ = indexes_.takeLast();
     }
     void clear() {
-        assert(!stacks_.empty());
-        stacks_.pop_back();
+        indexes_.pop_back();
     }
 };
 

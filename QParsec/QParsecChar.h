@@ -66,8 +66,8 @@ struct ParserStr : Parser<QString> {
     QString parse(Input &input) {
         if (input.isEmpty())
             throw ParserException(0, "Empty input");
-        if (!input.str().startsWith(s_))
-            throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(s_, input.str().left(s_.length())));
+        if (!input.midRef(0).startsWith(s_))
+            throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(s_, input.left(s_.length())));
 
         input.consume(s_.length());
         return setOut(s_);
