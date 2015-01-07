@@ -178,7 +178,7 @@ struct Apply : Val {
         QStringList result;
         Q_FOREACH(const SharedVal& arg, args)
             result.push_back(arg->toString());
-        return QStringLiteral("(%1 (%2))").arg(proc->toString(), result.join(" "));
+        return QStringLiteral("(%1 %2)").arg(proc->toString(), result.join(" "));
     }
 };
 
@@ -194,9 +194,10 @@ struct Lambda : Val {
         Q_FOREACH(const auto& b, bodies)
             bs.push_back(b->toString());
 
-        // todo
         if (listarg.isEmpty())
             return QStringLiteral("(lambda (%1) %2)").arg(args.join(" "), bs.join(" "));
+        if (args.isEmpty())
+            return QStringLiteral("(lambda %1 %2)").arg(listarg, bs.join(" "));
         return QStringLiteral("(lambda (%1 . %2)  %3)").arg(args.join(" "), listarg, bs.join(" "));
     }
 };
