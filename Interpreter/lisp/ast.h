@@ -20,7 +20,7 @@ struct Symbol : Val {
     static SharedVal create(QString s) { return QSharedPointer<Symbol>(new Symbol(s)); }
     Symbol(QString s) : val(s) {}
     QString toString() {
-        return QStringLiteral("<Symbol:\"%1\">").arg(val);
+        return val;
     }
 };
 
@@ -29,7 +29,7 @@ struct Variable : Val {
     static SharedVal create(QString s) { return QSharedPointer<Variable>(new Variable(s)); }
     Variable(QString s) : val(s) {}
     QString toString() {
-        return QStringLiteral("<Var:\"%1\">").arg(val);
+        return val;
     }
 };
 
@@ -38,7 +38,7 @@ struct Char : Val {
     static SharedVal create(QChar c) { return QSharedPointer<Char>(new Char(c)); }
     Char(QChar c) : val(c) {}
     QString toString() {
-        return QStringLiteral("<Char:'%1'>").arg(val);
+        return QStringLiteral("#\\%1").arg(val);
     }
 };
 
@@ -47,7 +47,7 @@ struct String : Val {
     static SharedVal create(QString s) { return QSharedPointer<String>(new String(s)); }
     String(QString s) : val(s) {}
     QString toString() {
-        return QStringLiteral("<String:\"%1\">").arg(val);
+        return QStringLiteral("\"%1\"").arg(val);
     }
 };
 
@@ -56,7 +56,7 @@ struct Bool : Val {
     static SharedVal create(bool b) { return QSharedPointer<Bool>(new Bool(b)); }
     Bool(bool b) : val(b) {}
     QString toString() {
-        return QStringLiteral("<Bool:%1>").arg(val ? "true" : "false");
+        return QStringLiteral("#%1").arg(val ? "t" : "f");
     }
 };
 
@@ -65,7 +65,7 @@ struct Integer : Val {
     static SharedVal create(int64_t i) { return QSharedPointer<Integer>(new Integer(i)); }
     Integer(int i) : val(i) {}
     QString toString() {
-        return QStringLiteral("<Int:%1>").arg(val);
+        return QString::number(val);
     }
 };
 
@@ -74,7 +74,7 @@ struct Real : Val {
     static SharedVal create(double d) { return QSharedPointer<Real>(new Real(d)); }
     Real(double d) : val(d) {}
     QString toString() {
-        return QStringLiteral("<Real:%1>").arg(val);
+        return QStringLiteral("%1").arg(val, 0, 'e');
     }
 };
 
@@ -84,7 +84,7 @@ struct Rational : Val {
     static SharedVal create(int64_t n, uint64_t d) { return QSharedPointer<Rational>(new Rational(n, d)); }
     Rational(int64_t n, uint64_t d) : numerator(n), denominator(d) {}
     QString toString() {
-        return QStringLiteral("<Rational:%1/%2>").arg(numerator).arg(denominator);
+        return QStringLiteral("%1/%2").arg(numerator).arg(denominator);
     }
 };
 
@@ -95,15 +95,15 @@ struct Complex : Val {
     Complex(double r, double i) : real(r), imagnary(i) {}
     QString toString() {
         if (imagnary > 0.0)
-            return QStringLiteral("<Complex:%1+%2i>").arg(real).arg(imagnary);
-        return QStringLiteral("<Complex:%1%2i>").arg(real).arg(imagnary);
+            return QStringLiteral("%1+%2i").arg(real).arg(imagnary);
+        return QStringLiteral("%1%2i").arg(real).arg(imagnary);
     }
 };
 
 struct Undef : Val {
     static SharedVal create() { return QSharedPointer<Undef>(new Undef()); }
     QString toString() {
-        return QStringLiteral("<Undefined>");
+        return QStringLiteral("#<undef>");
     }
 };
 
@@ -112,7 +112,8 @@ struct Quote : Val {
     static SharedVal create(SharedVal v) { return QSharedPointer<Quote>(new Quote(v)); }
     Quote(SharedVal v) : val(v) {}
     QString toString() {
-        return QStringLiteral("<Quote:%1>").arg(val->toString());
+        // todo
+        return QStringLiteral("%1").arg(val->toString());
     }
 };
 
@@ -122,7 +123,9 @@ struct Set : Val {
     static SharedVal create(QString v, SharedVal e) { return QSharedPointer<Set>(new Set(v, e)); }
     Set(QString v, SharedVal e) : var(v), exp(e) {}
     QString toString() {
-        return QStringLiteral("<Set!:%1 %2>").arg(var, exp->toString());
+        return QStringLiteral("set! %1 %2)").arg(var, exp->toString());
+    }
+};
     }
 };
 
@@ -135,7 +138,7 @@ struct List : Val {
         Q_FOREACH(const SharedVal& v, val)
             result.push_back(v->toString());
 
-        return QStringLiteral("<List:(%1)>").arg(result.join(", "));
+        return QStringLiteral("(%1)").arg(result.join(" "));
     }
 };
 
@@ -149,7 +152,7 @@ struct DList : Val {
         Q_FOREACH(const SharedVal& car, cars)
             result.push_back(car->toString());
 
-        return QStringLiteral("<DList:(%1 | %2)>").arg(result.join(", "), cdr->toString());
+        return QStringLiteral("(%1 . %2)").arg(result.join(" "), cdr->toString());
     }
 };
 
@@ -162,7 +165,7 @@ struct Vector : Val {
         Q_FOREACH(const SharedVal& e, elems)
             result.push_back(e->toString());
 
-        return QStringLiteral("<Vector:#(%1)>").arg(result.join(", "));
+        return QStringLiteral("#(%1)").arg(result.join(" "));
     }
 };
 
@@ -175,7 +178,7 @@ struct Apply : Val {
         QStringList result;
         Q_FOREACH(const SharedVal& arg, args)
             result.push_back(arg->toString());
-        return QStringLiteral("<Apply:%1(%2)>").arg(proc->toString(), result.join(", "));
+        return QStringLiteral("(%1 (%2))").arg(proc->toString(), result.join(" "));
     }
 };
 
@@ -187,16 +190,14 @@ struct Lambda : Val {
     static SharedVal create(QList<QString> a, QString l, QList<SharedVal> b, Env e) { return QSharedPointer<Lambda>(new Lambda(a, l, b, e)); }
     Lambda(QList<QString> a, QString l, QList<SharedVal> b, Env e) : args(a), listarg(l), bodies(b), env(e) {}
     QString toString() {
-        QStringList envs;
-        Q_FOREACH(const auto& e, env)
-            envs.push_back(QStringLiteral("%1=%2").arg(e.first, e.second->toString()));
         QStringList bs;
         Q_FOREACH(const auto& b, bodies)
             bs.push_back(b->toString());
 
+        // todo
         if (listarg.isEmpty())
-            return QStringLiteral("<Lambda:(%1) -> %2 [%3]>").arg(args.join(", "), bs.join(", "), envs.join(", "));
-        return QStringLiteral("<Lambda:(%1 . %2) -> %3 [%4]>").arg(args.join(", "), listarg, bs.join(", "), envs.join(", "));
+            return QStringLiteral("(lambda (%1) %2)").arg(args.join(" "), bs.join(" "));
+        return QStringLiteral("(lambda (%1 . %2)  %3)").arg(args.join(" "), listarg, bs.join(" "));
     }
 };
 
@@ -207,7 +208,7 @@ struct Define : Val {
     static SharedVal create(QString n, SharedVal b) { return QSharedPointer<Define>(new Define(n, b)); }
     Define(QString n, SharedVal b) : name(n), body(b) {}
     QString toString() {
-        return QStringLiteral("<Define:%1=%2>").arg(name, body->toString());
+        return QStringLiteral("(define %1 %2)").arg(name, body->toString());
     }
 };
 
@@ -218,7 +219,7 @@ struct If : Val {
     static SharedVal create(SharedVal c, SharedVal l, SharedVal r) { return QSharedPointer<If>(new If(c, l, r)); }
     If(SharedVal c, SharedVal l, SharedVal r) : condition(c), left(l), right(r) {}
     QString toString() {
-        return QStringLiteral("<If:(%1,%2,%3)>").arg(condition->toString(), left->toString(), right->toString());
+        return QStringLiteral("(if %1 %2 %3)").arg(condition->toString(), left->toString(), right->toString());
     }
 };
 
@@ -243,7 +244,7 @@ struct Sequence : Val {
         QStringList result;
         Q_FOREACH(const auto& v, vals)
             result.push_back(v->toString());
-        return QStringLiteral("<Seq:(%1)>").arg(result.join(", "));
+        return QStringLiteral("(%1)").arg(result.join(" "));
     }
 };
 
