@@ -81,6 +81,7 @@ private Q_SLOTS:
     void testChaninl1();
     void testChainr();
     void testChainr1();
+    void testLookAhead();
 
     void testWhiteSpace();
     void testLexeme();
@@ -736,6 +737,24 @@ void QParsecTestTest::testChainr1()
     Input input5("8/4/2");
     auto result5 = Chainr1(Decimal(), new ParserDiv())->parse(input5);
     QCOMPARE(result5, 8 / (4 / 2));
+}
+
+void QParsecTestTest::testLookAhead()
+{
+    Input input("abc123");
+
+    auto abc = LookAhead(Str("abc"))->parse(input);
+    QCOMPARE(abc, QStringLiteral("abc"));
+
+    QVERIFY_EXCEPTION_THROWN(Str("123")->parse(input), ParserException);
+
+    auto abc2 = Str("abc")->parse(input);
+    QCOMPARE(abc2, QStringLiteral("abc"));
+
+    QVERIFY_EXCEPTION_THROWN(Str("abc")->parse(input), ParserException);
+
+    auto onetwothree = LookAhead(Str("123"))->parse(input);
+    QCOMPARE(onetwothree, QStringLiteral("123"));
 }
 
 void QParsecTestTest::testWhiteSpace()

@@ -501,6 +501,21 @@ struct ParserChainr1 : Parser<T> {
 };
 
 template<typename T>
+struct ParserLookAhead : Parser<T> {
+    Parser<T> *p_;
+
+    ParserLookAhead(Parser<T> *p, T *out) : Parser<T>(out), p_(p) {}
+    ~ParserLookAhead() { delete p_; }
+
+    T parse(Input &input) {
+        input.preserve();
+        auto result = p_->parse(input);
+        input.restore();
+        return Parser<T>::setOut(result);
+    }
+};
+
+template<typename T>
 ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
 { return new ParserMany<T>(p, out); }
 ParserMany<QChar> *Many(Parser<QChar> *p, QString *out = nullptr)
@@ -584,6 +599,10 @@ ParserChainr<T> *Chainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *o
 template<typename T>
 ParserChainr1<T> *Chainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out = nullptr)
 { return new ParserChainr1<T>(p, poperator, out); }
+
+template<typename T>
+ParserLookAhead<T> *LookAhead(Parser<T> *p, T *out = nullptr)
+{ return new ParserLookAhead<T>(p, out); }
 
 }
 }
