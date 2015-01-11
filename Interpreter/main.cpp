@@ -41,8 +41,12 @@ int main(int argc, char *argv[])
             std::cout << result->toString().toLatin1().constData() << std::endl;
         }
         catch (const ParserException &e) {
-            qDebug() << "ParseError at" << e.index;
-            qDebug("%s", e.reason.toLatin1().constData());
+            std::cout << "ParseError at " << e.index << std::endl;
+
+            std::cout << line.mid(e.index - 5, 32).toLatin1().constData() <<std::endl;
+            for(int i = 0; i < qMin(e.index, 5); i++)
+                std::cout << " ";
+            std::cout << "^ " << e.reason.toLatin1().constData() << std::endl;
         }
     }
 
