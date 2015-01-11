@@ -244,6 +244,119 @@ struct ParserAssignment : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Assignment() { return new ParserAssignment(); }
 
+struct ParserDerivedExpression : Parser<ast::SharedVal> {
+    static Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Lazy(Expression)); }
+
+    struct ParserCondClause : Parser<QSharedPointer<ast::Cond::CondClause>> {
+        QSharedPointer<ast::Cond::CondClause> parse(Input &input) {
+            Lexeme(Char('('))->parse(input);
+            auto exp = Try(Lazy(Expression))->parse(input);
+
+            try {
+                // e.g. ((= x 1) => f)
+                Lexeme(Str("=>"))->parse(input);
+                auto recipient = Expression()->parse(input);
+                Lexeme(Char(')'))->parse(input);
+
+                ast::Cond::CondClause *clause = new ast::Cond::TestArrow(exp, recipient);
+                return QSharedPointer<ast::Cond::CondClause>(clause);
+            } catch (const ParserException &) {}
+
+            try {
+                // e.g. ((= x 1))
+                Lexeme(Char(')'))->parse(input);
+
+                ast::Cond::CondClause *test = new ast::Cond::Test(exp);
+                return QSharedPointer<ast::Cond::CondClause>(test);
+            } catch (const ParserException &) {}
+
+            // e.g. ((= x 1) (print 1) (print 2))
+            auto sequence = Sequence()->parse(input);
+            Lexeme(Char(')'))->parse(input);
+
+            ast::Cond::CondClause *clause = new ast::Cond::TestSeq(exp, sequence);
+            return QSharedPointer<ast::Cond::CondClause>(clause);
+        }
+    };
+    Parser<QSharedPointer<ast::Cond::CondClause>> *CondClause() { return new ParserCondClause(); }
+
+    Parser<QList<ast::SharedVal>> *Else() {
+        return Lexeme(Parens(Right(Lexeme(Str("else")), Sequence())));
+    }
+
+    ast::SharedVal parse(Input &input) {
+        Lexeme(Char('('))->parse(input);
+
+        try {
+            Lexeme(Str("cond"))->parse(input);
+
+            try {
+                auto elseexp = Try(Else())->parse(input);
+                Lexeme(Char(')'))->parse(input);
+
+                // e.g. (cond (else ...))
+                return ast::Cond::create(elseexp);
+            } catch (const ParserException &) {}
+
+            QList<QSharedPointer<ast::Cond::CondClause>> clauses;
+            clauses.push_back(CondClause()->parse(input));
+
+            try {
+                Q_FOREVER {
+                    try {
+                        // if parse 'else' succeeds, that is the last condclause
+                        auto elseexp = Try(Left(Else(), Lexeme(Char(')'))))->parse(input);
+
+                        // e.g. (cond ((= x 1) 3) (else ...))
+                        return ast::Cond::create(clauses, elseexp);
+                    } catch (const ParserException &){}
+
+                    clauses.push_back(CondClause()->parse(input));
+                }
+            } catch (const ParserException &) {}
+
+            // if parse 'condclause' fails without 'else'
+            // e.g. (cond ((= x 1) 3))
+            Lexeme(Char(')'))->parse(input);
+            return ast::Cond::create(clauses);
+        } catch (const ParserException &) {}
+        return ast::Undef::create();
+
+
+
+        try {
+            Lexeme(Str("case"))->parse(input);
+        } catch (const ParserException &) {}
+
+        try {
+            Lexeme(Str("and"))->parse(input);
+        } catch (const ParserException &) {}
+
+        try {
+            Lexeme(Str("or"))->parse(input);
+        } catch (const ParserException &) {}
+
+        try {
+            Lexeme(Str("let"))->parse(input);
+        } catch (const ParserException &) {}
+
+        try {
+            Lexeme(Str("begin"))->parse(input);
+        } catch (const ParserException &) {}
+
+        try {
+            Lexeme(Str("do"))->parse(input);
+        } catch (const ParserException &) {}
+
+        try {
+            Lexeme(Str("delay"))->parse(input);
+        } catch (const ParserException &) {}
+
+        // todo: support quasification
+    }
+};
+Parser<ast::SharedVal> *DerivedExpression() { return new ParserDerivedExpression(); }
+
 Parser<ast::SharedVal> *Expression() {
     // variable
     // derived expression
@@ -254,7 +367,8 @@ Parser<ast::SharedVal> *Expression() {
                            Try(Lambda()),
                            Try(ProcedureCall()),
                            Try(Condition()),
-                           Assignment(),
+                           Try(Assignment()),
+                           DerivedExpression(),
                          }));
 }
 

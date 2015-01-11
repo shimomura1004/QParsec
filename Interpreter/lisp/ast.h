@@ -112,7 +112,6 @@ struct Quote : Val {
     static SharedVal create(SharedVal v) { return QSharedPointer<Quote>(new Quote(v)); }
     Quote(SharedVal v) : val(v) {}
     QString toString() {
-        // todo
         return QStringLiteral("%1").arg(val->toString());
     }
 };
@@ -126,6 +125,58 @@ struct Set : Val {
         return QStringLiteral("set! %1 %2)").arg(var, exp->toString());
     }
 };
+
+struct Cond : Val {
+    struct CondClause {
+        virtual QString toString() = 0;
+    };
+    struct TestSeq : CondClause {
+        SharedVal test;
+        QList<SharedVal> sequences;
+        TestSeq(SharedVal t, QList<SharedVal> s) : test(t), sequences(s) {}
+        QString toString(){
+            QStringList result;
+            Q_FOREACH(const auto& seq, sequences)
+                result.push_back(seq->toString());
+            return QStringLiteral("(%1 %2)").arg(test->toString(), result.join(" "));
+        }
+    };
+    struct Test : CondClause {
+        SharedVal test;
+        Test(SharedVal t) : test(t) {}
+        QString toString(){ return QStringLiteral("(%1)").arg(test->toString()); }
+    };
+    struct TestArrow : CondClause {
+        SharedVal test;
+        SharedVal recipient;
+        TestArrow(SharedVal t, SharedVal r) : test(t), recipient(r) {}
+        QString toString(){ return QStringLiteral("(%1 => %2)").arg(test->toString(), recipient->toString()); }
+    };
+
+    QList<QSharedPointer<CondClause>> condclauses;
+    QList<SharedVal> elseclause;
+
+    static SharedVal create(QList<QSharedPointer<CondClause>> c) { return QSharedPointer<Cond>(new Cond(c)); }
+    static SharedVal create(QList<SharedVal> e) { return QSharedPointer<Cond>(new Cond(e)); }
+    static SharedVal create(QList<QSharedPointer<CondClause>> c, QList<SharedVal> e) { return QSharedPointer<Cond>(new Cond(c, e)); }
+    Cond(QList<QSharedPointer<CondClause>> c) : condclauses(c) {}
+    Cond(QList<SharedVal> e) : elseclause(e) {}
+    Cond(QList<QSharedPointer<CondClause>> c, QList<SharedVal> e) : condclauses(c), elseclause(e) {}
+
+    QString toString() {
+        QStringList conds;
+
+        Q_FOREACH(const auto& clause, condclauses)
+            conds.push_back(clause->toString());
+
+        if (elseclause.isEmpty())
+            return QStringLiteral("(cond %1)").arg(conds.join(" "));
+
+        QStringList elses;
+        Q_FOREACH(const auto& exp, elseclause)
+            elses.push_back(exp->toString());
+
+        return QStringLiteral("(cond %1 (else %2))").arg(conds.join(" "), elses.join(" "));
     }
 };
 
