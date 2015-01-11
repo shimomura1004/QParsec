@@ -244,7 +244,8 @@ struct ParserAssignment : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Assignment() { return new ParserAssignment(); }
 
-struct ParserDerivedExpression : Parser<ast::SharedVal> {
+
+struct ParserCond : Parser<ast::SharedVal> {
     static Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Lazy(Expression)); }
 
     struct ParserCondClause : Parser<QSharedPointer<ast::Cond::CondClause>> {
@@ -286,41 +287,44 @@ struct ParserDerivedExpression : Parser<ast::SharedVal> {
 
     ast::SharedVal parse(Input &input) {
         Lexeme(Char('('))->parse(input);
+        Lexeme(Str("cond"))->parse(input);
 
         try {
-            Lexeme(Str("cond"))->parse(input);
+            auto elseexp = Try(Left(Else(), Lexeme(Char(')'))))->parse(input);
 
-            try {
-                auto elseexp = Try(Else())->parse(input);
-                Lexeme(Char(')'))->parse(input);
-
-                // e.g. (cond (else ...))
-                return ast::Cond::create(elseexp);
-            } catch (const ParserException &) {}
-
-            QList<QSharedPointer<ast::Cond::CondClause>> clauses;
-            clauses.push_back(CondClause()->parse(input));
-
-            try {
-                Q_FOREVER {
-                    try {
-                        // if parse 'else' succeeds, that is the last condclause
-                        auto elseexp = Try(Left(Else(), Lexeme(Char(')'))))->parse(input);
-
-                        // e.g. (cond ((= x 1) 3) (else ...))
-                        return ast::Cond::create(clauses, elseexp);
-                    } catch (const ParserException &){}
-
-                    clauses.push_back(CondClause()->parse(input));
-                }
-            } catch (const ParserException &) {}
-
-            // if parse 'condclause' fails without 'else'
-            // e.g. (cond ((= x 1) 3))
-            Lexeme(Char(')'))->parse(input);
-            return ast::Cond::create(clauses);
+            // e.g. (cond (else ...))
+            return ast::Cond::create(elseexp);
         } catch (const ParserException &) {}
-        return ast::Undef::create();
+
+        QList<QSharedPointer<ast::Cond::CondClause>> clauses;
+        clauses.push_back(CondClause()->parse(input));
+
+        try {
+            Q_FOREVER {
+                try {
+                    // if parse 'else' succeeds, that is the last condclause
+                    auto elseexp = Try(Left(Else(), Lexeme(Char(')'))))->parse(input);
+
+                    // e.g. (cond ((= x 1) 3) (else ...))
+                    return ast::Cond::create(clauses, elseexp);
+                } catch (const ParserException &){}
+
+                clauses.push_back(CondClause()->parse(input));
+            }
+        } catch (const ParserException &) {}
+
+        // if parse 'condclause' fails without 'else'
+        // e.g. (cond ((= x 1) 3))
+        Lexeme(Char(')'))->parse(input);
+        return ast::Cond::create(clauses);
+    }
+};
+Parser<ast::SharedVal> *Cond() { return new ParserCond(); }
+
+struct ParserDerivedExpression : Parser<ast::SharedVal> {
+    ast::SharedVal parse(Input &input) {
+        return Choice({ Try(Cond()),
+                      })->parse(input);
 
 
 
