@@ -223,6 +223,30 @@ struct Case : Val {
     }
 };
 
+struct And : Val {
+    QList<SharedVal> vals;
+    static SharedVal create(QList<SharedVal> vs) { return QSharedPointer<And>(new And(vs)); }
+    And(QList<SharedVal> vs) : vals(vs) {}
+    QString toString() {
+        QStringList result;
+        Q_FOREACH(const auto& v, vals)
+            result.push_back(v->toString());
+        return QStringLiteral("(and %1)").arg(result.join(" "));
+    }
+};
+
+struct Or : Val {
+    QList<SharedVal> vals;
+    static SharedVal create(QList<SharedVal> vs) { return QSharedPointer<Or>(new Or(vs)); }
+    Or(QList<SharedVal> vs) : vals(vs) {}
+    QString toString() {
+        QStringList result;
+        Q_FOREACH(const auto& v, vals)
+            result.push_back(v->toString());
+        return QStringLiteral("(or %1)").arg(result.join(" "));
+    }
+};
+
 struct List : Val {
     QList<SharedVal> val;
     static SharedVal create(QList<SharedVal> l) { return QSharedPointer<List>(new List(l)); }

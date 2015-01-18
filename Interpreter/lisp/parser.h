@@ -378,19 +378,21 @@ struct ParserCase : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Case() { return new ParserCase(); }
 
+Parser<ast::SharedVal> *And() {
+    return Apply(Parens(Right(Lexeme(Str("and")), Many(Lazy(Expression)))), ast::And::create);
+}
+
+Parser<ast::SharedVal> *Or() {
+    return Apply(Parens(Right(Lexeme(Str("or")), Many(Lazy(Expression)))), ast::Or::create);
+}
+
 struct ParserDerivedExpression : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         return Choice({ Try(Cond()),
                         Try(Case()),
+                        Try(And()),
+                        Try(Or()),
                       })->parse(input);
-
-        try {
-            Lexeme(Str("and"))->parse(input);
-        } catch (const ParserException &) {}
-
-        try {
-            Lexeme(Str("or"))->parse(input);
-        } catch (const ParserException &) {}
 
         try {
             Lexeme(Str("let"))->parse(input);
