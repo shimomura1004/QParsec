@@ -321,16 +321,68 @@ struct ParserCond : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Cond() { return new ParserCond(); }
 
+struct ParserCase : Parser<ast::SharedVal> {
+    static Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Lazy(Expression)); }
+
+    struct ParserCaseClause : Parser<QSharedPointer<ast::Case::CaseClause>> {
+        QSharedPointer<ast::Case::CaseClause> parse(Input &input) {
+            Lexeme(Char('('))->parse(input);
+            auto data = Parens(Many(datum::Datum()))->parse(input);
+            auto sequence = Sequence()->parse(input);
+            Lexeme(Char(')'))->parse(input);
+
+            return QSharedPointer<ast::Case::CaseClause>(new ast::Case::CaseClause(data, sequence));
+        }
+    };
+    Parser<QSharedPointer<ast::Case::CaseClause>> *CaseClause() { return new ParserCaseClause(); }
+
+    Parser<QList<ast::SharedVal>> *Else() {
+        return Lexeme(Parens(Right(Lexeme(Str("else")), Sequence())));
+    }
+
+    ast::SharedVal parse(Input &input) {
+        Lexeme(Char('('))->parse(input);
+        Lexeme(Str("case"))->parse(input);
+
+        auto exp = Expression()->parse(input);
+
+        try {
+            auto elseexp = Try(Left(Else(), Lexeme(Char(')'))))->parse(input);
+
+            // e.g. (case (else ...))
+            return ast::Case::create(exp, elseexp);
+        } catch (const ParserException &) {}
+
+        QList<QSharedPointer<ast::Case::CaseClause>> clauses;
+        clauses.push_back(CaseClause()->parse(input));
+
+        try {
+            Q_FOREVER {
+                try {
+                    // if parse 'else' succeeds, that is the last condclause
+                    auto elseexp = Try(Left(Else(), Lexeme(Char(')'))))->parse(input);
+
+                    // e.g. (case (* 2 3) (else ...))
+                    return ast::Case::create(exp, clauses, elseexp);
+                } catch (const ParserException &){}
+
+                clauses.push_back(CaseClause()->parse(input));
+            }
+        } catch (const ParserException &) {}
+
+        // if parse 'condclause' fails without 'else'
+        // e.g. (case (* 2 3) (...))
+        Lexeme(Char(')'))->parse(input);
+        return ast::Case::create(exp, clauses);
+    }
+};
+Parser<ast::SharedVal> *Case() { return new ParserCase(); }
+
 struct ParserDerivedExpression : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         return Choice({ Try(Cond()),
+                        Try(Case()),
                       })->parse(input);
-
-
-
-        try {
-            Lexeme(Str("case"))->parse(input);
-        } catch (const ParserException &) {}
 
         try {
             Lexeme(Str("and"))->parse(input);

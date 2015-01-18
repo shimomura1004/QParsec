@@ -180,6 +180,49 @@ struct Cond : Val {
     }
 };
 
+struct Case : Val {
+    struct CaseClause {
+        QList<SharedVal> data;
+        QList<SharedVal> sequence;
+        CaseClause(QList<SharedVal> d, QList<SharedVal> s) : data(d), sequence(s) {}
+        QString toString() {
+            QStringList datastr;
+            Q_FOREACH(const auto& datum, data)
+                datastr.push_back(datum->toString());
+            QStringList seqstr;
+            Q_FOREACH(const auto& seq, sequence)
+                seqstr.push_back(seq->toString());
+            return QStringLiteral("((%1) %2)").arg(datastr.join(" "), seqstr.join(" "));
+        }
+    };
+
+    SharedVal caseexp;
+    QList<QSharedPointer<CaseClause>> caseclauses;
+    QList<SharedVal> elseclause;
+
+    static SharedVal create(SharedVal exp, QList<QSharedPointer<CaseClause>> c)  { return QSharedPointer<Case>(new Case(exp, c)); }
+    static SharedVal create(SharedVal exp, QList<SharedVal> e) { return QSharedPointer<Case>(new Case(exp, e)); }
+    static SharedVal create(SharedVal exp, QList<QSharedPointer<CaseClause>> c, QList<SharedVal> e) { return QSharedPointer<Case>(new Case(exp, c, e)); }
+    Case(SharedVal exp, QList<QSharedPointer<CaseClause>> c) : caseexp(exp), caseclauses(c) {}
+    Case(SharedVal exp, QList<SharedVal> e) : caseexp(exp), elseclause(e) {}
+    Case(SharedVal exp, QList<QSharedPointer<CaseClause>> c, QList<SharedVal> e) : caseexp(exp), caseclauses(c), elseclause(e) {}
+
+    QString toString() {
+        QStringList cases;
+        Q_FOREACH(const auto &c, caseclauses)
+            cases.push_back(c->toString());
+
+        if (elseclause.isEmpty())
+            return QStringLiteral("(case %1 %2)").arg(caseexp->toString(), cases.join(" "));
+
+        QStringList elses;
+        Q_FOREACH(const auto& exp, elseclause)
+            elses.push_back(exp->toString());
+
+        return QStringLiteral("(case %1 %2 (else %3))").arg(caseexp->toString(), cases.join(" "), elses.join(" "));
+    }
+};
+
 struct List : Val {
     QList<SharedVal> val;
     static SharedVal create(QList<SharedVal> l) { return QSharedPointer<List>(new List(l)); }
