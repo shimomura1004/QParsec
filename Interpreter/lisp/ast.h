@@ -343,15 +343,42 @@ struct If : Val {
 };
 
 struct Let : Val {
-    QList<QPair<QString, SharedVal>> letenv;
-    SharedVal body;
-    static SharedVal create(QList<QPair<QString, SharedVal>> l, SharedVal b) { return QSharedPointer<Let>(new Let(l, b)); }
-    Let(QList<QPair<QString, SharedVal>> l, SharedVal b) : letenv(l), body(b) {}
+    QString name;
+    QList<QPair<QString, SharedVal>> bindings;
+    QList<SharedVal> sequence;
+
+    static SharedVal create(QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) { return QSharedPointer<Let>(new Let(b, s)); }
+    Let(QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) : bindings(b), sequence(s) {}
+
     QString toString() {
-        QStringList envs;
-        Q_FOREACH(const auto& e, letenv)
-            envs.push_back(QStringLiteral("%1=%2").arg(e.first, e.second->toString()));
-        return QStringLiteral("<Let:[%1]%2>").arg(envs.join(", "), body->toString());
+        QStringList bindingstr;
+        Q_FOREACH(const auto& b, bindings)
+            bindingstr.push_back(QStringLiteral("(%1 %2)").arg(b.first, b.second->toString()));
+
+        QStringList sequencestr;
+        Q_FOREACH(const auto &s, sequence)
+            sequencestr.push_back(s->toString());
+
+        if (name.isNull())
+            return QStringLiteral("(let (%1) %2)").arg(bindingstr.join(" "), sequencestr.join(" "));
+
+        return QStringLiteral("(let %1 (%2) %3)").arg(name, bindingstr.join(" "), sequencestr.join(" "));
+    }
+};
+
+struct LetStar : Val {
+    QList<QPair<QString, SharedVal>> bindings;
+    QList<SharedVal> sequence;
+
+    QString toString() {
+    }
+};
+
+struct LetRec : Val {
+    QList<QPair<QString, SharedVal>> bindings;
+    QList<SharedVal> sequence;
+
+    QString toString() {
     }
 };
 

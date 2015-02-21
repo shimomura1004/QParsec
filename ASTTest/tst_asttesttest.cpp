@@ -51,7 +51,8 @@ void ASTTestTest::testCreate()
     qDebug() << Let::create({ QPair<QString, QSharedPointer<Val>>("x", Integer::create(3)),
                               QPair<QString, QSharedPointer<Val>>("y", String::create("hello"))
                             },
-                            Symbol::create("x"))->toString();
+                            { Symbol::create("x") }
+                            )->toString();
     qDebug() << Sequence::create({Integer::create(3), String::create("hello")})->toString();
 }
 
