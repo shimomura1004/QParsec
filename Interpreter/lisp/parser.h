@@ -15,15 +15,6 @@ using namespace qparsec::chars;
 using namespace qparsec::combinators;
 using namespace qparsec::tokens;
 
-
-const QStringList ExpressionKeyword = {
-    "quote", "lambda", "if", "set!", "begin", "cond", "and", "or", "case",
-    "let", "let*", "letrec", "do", "delay", "quasiquote"
-};
-const QStringList SyntacticKeyword = {
-    "else", "=>", "define", "unquote", "unquote-splicing"
-};
-
 Parser<ast::SharedVal> *Boolean() { return Apply(scheme::Boolean(), ast::Bool::create); }
 Parser<ast::SharedVal> *Character() { return Apply(scheme::Character(), ast::Char::create); }
 Parser<ast::SharedVal> *String() { return Apply(scheme::String(), ast::String::create); }
@@ -44,16 +35,8 @@ Parser<ast::SharedVal> *Number() {
     return Apply(scheme::Number(), f);
 }
 
-Parser<ast::SharedVal> *Identifier() {
-    ast::SharedVal(*f)(QString) = [](QString ident){
-        if (SyntacticKeyword.contains(ident) || ExpressionKeyword.contains(ident))
-            return ast::Symbol::create(ident);
-        return ast::Variable::create(ident);
-    };
-    return Apply(scheme::Identifier(), f);
-}
-
-Parser<QString> *Variable() { return scheme::Identifier(); }
+Parser<ast::SharedVal> *Identifier() { return Apply(scheme::Identifier(), ast::Symbol::create); }
+Parser<ast::SharedVal> *Variable() { return Apply(Lexeme(scheme::Variable()), ast::Variable::create); }
 
 namespace datum {
 Parser<ast::SharedVal> *Datum();
@@ -185,19 +168,19 @@ struct ParserLambda : Parser<ast::SharedVal> {
     struct ParserFormals : Parser<QPair<QStringList, QString>> {
         QPair<QStringList, QString> parse(Input &input) {
             try {
-                auto vars = Try(Parens(Many(Lexeme(Variable()))))->parse(input);
+                auto vars = Try(Parens(Many(Lexeme(scheme::Variable()))))->parse(input);
                 return QPair<QStringList, QString>(vars, "");
             } catch (const ParserException &) {}
 
             try {
-                auto var = Lexeme(Variable())->parse(input);
+                auto var = Lexeme(scheme::Variable())->parse(input);
                 return QPair<QStringList, QString>(QStringList(), var);
             } catch (const ParserException &) {}
 
             Lexeme(Char('('))->parse(input);
-            auto vars = Many1(Lexeme(Variable()))->parse(input);
+            auto vars = Many1(Lexeme(scheme::Variable()))->parse(input);
             Lexeme(Char('.'))->parse(input);
-            auto var = Lexeme(Variable())->parse(input);
+            auto var = Lexeme(scheme::Variable())->parse(input);
             Lexeme(Char(')'))->parse(input);
 
             return QPair<QStringList, QString>(vars, var);
@@ -236,7 +219,7 @@ struct ParserAssignment : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         Lexeme(Char('('))->parse(input);
         Lexeme(Str("set!"))->parse(input);
-        auto var = Lexeme(Variable())->parse(input);
+        auto var = Lexeme(scheme::Variable())->parse(input);
         auto exp = Lexeme(Expression())->parse(input);
         Lexeme(Char(')'))->parse(input);
         return ast::Set::create(var, exp);
@@ -382,7 +365,7 @@ Parser<ast::SharedVal> *Or() {
 }
 
 Parser<QPair<QString, ast::SharedVal>> *BindingSpec() {
-    return Lexeme(Parens(Pair(Lexeme(Variable()), Lexeme(Expression()))));
+    return Lexeme(Parens(Pair(Lexeme(scheme::Variable()), Lexeme(Expression()))));
 }
 
 struct ParserLet : Parser<ast::SharedVal> {
@@ -396,7 +379,7 @@ struct ParserLet : Parser<ast::SharedVal> {
 
         QString name;
         if (type == ast::Let::Normal) {
-            name = Option(Lexeme(Variable()), QString(""))->parse(input);
+            name = Option(Lexeme(scheme::Variable()), QString(""))->parse(input);
         }
 
         QList<QPair<QString, ast::SharedVal>> bindingspec = Lexeme(Parens(Many(BindingSpec())))->parse(input);
@@ -417,7 +400,7 @@ struct ParserDo : Parser<ast::SharedVal> {
     struct ParserIterationSpec : Parser<QSharedPointer<ast::Do::IterationSpec>> {
         QSharedPointer<ast::Do::IterationSpec> parse(Input &input) {
             Lexeme(Char('('))->parse(input);
-            auto var = Lexeme(Variable())->parse(input);
+            auto var = Lexeme(scheme::Variable())->parse(input);
             auto init = Expression()->parse(input);
 
             try {
@@ -471,7 +454,8 @@ Parser<ast::SharedVal> *Expression() {
     // macro use
     // macro block
 
-    return Lexeme(Choice({ Try(Literal()),
+    return Lexeme(Choice({ Try(Variable()),
+                           Try(Literal()),
                            Try(Lambda()),
                            Try(ProcedureCall()),
                            Try(Condition()),
