@@ -393,19 +393,22 @@ Parser<QPair<QString, ast::SharedVal>> *BindingSpec() {
 struct ParserLet : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         Lexeme(Char('('))->parse(input);
-        Lexeme(Str("let"))->parse(input);
+
+        ast::Let::Type type = Lexeme(Choice({ Try(Right(Str("letrec"), Return(ast::Let::Rec))),
+                                              Try(Right(Str("let*"), Return(ast::Let::Star))),
+                                              Try(Right(Str("let"), Return(ast::Let::Normal))),
+                                            }))->parse(input);
 
         QString name;
-        try {
-            name = Lexeme(Variable())->parse(input);
+        if (type == ast::Let::Normal) {
+            name = Option(Lexeme(Variable()), QString(""))->parse(input);
         }
-        catch (const ParserException &) {}
 
         QList<QPair<QString, ast::SharedVal>> bindingspec = Lexeme(Parens(Many(BindingSpec())))->parse(input);
         QList<ast::SharedVal> body = Lexeme(Body())->parse(input);
         Lexeme(Char(')'))->parse(input);
 
-        return ast::Let::create(name, bindingspec, body);
+        return ast::Let::create(name, bindingspec, body, type);
     }
 };
 Parser<ast::SharedVal> *Let() { return new ParserLet(); }

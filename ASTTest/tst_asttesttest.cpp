@@ -48,10 +48,11 @@ void ASTTestTest::testCreate()
                                               QList<SharedVal>({List::create({Symbol::create("+"), Integer::create(1)})}),
                                               Env()))->toString();
     qDebug() << If::create(Bool::create(true), String::create("true"), String::create("false"))->toString();
-    qDebug() << Let::create({ QPair<QString, QSharedPointer<Val>>("x", Integer::create(3)),
-                              QPair<QString, QSharedPointer<Val>>("y", String::create("hello"))
-                            },
-                            { Symbol::create("x") }
+    qDebug() << Let::create(QString(""),
+                            { QPair<QString, QSharedPointer<Val>>("x", Integer::create(3)),
+                              QPair<QString, QSharedPointer<Val>>("y", String::create("hello")) },
+                            { Symbol::create("x") },
+                            ast::Let::Normal
                             )->toString();
     qDebug() << Sequence::create({Integer::create(3), String::create("hello")})->toString();
 }

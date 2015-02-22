@@ -343,12 +343,22 @@ struct If : Val {
 };
 
 struct Let : Val {
+    enum Type { Normal, Star, Rec };
+    const char* typeToString(Type type) {
+        switch(type) {
+        case Normal: return "";
+        case Star: return "*";
+        case Rec: return "rec";
+        }
+    }
+
     QString name;
     QList<QPair<QString, SharedVal>> bindings;
     QList<SharedVal> sequence;
+    Type type;
 
-    static SharedVal create(QString n, QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) { return QSharedPointer<Let>(new Let(n, b, s)); }
-    Let(QString n, QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) : name(n), bindings(b), sequence(s) {}
+    static SharedVal create(QString n, QList<QPair<QString, SharedVal>> b, QList<SharedVal> s, Type t) { return QSharedPointer<Let>(new Let(n, b, s, t)); }
+    Let(QString n, QList<QPair<QString, SharedVal>> b, QList<SharedVal> s, Type t) : name(n), bindings(b), sequence(s), type(t) {}
 
     QString toString() {
         QStringList bindingstr;
@@ -360,25 +370,9 @@ struct Let : Val {
             sequencestr.push_back(s->toString());
 
         if (name.isNull())
-            return QStringLiteral("(let (%1) %2)").arg(bindingstr.join(" "), sequencestr.join(" "));
+            return QStringLiteral("(let%1 (%2) %3)").arg(typeToString(type), bindingstr.join(" "), sequencestr.join(" "));
 
-        return QStringLiteral("(let %1 (%2) %3)").arg(name, bindingstr.join(" "), sequencestr.join(" "));
-    }
-};
-
-struct LetStar : Val {
-    QList<QPair<QString, SharedVal>> bindings;
-    QList<SharedVal> sequence;
-
-    QString toString() {
-    }
-};
-
-struct LetRec : Val {
-    QList<QPair<QString, SharedVal>> bindings;
-    QList<SharedVal> sequence;
-
-    QString toString() {
+        return QStringLiteral("(let%1 %2 (%3) %4)").arg(typeToString(type), name, bindingstr.join(" "), sequencestr.join(" "));
     }
 };
 
