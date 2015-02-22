@@ -129,6 +129,7 @@ struct Set : Val {
 struct Cond : Val {
     struct CondClause {
         virtual QString toString() = 0;
+        virtual ~CondClause() {}
     };
     struct TestSeq : CondClause {
         SharedVal test;
