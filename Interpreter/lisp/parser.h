@@ -429,6 +429,10 @@ struct ParserDo : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Do() { return new ParserDo(); }
 
+Parser<ast::SharedVal> *Delay() {
+    return Apply(Lexeme(Parens(Right(Lexeme(Str("delay")), Expression()))), ast::Delay::create);
+}
+
 struct ParserDerivedExpression : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         return Choice({ Try(Cond()),
@@ -437,12 +441,9 @@ struct ParserDerivedExpression : Parser<ast::SharedVal> {
                         Try(Or()),
                         Try(Let()),
                         Try(Begin()),
-                        Try(Do())
+                        Try(Do()),
+                        Try(Delay())
                       })->parse(input);
-
-//            Lexeme(Str("delay"))->parse(input);
-//        } catch (const ParserException &) {}
-
         // todo: support quasification
     }
 };

@@ -439,6 +439,13 @@ struct Do : Val {
     }
 };
 
+struct Delay : Val {
+    SharedVal val;
+    static SharedVal create(SharedVal v) { return QSharedPointer<Delay>(new Delay(v)); }
+    Delay(SharedVal v) : val(v) {}
+    QString toString() { return QStringLiteral("(delay %1)").arg(val->toString()); }
+};
+
 }
 
 #endif // AST_H
