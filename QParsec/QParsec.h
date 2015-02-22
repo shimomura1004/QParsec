@@ -65,6 +65,15 @@ struct ParserEmpty : Parser<void> {
 };
 
 template<typename T>
+struct ParserReturn : Parser<T> {
+    T value;
+    ParserReturn(T v) : value(v) {}
+    T parse(Input &) {
+        return value;
+    }
+};
+
+template<typename T>
 struct ParserIgnore : Parser<void> {
     Parser<T> *p_;
 
@@ -275,6 +284,10 @@ struct ParserLazy : Parser<T> {
 
 ParserEmpty *Empty()
 { return new ParserEmpty(); }
+
+template<typename T>
+ParserReturn<T> *Return(T v)
+{ return new ParserReturn<T>(v); }
 
 template<typename T>
 ParserIgnore<T> *Ignore(Parser<T> *p)

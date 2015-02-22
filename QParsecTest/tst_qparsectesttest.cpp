@@ -36,6 +36,7 @@ public:
     QParsecTestTest();
 
 private Q_SLOTS:
+    void testReturn();
     void testSeq();
     void testTry();
     void testLeft();
@@ -105,6 +106,13 @@ private Q_SLOTS:
 
 QParsecTestTest::QParsecTestTest()
 {
+}
+
+void QParsecTestTest::testReturn()
+{
+    Input input("");
+    auto a = Return(QString("a"))->parse(input);
+    QCOMPARE(a, QString("a"));
 }
 
 void QParsecTestTest::testSeq() {
