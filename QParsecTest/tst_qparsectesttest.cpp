@@ -40,6 +40,7 @@ private Q_SLOTS:
     void testTry();
     void testLeft();
     void testRight();
+    void testPair();
     void testFail();
     void testHelp();
     void testApply();
@@ -142,6 +143,14 @@ void QParsecTestTest::testRight()
     Q_FOREACH(auto n, varname)
         name += n;
     QCOMPARE(name, QString("x"));
+}
+
+void QParsecTestTest::testPair()
+{
+    Input input("(x 3)");
+    auto pair = Parens(Pair(Lexeme(AnyChar()), Lexeme(Digit())))->parse(input);
+    QCOMPARE(pair.first, QChar('x'));
+    QCOMPARE(pair.second, QChar('3'));
 }
 
 void QParsecTestTest::testFail() {

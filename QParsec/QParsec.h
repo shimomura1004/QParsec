@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <QString>
+#include <QPair>
 #include <QStringList>
 #include <QSharedPointer>
 
@@ -180,6 +181,24 @@ struct ParserRight : Parser<T2> {
     }
 };
 
+template<typename T1, typename T2>
+struct ParserPair : Parser<QPair<T1, T2>> {
+    Parser<T1> *p1_;
+    Parser<T2> *p2_;
+
+    ParserPair(Parser<T1> *p1, Parser<T2> *p2) : Parser<QPair<T1, T2>>(), p1_(p1), p2_(p2) {}
+    ~ParserPair() {
+        delete p1_;
+        delete p2_;
+    }
+
+    QPair<T1, T2> parse(Input &input) {
+        T1 left = p1_->parse(input);
+        T2 right = p2_->parse(input);
+        return QPair<T1, T2>(left, right);
+    }
+};
+
 template<typename T>
 struct ParserHelp : Parser<T> {
     Parser<T> *p_;
@@ -291,6 +310,10 @@ ParserLeft<T1, T2> *Left(Parser<T1> *p1, Parser<T2> *p2)
 template<typename T1, typename T2>
 ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2)
 { return new ParserRight<T1, T2>(p1, p2); }
+
+template<typename T1, typename T2>
+ParserPair<T1, T2> *Pair(Parser<T1> *p1, Parser<T2> *p2)
+{ return new ParserPair<T1, T2>(p1, p2); }
 
 template<typename T>
 ParserLazy<T> *Lazy(Parser<T>* (*p)())
