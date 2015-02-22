@@ -16,62 +16,62 @@ template<typename T>
 struct ParserLexeme : Parser<T> {
   Parser<T> *p_;
 
-  ParserLexeme(Parser<T> *p, T *out) : Parser<T>(out), p_(p) {}
+  ParserLexeme(Parser<T> *p) : Parser<T>(), p_(p) {}
   ~ParserLexeme() { delete p_; }
 
   T parse(Input &input) {
       auto result = p_->parse(input);
       WhiteSpace()->parse(input);
-      return Parser<T>::setOut(result);
+      return result;
   }
 };
 
 template<typename T>
-Parser<T> *Lexeme(Parser<T> *p, T *out = nullptr)
-{ return new ParserLexeme<T>(p, out); }
+Parser<T> *Lexeme(Parser<T> *p)
+{ return new ParserLexeme<T>(p); }
 
-Parser<QString> *Symbol(QString str, QString *out = nullptr)
-{ return Lexeme(Str(str), out); }
-
-template<typename T>
-Parser<T> *Parens(Parser<T> *p, T *out = nullptr)
-{ return Between(p, Symbol("("), Symbol(")"), out); }
+Parser<QString> *Symbol(QString str)
+{ return Lexeme(Str(str)); }
 
 template<typename T>
-Parser<T> *Braces(Parser<T> *p, T *out = nullptr)
-{ return Between(p, Symbol("{"), Symbol("}"), out); }
+Parser<T> *Parens(Parser<T> *p)
+{ return Between(p, Symbol("("), Symbol(")")); }
 
 template<typename T>
-Parser<T> *Brackets(Parser<T> *p, T *out = nullptr)
-{ return Between(p, Symbol("<"), Symbol(">"), out); }
+Parser<T> *Braces(Parser<T> *p)
+{ return Between(p, Symbol("{"), Symbol("}")); }
 
 template<typename T>
-Parser<T> *Squares(Parser<T> *p, T *out = nullptr)
-{ return Between(p, Symbol("["), Symbol("]"), out); }
-
-Parser<QChar> *Semi(QChar *out = nullptr) { return Lexeme(Char(';'), out); }
-
-Parser<QChar> *Comma(QChar *out = nullptr) { return Lexeme(Char(','), out); }
-
-Parser<QChar> *Colon(QChar *out = nullptr) { return Lexeme(Char(':'), out); }
-
-Parser<QChar> *Dot(QChar *out = nullptr) { return Lexeme(Char('.'), out); }
+Parser<T> *Brackets(Parser<T> *p)
+{ return Between(p, Symbol("<"), Symbol(">")); }
 
 template<typename T>
-Parser<QList<T>> *SemiSep(Parser<T> *p, QList<T> *out = nullptr)
-{ return SepBy(p, Semi(), out); }
+Parser<T> *Squares(Parser<T> *p)
+{ return Between(p, Symbol("["), Symbol("]")); }
+
+Parser<QChar> *Semi() { return Lexeme(Char(';')); }
+
+Parser<QChar> *Comma() { return Lexeme(Char(',')); }
+
+Parser<QChar> *Colon() { return Lexeme(Char(':')); }
+
+Parser<QChar> *Dot() { return Lexeme(Char('.')); }
 
 template<typename T>
-Parser<QList<T>> *SemiSep1(Parser<T> *p, QList<T> *out = nullptr)
-{ return SepBy1(p, Semi(), out); }
+Parser<QList<T>> *SemiSep(Parser<T> *p)
+{ return SepBy(p, Semi()); }
 
 template<typename T>
-Parser<QList<T>> *CommaSep(Parser<T> *p, QList<T> *out = nullptr)
-{ return SepBy(p, Comma(), out); }
+Parser<QList<T>> *SemiSep1(Parser<T> *p)
+{ return SepBy1(p, Semi()); }
 
 template<typename T>
-Parser<QList<T>> *CommaSep1(Parser<T> *p, QList<T> *out = nullptr)
-{ return SepBy1(p, Comma(), out); }
+Parser<QList<T>> *CommaSep(Parser<T> *p)
+{ return SepBy(p, Comma()); }
+
+template<typename T>
+Parser<QList<T>> *CommaSep1(Parser<T> *p)
+{ return SepBy1(p, Comma()); }
 
 }
 }

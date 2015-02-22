@@ -13,7 +13,7 @@ template<typename T>
 struct ParserMany : Parser< QList<T> > {
     Parser<T> *p_;
 
-    ParserMany(Parser<T> *p, QList<T> *out = nullptr) : Parser< QList<T> >(out), p_(p) {}
+    ParserMany(Parser<T> *p) : Parser< QList<T> >(), p_(p) {}
     virtual ~ParserMany() {delete p_;}
 
     QList<T> parse(Input &input) {
@@ -24,7 +24,7 @@ struct ParserMany : Parser< QList<T> > {
             }
         }
         catch (const ParserException &) {
-            return Parser< QList<T> >::setOut(result);
+            return result;
         }
     }
 };
@@ -33,7 +33,7 @@ template<>
 struct ParserMany<QChar> : Parser<QString> {
     Parser<QChar> *p_;
 
-    ParserMany(Parser<QChar> *p, QString *out = nullptr) : Parser(out), p_(p) {}
+    ParserMany(Parser<QChar> *p) : Parser(), p_(p) {}
     virtual ~ParserMany() {delete p_;}
 
     QString parse(Input &input) {
@@ -44,34 +44,34 @@ struct ParserMany<QChar> : Parser<QString> {
             }
         }
         catch (const ParserException &) {
-            return setOut(result);
+            return result;
         }
     }
 };
 
 template<typename T>
 struct ParserMany1 : ParserMany<T> {
-    ParserMany1(Parser<T> *p, QList<T> *out = nullptr) : ParserMany<T>(p, out) {}
+    ParserMany1(Parser<T> *p) : ParserMany<T>(p) {}
 
     QList<T> parse(Input &input) {
         QList<T> result;
         result.push_back(ParserMany<T>::p_->parse(input));
         result.append(ParserMany<T>::parse(input));
 
-        return ParserMany<T>::setOut(result);
+        return result;
     }
 };
 
 template<>
 struct ParserMany1<QChar> : ParserMany<QChar> {
-    ParserMany1(Parser<QChar> *p, QString *out = nullptr) : ParserMany<QChar>(p, out) {}
+    ParserMany1(Parser<QChar> *p) : ParserMany<QChar>(p) {}
 
     QString parse(Input &input) {
         QString result;
         result += ParserMany<QChar>::p_->parse(input);
         result += ParserMany<QChar>::parse(input);
 
-        return setOut(result);
+        return result;
     }
 };
 
@@ -106,8 +106,8 @@ template<typename T>
 struct ParserChoice : Parser<T> {
   QList< Parser<T>* > ps_;
 
-  ParserChoice(QList< Parser<T>* > ps, T *out) : Parser<T>(out), ps_(ps) {}
-  ParserChoice(std::initializer_list< Parser<T>* > &ps, T *out) : Parser<T>(out), ps_(ps) {}
+  ParserChoice(QList< Parser<T>* > ps) : Parser<T>(), ps_(ps) {}
+  ParserChoice(std::initializer_list< Parser<T>* > &ps) : Parser<T>(), ps_(ps) {}
   virtual ~ParserChoice() {
       Q_FOREACH(auto &p, ps_) {
           delete p;
@@ -119,8 +119,7 @@ struct ParserChoice : Parser<T> {
       ParserException exp(0, "");
       Q_FOREACH(Parser<T> *p, ps_) {
           try {
-              T result = p->parse(input);
-              return Parser<T>::setOut(result);
+              return p->parse(input);
           }
           catch (const ParserException &e) {
               exp = e;
@@ -136,7 +135,7 @@ struct ParserSepBy : Parser< QList<T> > {
     Parser<T> *p_;
     Parser<TSep> *sep_;
 
-    ParserSepBy(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
+    ParserSepBy(Parser<T> *p, Parser<TSep> *sep) : Parser< QList<T> >(), p_(p), sep_(sep) {}
     virtual ~ParserSepBy() {
         delete p_;
         delete sep_;
@@ -149,7 +148,7 @@ struct ParserSepBy : Parser< QList<T> > {
             result.push_back(p_->parse(input));
         }
         catch (const ParserException &) {
-            return Parser< QList<T> >::setOut(result);
+            return result;
         }
 
         Q_FOREVER {
@@ -157,7 +156,7 @@ struct ParserSepBy : Parser< QList<T> > {
                 sep_->parse(input);
             }
             catch (const ParserException &) {
-                return Parser< QList<T> >::setOut(result);
+                return result;
             }
 
             result.push_back(p_->parse(input));
@@ -170,7 +169,7 @@ struct ParserSepBy1 : Parser< QList<T> > {
     Parser<T> *p_;
     Parser<TSep> *sep_;
 
-    ParserSepBy1(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
+    ParserSepBy1(Parser<T> *p, Parser<TSep> *sep) : Parser< QList<T> >(), p_(p), sep_(sep) {}
     virtual ~ParserSepBy1() {
         delete p_;
         delete sep_;
@@ -185,7 +184,7 @@ struct ParserSepBy1 : Parser< QList<T> > {
                 sep_->parse(input);
             }
             catch (const ParserException &) {
-                return Parser< QList<T> >::setOut(result);
+                return result;
             }
 
             result.push_back(p_->parse(input));
@@ -198,7 +197,7 @@ struct ParserEndBy : Parser< QList<T> > {
     Parser<T> *p_;
     Parser<TSep> *sep_;
 
-    ParserEndBy(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
+    ParserEndBy(Parser<T> *p, Parser<TSep> *sep) : Parser< QList<T> >(), p_(p), sep_(sep) {}
     virtual ~ParserEndBy() {
         delete p_;
         delete sep_;
@@ -212,7 +211,7 @@ struct ParserEndBy : Parser< QList<T> > {
                 result.push_back(p_->parse(input));
             }
             catch (const ParserException &) {
-                return Parser< QList<T> >::setOut(result);
+                return result;
             }
             sep_->parse(input);
         }
@@ -224,7 +223,7 @@ struct ParserEndBy1 : Parser< QList<T> > {
     Parser<T> *p_;
     Parser<TSep> *sep_;
 
-    ParserEndBy1(Parser<T> *p, Parser<TSep> *sep, QList<T> *out) : Parser< QList<T> >(out), p_(p), sep_(sep) {}
+    ParserEndBy1(Parser<T> *p, Parser<TSep> *sep) : Parser< QList<T> >(), p_(p), sep_(sep) {}
     virtual ~ParserEndBy1() {
         delete p_;
         delete sep_;
@@ -241,7 +240,7 @@ struct ParserEndBy1 : Parser< QList<T> > {
                 result.push_back(p_->parse(input));
             }
             catch (const ParserException &) {
-                return Parser< QList<T> >::setOut(result);
+                return result;
             }
             sep_->parse(input);
         }
@@ -253,7 +252,7 @@ struct ParserCount : Parser< QList<T> > {
     Parser<T> *p_;
     int n_;
 
-    ParserCount(Parser<T> *p, int n, QList<T> *out) : Parser< QList<T> >(out), p_(p), n_(n) {}
+    ParserCount(Parser<T> *p, int n) : Parser< QList<T> >(), p_(p), n_(n) {}
     virtual ~ParserCount() { delete p_; }
 
     QList<T> parse(Input &input) {
@@ -262,7 +261,7 @@ struct ParserCount : Parser< QList<T> > {
         for(int i = 0; i < n_; i++) {
             result.push_back(p_->parse(input));
         }
-        return setOut(result);
+        return result;
     }
 };
 
@@ -271,7 +270,7 @@ struct ParserCount<QChar> : Parser<QString> {
     Parser<QChar> *p_;
     int n_;
 
-    ParserCount(Parser<QChar> *p, int n, QString *out) : Parser<QString>(out), p_(p), n_(n) {}
+    ParserCount(Parser<QChar> *p, int n) : Parser<QString>(), p_(p), n_(n) {}
     virtual ~ParserCount() { delete p_; }
 
     QString parse(Input &input) {
@@ -280,7 +279,7 @@ struct ParserCount<QChar> : Parser<QString> {
         for(int i = 0; i < n_; i++) {
             result.push_back(p_->parse(input));
         }
-        return setOut(result);
+        return result;
     }
 };
 
@@ -290,7 +289,7 @@ struct ParserBetween : Parser<T> {
     Parser<TOpen> *popen_;
     Parser<TClose> *pclose_;
 
-    ParserBetween(Parser<T> *p, Parser<TOpen> *popen, Parser<TClose> *pclose, T *out) : Parser<T>(out), p_(p), popen_(popen), pclose_(pclose) {}
+    ParserBetween(Parser<T> *p, Parser<TOpen> *popen, Parser<TClose> *pclose) : Parser<T>(), p_(p), popen_(popen), pclose_(pclose) {}
     virtual ~ParserBetween() {
         delete p_;
         delete popen_;
@@ -302,7 +301,7 @@ struct ParserBetween : Parser<T> {
         T result = p_->parse(input);
         pclose_->parse(input);
 
-        return Parser<T>::setOut(result);
+        return result;
     }
 };
 
@@ -311,16 +310,16 @@ struct ParserOption : Parser<T> {
     Parser<T> *p_;
     T opt_;
 
-    ParserOption(Parser<T> *p, T opt, T *out) : Parser<T>(out), p_(p), opt_(opt) {}
+    ParserOption(Parser<T> *p, T opt) : Parser<T>(), p_(p), opt_(opt) {}
     virtual ~ParserOption() { delete p_; }
 
     T parse(Input &input) {
         try {
             T result = p_->parse(input);
-            return Parser<T>::setOut(result);
+            return result;
         }
         catch (const ParserException &) {
-            return Parser<T>::setOut(opt_);
+            return opt_;
         }
     }
 };
@@ -349,7 +348,7 @@ struct ParserManyTill : Parser< QList<T> > {
     Parser<T> *p_;
     Parser<TEnd> *pend_;
 
-    ParserManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *out) : Parser< QList<T> >(out), p_(p), pend_(pend) {}
+    ParserManyTill(Parser<T> *p, Parser<TEnd> *pend) : Parser< QList<T> >(), p_(p), pend_(pend) {}
     virtual ~ParserManyTill(){
         delete p_;
         delete pend_;
@@ -361,7 +360,7 @@ struct ParserManyTill : Parser< QList<T> > {
         Q_FOREVER {
             try {
                 pend_->parse(input);
-                return Parser< QList<T> >::setOut(result);
+                return result;
             }
             catch (const ParserException &) {
                 result.push_back(p_->parse(input));
@@ -376,7 +375,7 @@ struct ParserChainl : Parser<T> {
     Parser<T(*)(T, T)> *poperator_;
     T opt_;
 
-    ParserChainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out) : Parser<T>(out), p_(p), poperator_(poperator), opt_(opt) {}
+    ParserChainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt) : Parser<T>(), p_(p), poperator_(poperator), opt_(opt) {}
     ~ParserChainl() {
         delete p_;
         delete poperator_;
@@ -398,7 +397,7 @@ struct ParserChainl : Parser<T> {
                 op = poperator_->parse(input);
             }
             catch (const ParserException &) {
-                return Parser<T>::setOut(accum);
+                return accum;
             }
 
             T t = p_->parse(input);
@@ -412,7 +411,7 @@ struct ParserChainl1 : Parser<T> {
     Parser<T> *p_;
     Parser<T(*)(T, T)> *poperator_;
 
-    ParserChainl1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out) : Parser<T>(out), p_(p), poperator_(poperator) {}
+    ParserChainl1(Parser<T> *p, Parser<T(*)(T, T)> *poperator) : Parser<T>(), p_(p), poperator_(poperator) {}
     ~ParserChainl1() {
         delete p_;
         delete poperator_;
@@ -427,7 +426,7 @@ struct ParserChainl1 : Parser<T> {
                 op = poperator_->parse(input);
             }
             catch (const ParserException &) {
-                return Parser<T>::setOut(accum);
+                return accum;
             }
 
             T t = p_->parse(input);
@@ -442,7 +441,7 @@ struct ParserChainr : Parser<T> {
     Parser<T(*)(T, T)> *poperator_;
     T opt_;
 
-    ParserChainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out) : Parser<T>(out), p_(p), poperator_(poperator), opt_(opt) {}
+    ParserChainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt) : Parser<T>(), p_(p), poperator_(poperator), opt_(opt) {}
     ~ParserChainr() {
         delete p_;
         delete poperator_;
@@ -463,11 +462,10 @@ struct ParserChainr : Parser<T> {
             op = poperator_->parse(input);
         }
         catch (const ParserException &) {
-            return Parser<T>::setOut(left);
+            return left;
         }
 
-        T rights = op(left, parse(input));
-        return Parser<T>::setOut(rights);
+        return op(left, parse(input));
     }
 };
 
@@ -476,7 +474,7 @@ struct ParserChainr1 : Parser<T> {
     Parser<T> *p_;
     Parser<T(*)(T, T)> *poperator_;
 
-    ParserChainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out) : Parser<T>(out), p_(p), poperator_(poperator) {}
+    ParserChainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator) : Parser<T>(), p_(p), poperator_(poperator) {}
     ~ParserChainr1() {
         delete p_;
         delete poperator_;
@@ -492,11 +490,10 @@ struct ParserChainr1 : Parser<T> {
             op = poperator_->parse(input);
         }
         catch (const ParserException &) {
-            return Parser<T>::setOut(left);
+            return left;
         }
 
-        T rights = op(left, parse(input));
-        return Parser<T>::setOut(rights);
+        return op(left, parse(input));
     }
 };
 
@@ -504,28 +501,28 @@ template<typename T>
 struct ParserLookAhead : Parser<T> {
     Parser<T> *p_;
 
-    ParserLookAhead(Parser<T> *p, T *out) : Parser<T>(out), p_(p) {}
+    ParserLookAhead(Parser<T> *p) : Parser<T>(), p_(p) {}
     ~ParserLookAhead() { delete p_; }
 
     T parse(Input &input) {
         input.preserve();
         auto result = p_->parse(input);
         input.restore();
-        return Parser<T>::setOut(result);
+        return result;
     }
 };
 
 template<typename T>
-ParserMany<T> *Many(Parser<T> *p, QList<T> *out = nullptr)
-{ return new ParserMany<T>(p, out); }
-ParserMany<QChar> *Many(Parser<QChar> *p, QString *out = nullptr)
-{ return new ParserMany<QChar>(p, out); }
+ParserMany<T> *Many(Parser<T> *p)
+{ return new ParserMany<T>(p); }
+ParserMany<QChar> *Many(Parser<QChar> *p)
+{ return new ParserMany<QChar>(p); }
 
 template<typename T>
-ParserMany1<T> *Many1(Parser<T> *p, QList<T> *out = nullptr)
-{ return new ParserMany1<T>(p, out); }
-ParserMany1<QChar> *Many1(Parser<QChar> *p, QString *out = nullptr)
-{ return new ParserMany1<QChar>(p, out); }
+ParserMany1<T> *Many1(Parser<T> *p)
+{ return new ParserMany1<T>(p); }
+ParserMany1<QChar> *Many1(Parser<QChar> *p)
+{ return new ParserMany1<QChar>(p); }
 
 template<typename T>
 ParserSkipMany<T> *SkipMany(Parser<T> *p)
@@ -536,73 +533,73 @@ ParserSkipMany1<T> *SkipMany1(Parser<T> *p)
 { return new ParserSkipMany1<T>(p); }
 
 template<typename T>
-ParserChoice<T> *Choice(QList< Parser<T>* > p, T *out = nullptr)
-{ return new ParserChoice<T>(p, out); }
+ParserChoice<T> *Choice(QList< Parser<T>* > p)
+{ return new ParserChoice<T>(p); }
 
 template<typename T>
-ParserChoice<T> *Choice(std::initializer_list< Parser<T>* > ps, T *out = nullptr)
-{ return new ParserChoice<T>(ps, out); }
+ParserChoice<T> *Choice(std::initializer_list< Parser<T>* > ps)
+{ return new ParserChoice<T>(ps); }
 
 template<typename T, typename TSep>
-ParserSepBy<T, TSep> *SepBy(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
-{ return new ParserSepBy<T, TSep>(p, psep, out); }
+ParserSepBy<T, TSep> *SepBy(Parser<T> *p, Parser<TSep> *psep)
+{ return new ParserSepBy<T, TSep>(p, psep); }
 
 template<typename T, typename TSep>
-ParserSepBy1<T, TSep> *SepBy1(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
-{ return new ParserSepBy1<T, TSep>(p, psep, out); }
+ParserSepBy1<T, TSep> *SepBy1(Parser<T> *p, Parser<TSep> *psep)
+{ return new ParserSepBy1<T, TSep>(p, psep); }
 
 template<typename T, typename TSep>
-ParserEndBy<T, TSep> *EndBy(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
-{ return new ParserEndBy<T, TSep>(p, psep, out); }
+ParserEndBy<T, TSep> *EndBy(Parser<T> *p, Parser<TSep> *psep)
+{ return new ParserEndBy<T, TSep>(p, psep); }
 
 template<typename T, typename TSep>
-ParserEndBy1<T, TSep> *EndBy1(Parser<T> *p, Parser<TSep> *psep, QList<T> *out = nullptr)
-{ return new ParserEndBy1<T, TSep>(p, psep, out); }
+ParserEndBy1<T, TSep> *EndBy1(Parser<T> *p, Parser<TSep> *psep)
+{ return new ParserEndBy1<T, TSep>(p, psep); }
 
 template<typename T>
-ParserCount<T> *Count(Parser<T> *p, int n, QList<T> *out = nullptr)
-{ return new ParserCount<T>(p, n, out); }
-ParserCount<QChar> *Count(Parser<QChar> *p, int n, QString *out = nullptr)
-{ return new ParserCount<QChar>(p, n, out); }
+ParserCount<T> *Count(Parser<T> *p, int n)
+{ return new ParserCount<T>(p, n); }
+ParserCount<QChar> *Count(Parser<QChar> *p, int n)
+{ return new ParserCount<QChar>(p, n); }
 
 template<typename T, typename TOpen, typename TClose>
-ParserBetween<T, TOpen, TClose> *Between(Parser<T> *p, Parser<TOpen> *popen, Parser<TClose> *pclose, T *out = nullptr)
-{ return new ParserBetween<T, TOpen, TClose>(p, popen, pclose, out); }
+ParserBetween<T, TOpen, TClose> *Between(Parser<T> *p, Parser<TOpen> *popen, Parser<TClose> *pclose)
+{ return new ParserBetween<T, TOpen, TClose>(p, popen, pclose); }
 
 template<typename T>
-ParserOption<T> *Option(Parser<T> *p, T opt, T *out = nullptr)
-{ return new ParserOption<T>(p, opt, out); }
+ParserOption<T> *Option(Parser<T> *p, T opt)
+{ return new ParserOption<T>(p, opt); }
 
 template<typename T>
 Parser<void> *Option_(Parser<T> *p)
 { return new ParserOption_<T>(p); }
 
 template<typename T, typename TEnd>
-ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend, QList<T> *out = nullptr)
-{ return new ParserManyTill<T, TEnd>(p, pend, out); }
+ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend)
+{ return new ParserManyTill<T, TEnd>(p, pend); }
 
 ParserEof *Eof()
 { return new ParserEof(); }
 
 template<typename T>
-ParserChainl<T> *Chainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out = nullptr)
-{ return new ParserChainl<T>(p, poperator, opt, out); }
+ParserChainl<T> *Chainl(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt)
+{ return new ParserChainl<T>(p, poperator, opt); }
 
 template<typename T>
-ParserChainl1<T> *Chainl1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out = nullptr)
-{ return new ParserChainl1<T>(p, poperator, out); }
+ParserChainl1<T> *Chainl1(Parser<T> *p, Parser<T(*)(T, T)> *poperator)
+{ return new ParserChainl1<T>(p, poperator); }
 
 template<typename T>
-ParserChainr<T> *Chainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt, T *out = nullptr)
-{ return new ParserChainr<T>(p, poperator, opt, out); }
+ParserChainr<T> *Chainr(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T opt)
+{ return new ParserChainr<T>(p, poperator, opt); }
 
 template<typename T>
-ParserChainr1<T> *Chainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator, T *out = nullptr)
-{ return new ParserChainr1<T>(p, poperator, out); }
+ParserChainr1<T> *Chainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator)
+{ return new ParserChainr1<T>(p, poperator); }
 
 template<typename T>
-ParserLookAhead<T> *LookAhead(Parser<T> *p, T *out = nullptr)
-{ return new ParserLookAhead<T>(p, out); }
+ParserLookAhead<T> *LookAhead(Parser<T> *p)
+{ return new ParserLookAhead<T>(p); }
 
 }
 }

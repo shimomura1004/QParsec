@@ -12,32 +12,30 @@ namespace clang {
 using namespace qparsec::chars;
 using namespace qparsec::combinators;
 
-Parser<int> *Decimal(int *out = nullptr) {
-    return Apply<QString, int>(Lexeme(Many1(Digit())), [](QString s){return s.toInt();}, out);
+Parser<int> *Decimal() {
+    return Apply<QString, int>(Lexeme(Many1(Digit())), [](QString s){return s.toInt();});
 }
 
-Parser<int> *Hexadecimal(int *out = nullptr) {
+Parser<int> *Hexadecimal() {
     return Apply<QString, int>(
                 Lexeme(Right(Seq(Char('0'), OneOf("xX")),
                              Many1(OneOf("0123456789abcdefABCDEF")))),
-                [](QString s){return s.toInt(0, 16);},
-                out);
+                [](QString s){return s.toInt(0, 16);});
 }
 
-Parser<int> *Octal(int *out = nullptr) {
+Parser<int> *Octal() {
     return Apply<QString, int>(
                 Lexeme(Right(Seq(Char('0'), OneOf("oO")),
                              Many1(OneOf("01234567")))),
-                [](QString s){return s.toInt(0, 8);},
-                out);
+                [](QString s){return s.toInt(0, 8);});
 }
 
-Parser<int> *Natural(int *out = nullptr) {
-    return Choice({Try(Hexadecimal()), Try(Octal()), Try(Decimal())}, out);
+Parser<int> *Natural() {
+    return Choice({Try(Hexadecimal()), Try(Octal()), Try(Decimal())});
 }
 
 struct ParserInteger : Parser<int> {
-    ParserInteger(int *out) : Parser<int>(out) {}
+    ParserInteger() : Parser<int>() {}
 
     int parse(Input &input) {
         auto sign = Choice({ Char('-'),
@@ -45,14 +43,13 @@ struct ParserInteger : Parser<int> {
                            })->parse(input);
         auto num = Natural()->parse(input);
 
-        int result = (sign == '+' ? 1 : -1) * num;
-        return setOut(result);
+        return (sign == '+' ? 1 : -1) * num;
     }
 };
-ParserInteger *Integer(int *out = nullptr) { return new ParserInteger(out); }
+ParserInteger *Integer() { return new ParserInteger(); }
 
 struct ParserDouble : Parser<double> {
-    ParserDouble(double *out) : Parser<double>(out) {}
+    ParserDouble() : Parser<double>() {}
 
     double parse(Input &input) {
         auto sign_b = Choice({ Char('-'),
@@ -77,13 +74,12 @@ struct ParserDouble : Parser<double> {
         }
         auto num_e = Decimal()->parse(input);
 
-        double result = QStringLiteral("%1%2.%3").arg(sign_b,
-                                                      QString::number(num_b),
-                                                      QString::number(num_e)).toDouble();
-        return setOut(result);
+        return QStringLiteral("%1%2.%3").arg(sign_b,
+                                             QString::number(num_b),
+                                             QString::number(num_e)).toDouble();
     }
 };
-ParserDouble *Double(double *out = nullptr) { return new ParserDouble(out); }
+ParserDouble *Double() { return new ParserDouble(); }
 
 }
 }

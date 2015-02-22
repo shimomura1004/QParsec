@@ -16,7 +16,6 @@ using namespace qparsec;
 // todo: parser should return wheather it consumes input
 // todo: fails parser should return expected characters
 // propose: return ParserResult<T> instead of using exception
-// propose: remove 'out' argument
 
 int main(int argc, char *argv[])
 {

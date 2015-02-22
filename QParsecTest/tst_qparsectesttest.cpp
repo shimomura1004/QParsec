@@ -109,12 +109,8 @@ QParsecTestTest::QParsecTestTest()
 void QParsecTestTest::testSeq() {
     Input input("abc");
 
-    QChar a, b, c;
-    Seq(Char('a', &a), Char('b', &b), Char('c', &c))->parse(input);
-
-    QCOMPARE(a, QChar('a'));
-    QCOMPARE(b, QChar('b'));
-    QCOMPARE(c, QChar('c'));
+    Seq(Char('a'), Char('b'), Char('c'))->parse(input);
+    Eof()->parse(input);
 }
 
 void QParsecTestTest::testTry() {
@@ -122,8 +118,9 @@ void QParsecTestTest::testTry() {
 
     QVERIFY_EXCEPTION_THROWN(Try(Seq(Char('a'), Char('b'), Char('a')))->parse(input), ParserException);
 
-    QChar a, b, c;
-    Try(Seq(Char('a', &a), Char('b', &b), Char('c', &c)))->parse(input);
+    QChar a = Char('a')->parse(input);
+    QChar b = Char('b')->parse(input);
+    QChar c = Char('c')->parse(input);
 
     QCOMPARE(a, QChar('a'));
     QCOMPARE(b, QChar('b'));
@@ -158,8 +155,7 @@ void QParsecTestTest::testFail() {
         QCOMPARE(e.reason, QString("fail parser"));
     }
 
-    QChar a;
-    Char('a', &a)->parse(input);
+    QChar a = Char('a')->parse(input);
     QCOMPARE(a, QChar('a'));
 }
 
@@ -230,8 +226,7 @@ void QParsecTestTest::testChar() {
     auto a = Char('a')->parse(input);
     QCOMPARE(a, QChar('a'));
 
-    QChar b;
-    Char('b', &b)->parse(input);
+    QChar b = Char('b')->parse(input);
     QCOMPARE(b, QChar('b'));
 
     QVERIFY_EXCEPTION_THROWN(Char('a')->parse(input), ParserException);
@@ -254,8 +249,9 @@ void QParsecTestTest::testStr() {
 void QParsecTestTest::testAnyChar() {
     Input input("a0*");
 
-    QChar a, b, c;
-    Seq(AnyChar(&a), AnyChar(&b), AnyChar(&c))->parse(input);
+    QChar a = AnyChar()->parse(input);
+    QChar b = AnyChar()->parse(input);
+    QChar c = AnyChar()->parse(input);
 
     QCOMPARE(a, QChar('a'));
     QCOMPARE(b, QChar('0'));
@@ -267,8 +263,8 @@ void QParsecTestTest::testAnyChar() {
 void QParsecTestTest::testSpace() {
     Input input(" \ta");
 
-    QChar space, tab;
-    Seq(Space(&space), Space(&tab))->parse(input);
+    QChar space = Space()->parse(input);
+    QChar tab = Space()->parse(input);
     QCOMPARE(space, QChar(' '));
     QCOMPARE(tab, QChar('\t'));
 
@@ -458,25 +454,25 @@ void QParsecTestTest::testMany1() {
 
 void QParsecTestTest::testSkipMany() {
     Input input1("   abc");
-    QString abc1;
-    Seq(SkipMany(Space()), Str("abc", &abc1))->parse(input1);
+
+    SkipMany(Space())->parse(input1);
+    QString abc1 = Str("abc")->parse(input1);
     QCOMPARE(abc1, QString("abc"));
 
     Input input2("abc");
-    QString abc2;
-    Seq(SkipMany(Space()), Str("abc", &abc2))->parse(input2);
+    SkipMany(Space())->parse(input2);
+    QString abc2 = Str("abc")->parse(input2);
     QCOMPARE(abc2, QString("abc"));
 }
 
 void QParsecTestTest::testSkipMany1() {
     Input input1("   abc");
-    QString abc1;
-    Seq(SkipMany1(Space()), Str("abc", &abc1))->parse(input1);
+    SkipMany1(Space())->parse(input1);
+    QString abc1 = Str("abc")->parse(input1);
     QCOMPARE(abc1, QString("abc"));
 
     Input input2("abc");
-    QString abc2;
-    QVERIFY_EXCEPTION_THROWN(Seq(SkipMany1(Space()), Str("abc", &abc2))->parse(input2), ParserException);
+    QVERIFY_EXCEPTION_THROWN(Seq(SkipMany1(Space()), Str("abc"))->parse(input2), ParserException);
 }
 
 void QParsecTestTest::testChoice() {

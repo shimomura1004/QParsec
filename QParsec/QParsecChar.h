@@ -13,7 +13,7 @@ namespace chars {
 struct ParserOneOf : Parser<QChar> {
     QString chars_;
 
-    ParserOneOf(QString chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
+    ParserOneOf(QString chars) : Parser(), chars_(chars) {}
 
     QChar parse(Input &input) {
         if (input.isEmpty())
@@ -21,15 +21,14 @@ struct ParserOneOf : Parser<QChar> {
         if (!chars_.contains(input[0]))
             throw ParserException(input.index(), QStringLiteral("Expected one of '%1' but got '%2'").arg(chars_, QString(input[0])));
 
-        QChar c = input.consume(1)[0];
-        return setOut(c);
+        return input.consume(1)[0];
     }
 };
 
 struct ParserNoneOf : Parser<QChar> {
     QString chars_;
 
-    ParserNoneOf(QString chars, QChar *out = nullptr) : Parser(out), chars_(chars) {}
+    ParserNoneOf(QString chars) : Parser(), chars_(chars) {}
 
     QChar parse(Input &input) {
         if (input.isEmpty())
@@ -37,15 +36,14 @@ struct ParserNoneOf : Parser<QChar> {
         if (chars_.contains(input[0]))
             throw ParserException(input.index(), QStringLiteral("Expected none of '%1' but got '%2'").arg(chars_, QString(input[0])));
 
-        QChar c = input.consume(1)[0];
-        return setOut(c);
+        return input.consume(1)[0];
     }
 };
 
 struct ParserChar : Parser<QChar> {
     QChar c_;
 
-    ParserChar(QChar c, QChar *out = nullptr) : Parser(out), c_(c) {}
+    ParserChar(QChar c) : Parser(), c_(c) {}
 
     QChar parse(Input &input) {
         if (input.isEmpty())
@@ -54,14 +52,14 @@ struct ParserChar : Parser<QChar> {
             throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(QString(c_), QString(input[0])));
 
         input.consume(1);
-        return setOut(c_);
+        return c_;
     }
 };
 
 struct ParserStr : Parser<QString> {
     QString s_;
 
-    ParserStr(QString s, QString *out = nullptr) : Parser(out), s_(s) {}
+    ParserStr(QString s) : Parser(), s_(s) {}
 
     QString parse(Input &input) {
         if (input.isEmpty())
@@ -70,74 +68,73 @@ struct ParserStr : Parser<QString> {
             throw ParserException(input.index(), QStringLiteral("Expected '%1' but got '%2'").arg(s_, input.left(s_.length() - 1)));
 
         input.consume(s_.length());
-        return setOut(s_);
+        return s_;
     }
 };
 
 struct ParserAnyChar : Parser<QChar> {
-    ParserAnyChar(QChar *out = nullptr) : Parser(out) {}
+    ParserAnyChar() : Parser() {}
 
     QChar parse(Input &input) {
         if (input.isEmpty())
             throw ParserException(input.index(), "Unexpected end of input");
 
-        QChar c = input.consume(1)[0];
-        return setOut(c);
+        return input.consume(1)[0];
     }
 };
 
-ParserOneOf *OneOf(QString chars, QChar *out = nullptr)
-{ return new ParserOneOf(chars, out); }
+ParserOneOf *OneOf(QString chars)
+{ return new ParserOneOf(chars); }
 
-ParserNoneOf *NoneOf(QString chars, QChar *out = nullptr)
-{ return new ParserNoneOf(chars, out); }
+ParserNoneOf *NoneOf(QString chars)
+{ return new ParserNoneOf(chars); }
 
-ParserChar *Char(QChar c, QChar *out = nullptr)
-{ return new ParserChar(c, out); }
+ParserChar *Char(QChar c)
+{ return new ParserChar(c); }
 
-ParserStr *Str(QString s, QString *out = nullptr)
-{ return new ParserStr(s, out); }
+ParserStr *Str(QString s)
+{ return new ParserStr(s); }
 
-ParserAnyChar *AnyChar(QChar *out = nullptr)
-{ return new ParserAnyChar(out); }
+ParserAnyChar *AnyChar()
+{ return new ParserAnyChar(); }
 
-Parser<QChar> *Space(QChar *out = nullptr)
-{ return OneOf(" \v\f\t\r\n", out); }
+Parser<QChar> *Space()
+{ return OneOf(" \v\f\t\r\n"); }
 
-Parser<QString> *Spaces(QString *out = nullptr)
-{ return combinators::Many(Space(), out); }
+Parser<QString> *Spaces()
+{ return combinators::Many(Space()); }
 
-Parser<QChar> *Newline(QChar *out = nullptr)
-{ return Char('\n', out); }
+Parser<QChar> *Newline()
+{ return Char('\n'); }
 
-Parser<QChar> *Tab(QChar *out = nullptr)
-{ return Char('\t', out); }
+Parser<QChar> *Tab()
+{ return Char('\t'); }
 
-Parser<QChar> *Upper(QChar *out = nullptr)
-{ return OneOf("ABCDEFGHIJKLMNOPQRSTUVWXYZ", out); }
+Parser<QChar> *Upper()
+{ return OneOf("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); }
 
-Parser<QChar> *Lower(QChar *out = nullptr)
-{ return OneOf("abcdefghijklmnopqrstuvwxyz", out); }
+Parser<QChar> *Lower()
+{ return OneOf("abcdefghijklmnopqrstuvwxyz"); }
 
-Parser<QChar> *Alphanum(QChar *out = nullptr)
-{ return OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", out); }
+Parser<QChar> *Alphanum()
+{ return OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"); }
 
-Parser<QChar> *Letter(QChar *out = nullptr)
-{ return OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", out); }
+Parser<QChar> *Letter()
+{ return OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"); }
 
-Parser<QChar> *Digit(QChar *out = nullptr)
-{ return OneOf("0123456789", out); }
+Parser<QChar> *Digit()
+{ return OneOf("0123456789"); }
 
-Parser<QChar> *Hexadigit(QChar *out = nullptr)
-{ return OneOf("0123456789abcdefABCDEF", out); }
+Parser<QChar> *Hexadigit()
+{ return OneOf("0123456789abcdefABCDEF"); }
 
-Parser<QChar> *Octdigit(QChar *out = nullptr)
-{ return OneOf("01234567", out); }
+Parser<QChar> *Octdigit()
+{ return OneOf("01234567"); }
 
 struct ParserSatisfy : Parser<QChar> {
     bool(*judge_)(QChar);
 
-    ParserSatisfy(bool(*judge)(QChar), QChar *out) : Parser<QChar>(out), judge_(judge) {}
+    ParserSatisfy(bool(*judge)(QChar)) : Parser<QChar>(), judge_(judge) {}
 
     QChar parse(Input &input) {
         if (input.isEmpty())
@@ -145,13 +142,12 @@ struct ParserSatisfy : Parser<QChar> {
         if (!judge_(input[0]))
             throw ParserException(input.index(), QStringLiteral("Not satisfied: %1").arg(input[0]));
 
-        QChar c = input.consume(1)[0];
-        return setOut(c);
+        return input.consume(1)[0];
     }
 };
 
-Parser<QChar> *Satisfy(bool(*judge)(QChar), QChar *out = nullptr)
-{ return new ParserSatisfy(judge, out); }
+Parser<QChar> *Satisfy(bool(*judge)(QChar))
+{ return new ParserSatisfy(judge); }
 
 }
 }

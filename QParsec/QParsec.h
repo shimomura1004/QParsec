@@ -50,23 +50,9 @@ struct ParserException {
 
 template<typename T>
 struct Parser {
-    T *out_;
-
-    Parser(T *out = nullptr) : out_(out) {}
+    Parser() {}
     virtual ~Parser() {}
     virtual T parse(Input &input) = 0;
-
-    inline T setOut(T &result) {
-        if (out_)
-            *out_ = result;
-        return result;
-    }
-};
-
-template<>
-struct Parser<void> {
-    virtual ~Parser() {}
-    virtual void parse(Input &input) = 0;
 };
 
 template<typename T>
@@ -163,7 +149,7 @@ struct ParserLeft : Parser<T1> {
     Parser<T1> *p1_;
     Parser<T2> *p2_;
 
-    ParserLeft(Parser<T1> *p1, Parser<T2> *p2, T1 *out) : Parser<T1>(out), p1_(p1), p2_(p2) {}
+    ParserLeft(Parser<T1> *p1, Parser<T2> *p2) : Parser<T1>(), p1_(p1), p2_(p2) {}
     ~ParserLeft() {
         delete p1_;
         delete p2_;
@@ -172,24 +158,7 @@ struct ParserLeft : Parser<T1> {
     T1 parse(Input &input) {
         T1 result = p1_->parse(input);
         p2_->parse(input);
-        return Parser<T1>::setOut(result);
-    }
-};
-template<typename T>
-struct ParserLeft<T, void> : Parser<T> {
-    Parser<T> *p1_;
-    Parser<void> *p2_;
-
-    ParserLeft(Parser<T> *p1, Parser<void> *p2, T *out) : Parser<T>(out), p1_(p1), p2_(p2) {}
-    ~ParserLeft() {
-        delete p1_;
-        delete p2_;
-    }
-
-    T parse(Input &input) {
-        T result = p1_->parse(input);
-        p2_->parse(input);
-        return Parser<T>::setOut(result);
+        return result;
     }
 };
 
@@ -198,7 +167,7 @@ struct ParserRight : Parser<T2> {
     Parser<T1> *p1_;
     Parser<T2> *p2_;
 
-    ParserRight(Parser<T1> *p1, Parser<T2> *p2, T2 *out) : Parser<T2>(out), p1_(p1), p2_(p2) {}
+    ParserRight(Parser<T1> *p1, Parser<T2> *p2) : Parser<T2>(), p1_(p1), p2_(p2) {}
     ~ParserRight() {
         delete p1_;
         delete p2_;
@@ -207,24 +176,7 @@ struct ParserRight : Parser<T2> {
     T2 parse(Input &input) {
         p1_->parse(input);
         T2 result = p2_->parse(input);
-        return Parser<T2>::setOut(result);
-    }
-};
-template<typename T>
-struct ParserRight<void, T> : Parser<T> {
-    Parser<void> *p1_;
-    Parser<T> *p2_;
-
-    ParserRight(Parser<void> *p1, Parser<T> *p2, T *out) : Parser<T>(out), p1_(p1), p2_(p2) {}
-    ~ParserRight() {
-        delete p1_;
-        delete p2_;
-    }
-
-    T parse(Input &input) {
-        p1_->parse(input);
-        T result = p2_->parse(input);
-        return Parser<T>::setOut(result);
+        return result;
     }
 };
 
@@ -252,12 +204,11 @@ struct ParserApply : Parser<T2> {
     Parser<T1> *p_;
     T2 (*func_)(T1);
 
-    ParserApply(Parser<T1> *p, T2 (*func)(T1), T2 *out) : Parser<T2>(out), p_(p), func_(func) {}
+    ParserApply(Parser<T1> *p, T2 (*func)(T1)) : Parser<T2>(), p_(p), func_(func) {}
     virtual ~ParserApply() { delete p_; }
 
     T2 parse(Input &input) {
-        T2 result = func_(p_->parse(input));
-        return Parser<T2>::setOut(result);
+        return func_(p_->parse(input));
     }
 };
 template<typename T2>
@@ -265,12 +216,11 @@ struct ParserApply<void, T2> : Parser<T2> {
     Parser<void> *p_;
     T2 (*func_)();
 
-    ParserApply(Parser<void> *p, T2 (*func)(), T2 *out) : Parser<T2>(out), p_(p), func_(func) {}
+    ParserApply(Parser<void> *p, T2 (*func)()) : Parser<T2>(), p_(p), func_(func) {}
     virtual ~ParserApply() { delete p_; }
 
     T2 parse(Input &input) {
-        p_->parse(input);
-        return Parser<T2>::setOut(func_());
+        return p_->parse(input);
     }
 };
 
@@ -280,7 +230,7 @@ struct ParserApply2 : Parser<T2> {
     Parser<T2> *p2_;
     T3(*func_)(T1, T2);
 
-    ParserApply2(Parser<T1> *p1, Parser<T2> *p2, T3 (*func)(T1, T2), T3 *out) : Parser<T3>(out), p1_(p1), p2_(p2), func_(func) {}
+    ParserApply2(Parser<T1> *p1, Parser<T2> *p2, T3 (*func)(T1, T2)) : Parser<T3>(), p1_(p1), p2_(p2), func_(func) {}
     virtual ~ParserApply2() {
         delete p1_;
         delete p2_;
@@ -289,8 +239,7 @@ struct ParserApply2 : Parser<T2> {
     T3 parse(Input &input) {
         auto r1 = p1_->parse(input);
         auto r2 = p2_->parse(input);
-        auto result = func_(r1, r2);
-        return Parser<T3>::setOut(result);
+        return func_(r1, r2);
     }
 };
 
@@ -298,11 +247,10 @@ template<typename T>
 struct ParserLazy : Parser<T> {
     Parser<T>*(*p_)();
 
-    ParserLazy(Parser<T>* (*p)(), T *out) : Parser<T>(out), p_(p) {}
+    ParserLazy(Parser<T>* (*p)()) : Parser<T>(), p_(p) {}
 
     T parse(Input &input) {
-        T result = p_()->parse(input);
-        return Parser<T>::setOut(result);
+        return p_()->parse(input);
     }
 };
 
@@ -329,24 +277,24 @@ ParserHelp<T> *Help(Parser<T> *p, const QString &message)
 { return new ParserHelp<T>(p, message); }
 
 template<typename T1, typename T2>
-ParserApply<T1, T2> *Apply(Parser<T1> *p, T2(*func)(T1), T2 *out = nullptr)
-{ return new ParserApply<T1, T2>(p, func, out); }
+ParserApply<T1, T2> *Apply(Parser<T1> *p, T2(*func)(T1))
+{ return new ParserApply<T1, T2>(p, func); }
 
 template<typename T1, typename T2, typename T3>
-ParserApply2<T1, T2, T3> *Apply2(Parser<T1> *p1, Parser<T2> *p2, T3(*func)(T1, T2), T3 *out = nullptr)
-{ return new ParserApply2<T1, T2, T3>(p1, p2, func, out); }
+ParserApply2<T1, T2, T3> *Apply2(Parser<T1> *p1, Parser<T2> *p2, T3(*func)(T1, T2))
+{ return new ParserApply2<T1, T2, T3>(p1, p2, func); }
 
 template<typename T1, typename T2>
-ParserLeft<T1, T2> *Left(Parser<T1> *p1, Parser<T2> *p2, T1 *out = nullptr)
-{ return new ParserLeft<T1, T2>(p1, p2, out); }
+ParserLeft<T1, T2> *Left(Parser<T1> *p1, Parser<T2> *p2)
+{ return new ParserLeft<T1, T2>(p1, p2); }
 
 template<typename T1, typename T2>
-ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2, T2 *out = nullptr)
-{ return new ParserRight<T1, T2>(p1, p2, out); }
+ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2)
+{ return new ParserRight<T1, T2>(p1, p2); }
 
 template<typename T>
-ParserLazy<T> *Lazy(Parser<T>* (*p)(), T *out = nullptr)
-{ return new ParserLazy<T>(p, out); }
+ParserLazy<T> *Lazy(Parser<T>* (*p)())
+{ return new ParserLazy<T>(p); }
 
 }
 
