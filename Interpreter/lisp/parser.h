@@ -394,11 +394,18 @@ struct ParserLet : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         Lexeme(Char('('))->parse(input);
         Lexeme(Str("let"))->parse(input);
+
+        QString name;
+        try {
+            name = Lexeme(Variable())->parse(input);
+        }
+        catch (const ParserException &) {}
+
         QList<QPair<QString, ast::SharedVal>> bindingspec = Lexeme(Parens(Many(BindingSpec())))->parse(input);
         QList<ast::SharedVal> body = Lexeme(Body())->parse(input);
         Lexeme(Char(')'))->parse(input);
 
-        return ast::Let::create(bindingspec, body);
+        return ast::Let::create(name, bindingspec, body);
     }
 };
 Parser<ast::SharedVal> *Let() { return new ParserLet(); }

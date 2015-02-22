@@ -347,8 +347,8 @@ struct Let : Val {
     QList<QPair<QString, SharedVal>> bindings;
     QList<SharedVal> sequence;
 
-    static SharedVal create(QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) { return QSharedPointer<Let>(new Let(b, s)); }
-    Let(QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) : bindings(b), sequence(s) {}
+    static SharedVal create(QString n, QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) { return QSharedPointer<Let>(new Let(n, b, s)); }
+    Let(QString n, QList<QPair<QString, SharedVal>> b, QList<SharedVal> s) : name(n), bindings(b), sequence(s) {}
 
     QString toString() {
         QStringList bindingstr;
