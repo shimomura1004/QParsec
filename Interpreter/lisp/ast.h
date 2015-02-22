@@ -122,7 +122,7 @@ struct Set : Val {
     static SharedVal create(QString v, SharedVal e) { return QSharedPointer<Set>(new Set(v, e)); }
     Set(QString v, SharedVal e) : var(v), exp(e) {}
     QString toString() {
-        return QStringLiteral("set! %1 %2)").arg(var, exp->toString());
+        return QStringLiteral("(set! %1 %2)").arg(var, exp->toString());
     }
 };
 
@@ -427,6 +427,10 @@ struct Do : Val {
         QStringList is;
         Q_FOREACH(const auto& i, iterationspecs)
             is.push_back(i->toString());
+        if (commands.isEmpty()) {
+            return QStringLiteral("(do (%1) (%2 %3))").arg(is.join(" "), test->toString(), doresult->toString());
+        }
+
         QStringList cs;
         Q_FOREACH(const auto& c, commands)
             cs.push_back(c->toString());
