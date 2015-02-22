@@ -53,6 +53,8 @@ Parser<ast::SharedVal> *Identifier() {
     return Apply(scheme::Identifier(), f);
 }
 
+Parser<QString> *Variable() { return scheme::Identifier(); }
+
 namespace datum {
 Parser<ast::SharedVal> *Datum();
 
@@ -172,10 +174,15 @@ Parser<ast::SharedVal> *ProcedureCall() {
     return Apply(Parens(Many1(Lazy(Expression))), f);
 }
 
+Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Expression()); }
+Parser<QList<ast::SharedVal>> *Body() {
+    // todo: support definition inside lambda
+    // Many(Definition())
+    return Sequence();
+}
+
 struct ParserLambda : Parser<ast::SharedVal> {
     struct ParserFormals : Parser<QPair<QStringList, QString>> {
-        Parser<QString> *Variable() { return scheme::Identifier(); }
-
         QPair<QStringList, QString> parse(Input &input) {
             try {
                 auto vars = Try(Parens(Many(Lexeme(Variable()))))->parse(input);
@@ -197,13 +204,6 @@ struct ParserLambda : Parser<ast::SharedVal> {
         }
     };
     Parser<QPair<QStringList, QString>> *Formals() { return new ParserFormals(); }
-
-    Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Expression()); }
-    Parser<QList<ast::SharedVal>> *Body() {
-        // todo: support definition inside lambda
-        // Many(Definition())
-        return Sequence();
-    }
 
     ast::SharedVal parse(Input &input) {
         Lexeme(Char('('))->parse(input);
@@ -386,29 +386,44 @@ Parser<ast::SharedVal> *Or() {
     return Apply(Parens(Right(Lexeme(Str("or")), Many(Lazy(Expression)))), ast::Or::create);
 }
 
+Parser<QPair<QString, ast::SharedVal>> *BindingSpec() {
+    return Lexeme(Parens(Pair(Lexeme(Variable()), Lexeme(Expression()))));
+}
+
+struct ParserLet : Parser<ast::SharedVal> {
+    ast::SharedVal parse(Input &input) {
+        Lexeme(Char('('))->parse(input);
+        Lexeme(Str("let"))->parse(input);
+        QList<QPair<QString, ast::SharedVal>> bindingspec = Lexeme(Parens(Many(BindingSpec())))->parse(input);
+        QList<ast::SharedVal> body = Lexeme(Body())->parse(input);
+        Lexeme(Char(')'))->parse(input);
+
+        return ast::Let::create(bindingspec, body);
+    }
+};
+Parser<ast::SharedVal> *Let() { return new ParserLet(); }
+
 struct ParserDerivedExpression : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         return Choice({ Try(Cond()),
                         Try(Case()),
                         Try(And()),
                         Try(Or()),
+                        Try(Let())
                       })->parse(input);
 
-        try {
-            Lexeme(Str("let"))->parse(input);
-        } catch (const ParserException &) {}
 
-        try {
-            Lexeme(Str("begin"))->parse(input);
-        } catch (const ParserException &) {}
+//        try {
+//            Lexeme(Str("begin"))->parse(input);
+//        } catch (const ParserException &) {}
 
-        try {
-            Lexeme(Str("do"))->parse(input);
-        } catch (const ParserException &) {}
+//        try {
+//            Lexeme(Str("do"))->parse(input);
+//        } catch (const ParserException &) {}
 
-        try {
-            Lexeme(Str("delay"))->parse(input);
-        } catch (const ParserException &) {}
+//        try {
+//            Lexeme(Str("delay"))->parse(input);
+//        } catch (const ParserException &) {}
 
         // todo: support quasification
     }
