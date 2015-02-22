@@ -36,14 +36,33 @@ struct ParserIdentifier : Parser<QString> {
 };
 Parser<QString> *Identifier() { return new ParserIdentifier(); }
 
+const QStringList ExpressionKeyword = {
+    "quote", "lambda", "if", "set!", "begin", "cond", "and", "or", "case",
+    "let", "let*", "letrec", "do", "delay", "quasiquote"
+};
+const QStringList SyntacticKeyword = {
+    "else", "=>", "define", "unquote", "unquote-splicing"
+};
+
+struct ParserVariable : Parser<QString> {
+    QString parse(Input &input) {
+        input.preserve();
+
+        auto ident = Identifier()->parse(input);
+        if (SyntacticKeyword.contains(ident) || ExpressionKeyword.contains(ident)) {
+            input.restore();
+            throw ParserException(input.index(), QStringLiteral("%1 is reserved identifier").arg(ident));
+        }
+        return ident;
+    }
+};
+Parser<QString> *Variable() { return new ParserVariable(); }
 
 Parser<bool> *Boolean() {
     bool(*convertTrue)(QString) = [](QString s){ return s == "#t"; };
     bool(*convertFalse)(QString) = [](QString s){ return s != "#f"; };
     return Choice({Apply(Str("#t"), convertTrue), Apply(Str("#f"), convertFalse)});
 }
-
-
 
 struct SchemeNumber {
     int64_t gcd(int64_t n, int64_t m){return m==0?n:gcd(m,n%m);}
