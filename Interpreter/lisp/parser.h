@@ -413,6 +413,39 @@ Parser<ast::SharedVal> *Begin() {
     return Apply(Parens(Right(Lexeme(Str("begin")), Sequence())), f);
 }
 
+struct ParserDo : Parser<ast::SharedVal> {
+    struct ParserIterationSpec : Parser<QSharedPointer<ast::Do::IterationSpec>> {
+        QSharedPointer<ast::Do::IterationSpec> parse(Input &input) {
+            Lexeme(Char('('))->parse(input);
+            auto var = Lexeme(Variable())->parse(input);
+            auto init = Expression()->parse(input);
+
+            try {
+                auto step = Expression()->parse(input);
+                Lexeme(Char(')'))->parse(input);
+                return ast::Do::IterationSpecWithStep::create(var, init, step);
+            }
+            catch (const ParserException&) {
+                Lexeme(Char(')'))->parse(input);
+                return ast::Do::IterationSpec::create(var, init);
+            }
+        }
+    };
+    Parser<QSharedPointer<ast::Do::IterationSpec>> *IterationSpec() { return new ParserIterationSpec(); }
+
+    ast::SharedVal parse(Input &input) {
+        Lexeme(Char('('))->parse(input);
+        Lexeme(Str("do"))->parse(input);
+        auto iterationSpecs = Lexeme(Parens(Many(IterationSpec())))->parse(input);
+        auto test_doresult = Lexeme(Parens(Pair(Expression(), Expression())))->parse(input);
+        auto commands = Lexeme(Many(Expression()))->parse(input);
+        Lexeme(Char(')'))->parse(input);
+
+        return ast::Do::create(iterationSpecs, test_doresult.first, test_doresult.second, commands);
+    }
+};
+Parser<ast::SharedVal> *Do() { return new ParserDo(); }
+
 struct ParserDerivedExpression : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         return Choice({ Try(Cond()),
@@ -420,14 +453,10 @@ struct ParserDerivedExpression : Parser<ast::SharedVal> {
                         Try(And()),
                         Try(Or()),
                         Try(Let()),
-                        Try(Begin())
+                        Try(Begin()),
+                        Try(Do())
                       })->parse(input);
 
-//        try {
-//            Lexeme(Str("do"))->parse(input);
-//        } catch (const ParserException &) {}
-
-//        try {
 //            Lexeme(Str("delay"))->parse(input);
 //        } catch (const ParserException &) {}
 
