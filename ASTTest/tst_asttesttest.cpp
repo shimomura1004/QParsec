@@ -54,7 +54,7 @@ void ASTTestTest::testCreate()
                             { Symbol::create("x") },
                             ast::Let::Normal
                             )->toString();
-    qDebug() << Sequence::create({Integer::create(3), String::create("hello")})->toString();
+    qDebug() << Begin::create({Integer::create(3), String::create("hello")})->toString();
 }
 
 void ASTTestTest::testBasic()

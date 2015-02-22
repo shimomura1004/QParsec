@@ -377,15 +377,15 @@ struct Let : Val {
     }
 };
 
-struct Sequence : Val {
+struct Begin : Val {
     QList<SharedVal> vals;
-    static SharedVal create(QList<SharedVal> v) { return QSharedPointer<Sequence>(new Sequence(v)); }
-    Sequence(QList<SharedVal> v) : vals(v) {}
+    static SharedVal create(QList<SharedVal> v) { return QSharedPointer<Begin>(new Begin(v)); }
+    Begin(QList<SharedVal> v) : vals(v) {}
     QString toString() {
         QStringList result;
         Q_FOREACH(const auto& v, vals)
             result.push_back(v->toString());
-        return QStringLiteral("(%1)").arg(result.join(" "));
+        return QStringLiteral("(begin %1)").arg(result.join(" "));
     }
 };
 

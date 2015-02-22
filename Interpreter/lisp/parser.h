@@ -244,10 +244,7 @@ struct ParserAssignment : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Assignment() { return new ParserAssignment(); }
 
-
 struct ParserCond : Parser<ast::SharedVal> {
-    static Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Lazy(Expression)); }
-
     struct ParserCondClause : Parser<QSharedPointer<ast::Cond::CondClause>> {
         QSharedPointer<ast::Cond::CondClause> parse(Input &input) {
             Lexeme(Char('('))->parse(input);
@@ -322,8 +319,6 @@ struct ParserCond : Parser<ast::SharedVal> {
 Parser<ast::SharedVal> *Cond() { return new ParserCond(); }
 
 struct ParserCase : Parser<ast::SharedVal> {
-    static Parser<QList<ast::SharedVal>> *Sequence() { return Many1(Lazy(Expression)); }
-
     struct ParserCaseClause : Parser<QSharedPointer<ast::Case::CaseClause>> {
         QSharedPointer<ast::Case::CaseClause> parse(Input &input) {
             Lexeme(Char('('))->parse(input);
@@ -413,19 +408,20 @@ struct ParserLet : Parser<ast::SharedVal> {
 };
 Parser<ast::SharedVal> *Let() { return new ParserLet(); }
 
+Parser<ast::SharedVal> *Begin() {
+    ast::SharedVal(*f)(QList<ast::SharedVal>)  = [](QList<ast::SharedVal> seqs){return ast::Begin::create(seqs);};
+    return Apply(Parens(Right(Lexeme(Str("begin")), Sequence())), f);
+}
+
 struct ParserDerivedExpression : Parser<ast::SharedVal> {
     ast::SharedVal parse(Input &input) {
         return Choice({ Try(Cond()),
                         Try(Case()),
                         Try(And()),
                         Try(Or()),
-                        Try(Let())
+                        Try(Let()),
+                        Try(Begin())
                       })->parse(input);
-
-
-//        try {
-//            Lexeme(Str("begin"))->parse(input);
-//        } catch (const ParserException &) {}
 
 //        try {
 //            Lexeme(Str("do"))->parse(input);
