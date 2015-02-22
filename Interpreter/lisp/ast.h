@@ -392,22 +392,22 @@ struct Begin : Val {
 struct Do : Val {
     struct IterationSpec {
         QString var;
-        ast::SharedVal init;
-        static QSharedPointer<IterationSpec> create(QString v, ast::SharedVal i) {
+        SharedVal init;
+        static QSharedPointer<IterationSpec> create(QString v, SharedVal i) {
             return QSharedPointer<IterationSpec>(new IterationSpec(v, i));
         }
-        IterationSpec(QString v, ast::SharedVal i) : var(v), init(i) {}
+        IterationSpec(QString v, SharedVal i) : var(v), init(i) {}
         virtual ~IterationSpec() {}
         virtual QString toString() {
             return QStringLiteral("(%1 %2)").arg(var, init->toString());
         }
     };
     struct IterationSpecWithStep : IterationSpec {
-        ast::SharedVal step;
-        static QSharedPointer<IterationSpecWithStep> create(QString v, ast::SharedVal i, ast::SharedVal s) {
+        SharedVal step;
+        static QSharedPointer<IterationSpecWithStep> create(QString v, SharedVal i, SharedVal s) {
             return QSharedPointer<IterationSpecWithStep>(new IterationSpecWithStep(v, i, s));
         }
-        IterationSpecWithStep(QString v, ast::SharedVal i, ast::SharedVal s) : IterationSpec(v, i), step(s) {}
+        IterationSpecWithStep(QString v, SharedVal i, SharedVal s) : IterationSpec(v, i), step(s) {}
         virtual ~IterationSpecWithStep() {}
         virtual QString toString() {
             return QStringLiteral("(%1 %2 %3)").arg(var, init->toString(), step->toString());
@@ -415,14 +415,14 @@ struct Do : Val {
     };
 
     QList<QSharedPointer<IterationSpec>> iterationspecs;
-    ast::SharedVal test;
-    ast::SharedVal doresult;
-    QList<ast::SharedVal> commands;
+    SharedVal test;
+    SharedVal doresult;
+    QList<SharedVal> commands;
 
-    static SharedVal create(QList<QSharedPointer<IterationSpec>> i, ast::SharedVal t, ast::SharedVal d, QList<ast::SharedVal> c) {
+    static SharedVal create(QList<QSharedPointer<IterationSpec>> i, SharedVal t, SharedVal d, QList<SharedVal> c) {
         return QSharedPointer<Do>(new Do(i, t, d, c));
     }
-    Do(QList<QSharedPointer<IterationSpec>> i, ast::SharedVal t, ast::SharedVal d, QList<ast::SharedVal> c) : iterationspecs(i), test(t), doresult(d), commands(c) {}
+    Do(QList<QSharedPointer<IterationSpec>> i, SharedVal t, SharedVal d, QList<SharedVal> c) : iterationspecs(i), test(t), doresult(d), commands(c) {}
     QString toString() {
         QStringList is;
         Q_FOREACH(const auto& i, iterationspecs)
