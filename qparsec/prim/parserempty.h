@@ -4,6 +4,7 @@
 #include "parser.h"
 
 namespace qparsec {
+namespace prim {
 
 class ParserEmpty : public Parser<void> {
     void parse(Input &) {}
@@ -12,6 +13,7 @@ class ParserEmpty : public Parser<void> {
 ParserEmpty *Empty()
 { return new ParserEmpty(); }
 
+}
 }
 
 #endif // PARSEREMPTY

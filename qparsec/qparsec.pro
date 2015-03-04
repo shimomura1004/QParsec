@@ -24,19 +24,6 @@ HEADERS += \
     parser.h \
     input.h \
     parserexception.h \
-    parserempty.h \
-    parserreturn.h \
-    parserignore.h \
-    parserseq.h \
-    parserfail.h \
-    parsertry.h \
-    parserleft.h \
-    parserright.h \
-    parserpair.h \
-    parserhelp.h \
-    parserapply.h \
-    parserapply2.h \
-    parserlazy.h \
     qparsec.h \
     character/parseroneof.h \
     character/parsernoneof.h \
@@ -57,4 +44,18 @@ HEADERS += \
     combinator/parsereof.h \
     combinator/parserchain.h \
     combinator/parsrelookahead.h \
-    combinator/combinator.h
+    combinator/combinator.h \
+    prim/parserlazy.h \
+    prim/parserapply.h \
+    prim/parserapply2.h \
+    prim/parserfail.h \
+    prim/parserhelp.h \
+    prim/parserleft.h \
+    prim/parserpair.h \
+    prim/parserright.h \
+    prim/parserreturn.h \
+    prim/parsertry.h \
+    prim/parserempty.h \
+    prim/parserignore.h \
+    prim/parserseq.h \
+    prim/prim.h

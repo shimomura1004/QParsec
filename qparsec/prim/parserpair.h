@@ -5,6 +5,7 @@
 #include <QPair>
 
 namespace qparsec {
+namespace prim {
 
 template<typename T1, typename T2>
 class ParserPair : public Parser<QPair<T1, T2>> {
@@ -30,6 +31,7 @@ template<typename T1, typename T2>
 ParserPair<T1, T2> *Pair(Parser<T1> *p1, Parser<T2> *p2)
 { return new ParserPair<T1, T2>(p1, p2); }
 
+}
 }
 
 #endif // PARSERPAIR

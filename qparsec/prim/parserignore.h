@@ -4,6 +4,7 @@
 #include "parser.h"
 
 namespace qparsec {
+namespace prim {
 
 template<typename T>
 class ParserIgnore : public Parser<T>
@@ -24,6 +25,7 @@ template<typename T>
 ParserIgnore<T> *Ignore(Parser<T> *p)
 { return new ParserIgnore<T>(p); }
 
+}
 }
 
 #endif // PARSERIGNORE_H

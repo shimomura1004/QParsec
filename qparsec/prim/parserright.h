@@ -4,6 +4,7 @@
 #include "parser.h"
 
 namespace qparsec {
+namespace prim {
 
 template<typename T1, typename T2>
 class ParserRight : Parser<T2> {
@@ -29,6 +30,7 @@ template<typename T1, typename T2>
 ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2)
 { return new ParserRight<T1, T2>(p1, p2); }
 
+}
 }
 
 #endif // PARSERRIGHT

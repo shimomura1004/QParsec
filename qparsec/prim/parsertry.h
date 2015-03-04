@@ -5,6 +5,7 @@
 #include "parserexception.h"
 
 namespace qparsec {
+namespace prim {
 
 template<typename T>
 class ParserTry : public Parser<T> {
@@ -56,6 +57,7 @@ template<typename T>
 ParserTry<T> *Try(Parser<T> *p)
 { return new ParserTry<T>(p); }
 
+}
 }
 
 #endif // PARSERTRY

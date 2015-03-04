@@ -4,6 +4,7 @@
 #include "parser.h"
 
 namespace qparsec {
+namespace prim {
 
 template<typename... Ts>
 class ParserSeq : public Parser<void> {
@@ -29,6 +30,7 @@ template<typename... Ts>
 ParserSeq<Ts...> *Seq(Parser<Ts>*... ps)
 { return new ParserSeq<Ts...>(ps...); }
 
+}
 }
 
 #endif // PARSERSEQ

@@ -5,6 +5,7 @@
 #include <input.h>
 
 namespace qparsec {
+namespace prim {
 
 template<typename T>
 class ParserReturn : public Parser<T>
@@ -24,6 +25,7 @@ template<typename T>
 ParserReturn<T> *Return(T v)
 { return new ParserReturn<T>(v); }
 
+}
 }
 
 #endif // PARSERRETURN_H

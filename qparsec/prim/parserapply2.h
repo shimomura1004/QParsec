@@ -4,6 +4,7 @@
 #include "parser.h"
 
 namespace qparsec {
+namespace prim {
 
 template<typename T1, typename T2, typename T3>
 class ParserApply2 : public Parser<T2> {
@@ -30,6 +31,7 @@ template<typename T1, typename T2, typename T3>
 ParserApply2<T1, T2, T3> *Apply2(Parser<T1> *p1, Parser<T2> *p2, T3(*func)(T1, T2))
 { return new ParserApply2<T1, T2, T3>(p1, p2, func); }
 
+}
 }
 
 #endif // PARSERAPPLY2

@@ -3,10 +3,12 @@
 #include "autotest.h"
 
 #include "qparsec.h"
+#include "prim/prim.h"
 #include "character/character.h"
 #include "combinator/combinator.h"
 
 using namespace qparsec;
+using namespace prim;
 using namespace character;
 using namespace combinator;
 

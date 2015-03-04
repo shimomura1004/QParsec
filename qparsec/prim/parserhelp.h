@@ -5,6 +5,7 @@
 #include "parserexception.h"
 
 namespace qparsec {
+namespace prim {
 
 template<typename T>
 class ParserHelp : public Parser<T> {
@@ -31,6 +32,7 @@ template<typename T>
 ParserHelp<T> *Help(Parser<T> *p, const QString &message)
 { return new ParserHelp<T>(p, message); }
 
+}
 }
 
 #endif // PARSERHELP

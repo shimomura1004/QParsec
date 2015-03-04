@@ -4,6 +4,7 @@
 #include "parser.h"
 
 namespace qparsec {
+namespace prim {
 
 template<typename T>
 class ParserLazy : public Parser<T> {
@@ -23,6 +24,7 @@ template<typename T>
 ParserLazy<T> *Lazy(Parser<T>* (*p)())
 { return new ParserLazy<T>(p); }
 
+}
 }
 
 #endif // PARSERLAZY

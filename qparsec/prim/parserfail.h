@@ -4,6 +4,7 @@
 #include "parser.h"
 
 namespace qparsec {
+namespace prim {
 
 class ParserFail : public Parser<void> {
 protected:
@@ -20,6 +21,7 @@ public:
 ParserFail *Fail(QString message)
 { return new ParserFail(message); }
 
+}
 }
 
 #endif // PARSERFAIL
