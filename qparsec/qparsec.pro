@@ -25,7 +25,10 @@ SOURCES += \
     prim/parserempty.cpp \
     combinator/parsercount.cpp \
     combinator/parsereof.cpp \
-    combinator/parsermany.cpp
+    combinator/parsermany.cpp \
+    language/scheme/parservariable.cpp \
+    language/scheme/parserboolean.cpp \
+    language/scheme/parsernumber.cpp
 
 HEADERS += \
     parser.h \
@@ -66,5 +69,9 @@ HEADERS += \
     prim/parserignore.h \
     prim/parserseq.h \
     prim/prim.h \
+    language/scheme/parseridentifier.h \
+    language/scheme/parservariable.h \
+    language/scheme/oldscheme.h \
     language/scheme/scheme.h \
-    language/scheme/parseridentifier.h
+    language/scheme/parserboolean.h \
+    language/scheme/parsernumber.h
