@@ -8,3 +8,6 @@ QChar qparsec::character::ParserAnyChar::parse(qparsec::Input &input) {
 
     return input.consume(1)[0];
 }
+
+qparsec::character::ParserAnyChar *qparsec::character::AnyChar()
+{ return new ParserAnyChar(); }

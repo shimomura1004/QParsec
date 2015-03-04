@@ -7,7 +7,7 @@ namespace qparsec {
 namespace prim {
 
 template<typename T1, typename T2>
-class ParserRight : Parser<T2> {
+class ParserRight : public Parser<T2> {
 protected:
     Parser<T1> *p1_;
     Parser<T2> *p2_;

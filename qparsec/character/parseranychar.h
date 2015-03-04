@@ -13,8 +13,7 @@ public:
     QChar parse(Input &input);
 };
 
-ParserAnyChar *AnyChar()
-{ return new ParserAnyChar(); }
+ParserAnyChar *AnyChar();
 
 }
 }

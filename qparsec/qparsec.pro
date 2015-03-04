@@ -18,7 +18,8 @@ SOURCES += \
     character/parserstr.cpp \
     character/parseranychar.cpp \
     character/parserspace.cpp \
-    character/parsersatisfy.cpp
+    character/parsersatisfy.cpp \
+    language/scheme/scheme.cpp
 
 HEADERS += \
     parser.h \
@@ -58,4 +59,5 @@ HEADERS += \
     prim/parserempty.h \
     prim/parserignore.h \
     prim/parserseq.h \
-    prim/prim.h
+    prim/prim.h \
+    language/scheme/scheme.h

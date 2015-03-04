@@ -7,7 +7,7 @@ namespace qparsec {
 namespace prim {
 
 template<typename T>
-class ParserIgnore : public Parser<T>
+class ParserIgnore : public Parser<void>
 {
 protected:
     Parser<T> *parser_;
