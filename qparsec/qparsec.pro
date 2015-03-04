@@ -19,7 +19,6 @@ SOURCES += \
     character/parseranychar.cpp \
     character/parserspace.cpp \
     character/parsersatisfy.cpp \
-    language/scheme/scheme.cpp \
     language/scheme/parseridentifier.cpp \
     prim/parserfail.cpp \
     prim/parserempty.cpp \
@@ -28,7 +27,9 @@ SOURCES += \
     combinator/parsermany.cpp \
     language/scheme/parservariable.cpp \
     language/scheme/parserboolean.cpp \
-    language/scheme/parsernumber.cpp
+    language/scheme/parsernumber.cpp \
+    language/scheme/parsercharacter.cpp \
+    language/scheme/parserstring.cpp
 
 HEADERS += \
     parser.h \
@@ -71,7 +72,8 @@ HEADERS += \
     prim/prim.h \
     language/scheme/parseridentifier.h \
     language/scheme/parservariable.h \
-    language/scheme/oldscheme.h \
     language/scheme/scheme.h \
     language/scheme/parserboolean.h \
-    language/scheme/parsernumber.h
+    language/scheme/parsernumber.h \
+    language/scheme/parsercharacter.h \
+    language/scheme/parserstring.h

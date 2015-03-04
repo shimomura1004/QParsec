@@ -5,6 +5,8 @@
 #include "parservariable.h"
 #include "parserboolean.h"
 #include "parsernumber.h"
+#include "parsercharacter.h"
+#include "parserstring.h"
 
 #endif // SCHEME_H
 
