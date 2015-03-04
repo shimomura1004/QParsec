@@ -83,67 +83,11 @@ public:
 template<>
 class ParserUReal<10> : public Parser<SchemeNumber> {
 protected:
-    Parser<QString> *SchemeDigit(){return Many1(SDigit<10>());}
-    Parser<QString> *Placeholders(){
-        // '#' is just replaced to '0'
-        QString(*sharpToZero)(QString) = [](QString str){return str.replace('#', '0');};
-        return Apply(Many(Char('#')), sharpToZero);
-    }
+    Parser<QString> *SchemeDigit();
+    Parser<QString> *Placeholders();
 
 public:
-    SchemeNumber parse(Input &input) {
-        try {
-            Try(Char('.'))->parse(input);
-
-            // e.g. ".123##e-23"
-            auto digit = SchemeDigit()->parse(input);
-            auto placeholders = Placeholders()->parse(input);
-            auto suffix = Suffix()->parse(input);
-            double result = QStringLiteral(".%1%2%3").arg(digit, placeholders, suffix).toDouble();
-            return SchemeNumber(result);
-        }
-        catch (const ParserException &) {}
-
-        auto digit = SchemeDigit()->parse(input);
-        auto placeholders = Placeholders()->parse(input);
-
-        try {
-            Char('.')->parse(input);
-
-            // e.g. "123##.23"
-            auto decimal = SchemeDigit()->parse(input);
-            auto decimalplaceholder = Placeholders()->parse(input);
-            auto suffix = Suffix()->parse(input);
-
-            double result = QStringLiteral("%1%2.%3%4%5").arg(digit, placeholders, decimal, decimalplaceholder, suffix).toDouble();
-            return SchemeNumber(result);
-        }
-        catch (const ParserException &) {}
-
-        try {
-            Char('/')->parse(input);
-
-            // e.g. "12/34"
-            auto digitDenom = SchemeDigit()->parse(input);
-            auto placeholdersDenom = Placeholders()->parse(input);
-
-            int64_t num = QStringLiteral("%1%2").arg(digit, placeholders).toLongLong();
-            uint64_t denom = QStringLiteral("%1%2").arg(digitDenom, placeholdersDenom).toLongLong();
-            return SchemeNumber(QPair<int64_t, uint64_t>(num, denom));
-        }
-        catch (const ParserException &) {}
-
-        auto suffix = Suffix()->parse(input);
-
-        if (suffix.isEmpty()) {
-            // e.g. "123", "-12"
-            return SchemeNumber(QStringLiteral("%1%2").arg(digit, placeholders).toLongLong());
-        }
-        else {
-            // e.g. 123e45
-            return SchemeNumber(QStringLiteral("%1%2%3").arg(digit, placeholders, suffix).toDouble());
-        }
-    }
+    SchemeNumber parse(Input &input);
 };
 template<int n> Parser<SchemeNumber> *UReal() { return new ParserUReal<n>(); }
 

@@ -35,20 +35,9 @@ protected:
     Parser<QChar> *p_;
 
 public:
-    ParserMany(Parser<QChar> *p) : Parser(), p_(p) {}
-    ~ParserMany() {delete p_;}
-
-    QString parse(Input &input) {
-        QString result;
-        try {
-            Q_FOREVER {
-                result += p_->parse(input);
-            }
-        }
-        catch (const ParserException &) {
-            return result;
-        }
-    }
+    ParserMany(Parser<QChar> *p);
+    ~ParserMany();
+    QString parse(Input &input);
 };
 
 template<typename T>
@@ -68,15 +57,8 @@ public:
 template<>
 class ParserMany1<QChar> : public ParserMany<QChar> {
 public:
-    ParserMany1(Parser<QChar> *p) : ParserMany<QChar>(p) {}
-
-    QString parse(Input &input) {
-        QString result;
-        result += ParserMany<QChar>::p_->parse(input);
-        result += ParserMany<QChar>::parse(input);
-
-        return result;
-    }
+    ParserMany1(Parser<QChar> *p);
+    QString parse(Input &input);
 };
 
 template<typename T, typename TEnd>
@@ -110,11 +92,13 @@ public:
 template<typename T>
 ParserMany<T> *Many(Parser<T> *p)
 { return new ParserMany<T>(p); }
+
 ParserMany<QChar> *Many(Parser<QChar> *p);
 
 template<typename T>
 ParserMany1<T> *Many1(Parser<T> *p)
 { return new ParserMany1<T>(p); }
+
 ParserMany1<QChar> *Many1(Parser<QChar> *p);
 
 template<typename T, typename TEnd>
