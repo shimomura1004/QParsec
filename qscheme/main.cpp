@@ -1,4 +1,5 @@
 #include <QCoreApplication>
+#include "ast/ast.h"
 
 int main(int argc, char *argv[])
 {
