@@ -39,7 +39,13 @@ SOURCES += main.cpp \
     ast/begin.cpp \
     ast/do.cpp \
     ast/delay.cpp \
-    parser/parserboolean.cpp
+    parser/datum/parsersimpledatum.cpp \
+    parser/datum/parserboolean.cpp \
+    parser/datum/parsercharacter.cpp \
+    parser/datum/parseridentifier.cpp \
+    parser/datum/parsernumber.cpp \
+    parser/datum/parserstring.cpp \
+    parser/datum/parservariable.cpp
 
 HEADERS += \
     ast/val.h \
@@ -71,5 +77,12 @@ HEADERS += \
     ast/do.h \
     ast/delay.h \
     ast/ast.h \
-    parser/parserboolean.h
+    parser/datum/parsersimpledatum.h \
+    parser/datum/datum.h \
+    parser/datum/parserboolean.h \
+    parser/datum/parsercharacter.h \
+    parser/datum/parseridentifier.h \
+    parser/datum/parsernumber.h \
+    parser/datum/parserstring.h \
+    parser/datum/parservariable.h
 
