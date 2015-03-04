@@ -1,5 +1,6 @@
 #include "char.h"
 
+namespace qscheme {
 namespace ast {
 
 Char::Char(QChar c) : val(c) {}
@@ -12,4 +13,5 @@ QString Char::toString() {
     return QStringLiteral("#\\%1").arg(val);
 }
 
+}
 }

@@ -1,5 +1,6 @@
 #include "integer.h"
 
+namespace qscheme {
 namespace ast {
 
 Integer::Integer(int i) : val(i) {}
@@ -12,4 +13,5 @@ QString Integer::toString() {
     return QString::number(val);
 }
 
+}
 }

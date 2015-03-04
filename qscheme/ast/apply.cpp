@@ -1,6 +1,7 @@
 #include "apply.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 Apply::Apply(SharedVal p, QList<SharedVal> a) : proc(p), args(a) {}
@@ -17,4 +18,5 @@ QString Apply::toString() {
     return QStringLiteral("(%1 %2)").arg(proc->toString(), result.join(" "));
 }
 
+}
 }

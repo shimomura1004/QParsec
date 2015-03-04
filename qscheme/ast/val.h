@@ -4,6 +4,7 @@
 #include <QString>
 #include <QSharedPointer>
 
+namespace qscheme {
 namespace ast {
 
 class Val {
@@ -15,6 +16,7 @@ public:
 typedef QSharedPointer<Val> SharedVal;
 typedef QList<QPair<QString, SharedVal>> Env;
 
+}
 }
 
 #endif // VAL_H

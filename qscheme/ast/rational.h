@@ -3,6 +3,7 @@
 
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Rational : public Val {
@@ -16,6 +17,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // RATIONAL_H

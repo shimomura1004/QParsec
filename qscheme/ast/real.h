@@ -3,6 +3,7 @@
 
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Real : public Val {
@@ -15,6 +16,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // REAL_H

@@ -1,5 +1,6 @@
 #include "bool.h"
 
+namespace qscheme {
 namespace ast {
 
 Bool::Bool(bool b) : val(b) {}
@@ -12,4 +13,5 @@ QString Bool::toString() {
     return QStringLiteral("#%1").arg(val ? "t" : "f");
 }
 
+}
 }

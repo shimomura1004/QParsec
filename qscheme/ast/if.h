@@ -3,6 +3,7 @@
 
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class If : public Val {
@@ -18,4 +19,6 @@ public:
 };
 
 }
+}
+
 #endif // IF_H

@@ -1,6 +1,7 @@
 #include "case.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 Case::CaseClause::CaseClause(QList<SharedVal> d, QList<SharedVal> s) : data(d), sequence(s) {}
@@ -41,4 +42,5 @@ QString Case::toString() {
     return QStringLiteral("(case %1 %2 (else %3))").arg(caseexp->toString(), cases.join(" "), elses.join(" "));
 }
 
+}
 }

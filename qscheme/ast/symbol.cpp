@@ -1,5 +1,6 @@
 #include "symbol.h"
 
+namespace qscheme {
 namespace ast {
 
 Symbol::Symbol(QString s) : val(s) {}
@@ -12,4 +13,5 @@ QString Symbol::toString() {
     return val;
 }
 
+}
 }

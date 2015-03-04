@@ -1,5 +1,6 @@
 #include "complex.h"
 
+namespace qscheme {
 namespace ast {
 
 Complex::Complex(double r, double i) : real(r), imagnary(i) {}
@@ -14,4 +15,5 @@ QString Complex::toString() {
     return QStringLiteral("%1%2i").arg(real).arg(imagnary);
 }
 
+}
 }

@@ -1,5 +1,6 @@
 #include "quote.h"
 
+namespace qscheme {
 namespace ast {
 
 Quote::Quote(SharedVal v) : val(v) {}
@@ -12,4 +13,5 @@ QString Quote::toString() {
     return QStringLiteral("%1").arg(val->toString());
 }
 
+}
 }

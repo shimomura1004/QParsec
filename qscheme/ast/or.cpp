@@ -1,6 +1,7 @@
 #include "or.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 Or::Or(QList<SharedVal> vs) : vals(vs) {}
@@ -17,4 +18,5 @@ QString Or::toString() {
     return QStringLiteral("(or %1)").arg(result.join(" "));
 }
 
+}
 }

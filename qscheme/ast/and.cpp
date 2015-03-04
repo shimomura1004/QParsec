@@ -1,6 +1,7 @@
 #include "and.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 And::And(QList<SharedVal> vs) : vals(vs) {}
@@ -17,4 +18,5 @@ QString And::toString() {
     return QStringLiteral("(and %1)").arg(result.join(" "));
 }
 
+}
 }

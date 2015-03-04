@@ -1,6 +1,7 @@
 #include "let.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 const char *Let::typeToString(Let::Type type) {
@@ -32,4 +33,5 @@ QString Let::toString() {
     return QStringLiteral("(let%1 %2 (%3) %4)").arg(typeToString(type), name, bindingstr.join(" "), sequencestr.join(" "));
 }
 
+}
 }

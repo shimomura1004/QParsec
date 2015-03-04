@@ -3,6 +3,7 @@
 
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Complex : public Val {
@@ -16,6 +17,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // COMPLEX_H

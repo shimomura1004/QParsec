@@ -3,6 +3,7 @@
 
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Case : public Val {
@@ -30,6 +31,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // CASE_H

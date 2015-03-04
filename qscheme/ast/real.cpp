@@ -1,5 +1,6 @@
 #include "real.h"
 
+namespace qscheme {
 namespace ast {
 
 Real::Real(double d) : val(d) {}
@@ -12,4 +13,5 @@ QString Real::toString() {
     return QStringLiteral("%1").arg(val, 0, 'e');
 }
 
+}
 }

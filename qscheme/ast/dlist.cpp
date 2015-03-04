@@ -1,6 +1,7 @@
 #include "dlist.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 DList::DList(QList<SharedVal> a, SharedVal d) : cars(a), cdr(d) {}
@@ -17,4 +18,5 @@ QString DList::toString() {
     return QStringLiteral("(%1 . %2)").arg(result.join(" "), cdr->toString());
 }
 
+}
 }

@@ -1,5 +1,6 @@
 #include "lambda.h"
 
+namespace qscheme {
 namespace ast {
 
 Lambda::Lambda(QList<QString> a, QString l, QList<SharedVal> b, Env e) : args(a), listarg(l), bodies(b), env(e) {}
@@ -22,4 +23,5 @@ QString Lambda::toString() {
     return QStringLiteral("(lambda (%1 . %2)  %3)").arg(args.join(" "), listarg, bs.join(" "));
 }
 
+}
 }

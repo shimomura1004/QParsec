@@ -1,5 +1,6 @@
 #include "variable.h"
 
+namespace qscheme {
 namespace ast {
 
 Variable::Variable(QString s) : val(s) {}
@@ -12,4 +13,5 @@ QString Variable::toString() {
     return val;
 }
 
+}
 }

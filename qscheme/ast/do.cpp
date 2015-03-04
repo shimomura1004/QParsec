@@ -1,6 +1,7 @@
 #include "do.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 QSharedPointer<Do::IterationSpec> Do::IterationSpec::create(QString v, SharedVal i) {
@@ -43,4 +44,5 @@ QString Do::toString() {
     return QStringLiteral("(do (%1) (%2 %3) %4)").arg(is.join(" "), test->toString(), doresult->toString(), cs.join(" "));
 }
 
+}
 }

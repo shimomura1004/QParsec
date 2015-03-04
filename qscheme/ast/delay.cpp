@@ -1,5 +1,6 @@
 #include "delay.h"
 
+namespace qscheme {
 namespace ast {
 
 Delay::Delay(SharedVal v) : val(v) {}
@@ -12,4 +13,5 @@ QString Delay::toString() {
     return QStringLiteral("(delay %1)").arg(val->toString());
 }
 
+}
 }

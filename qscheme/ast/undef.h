@@ -3,6 +3,7 @@
 
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Undef : public Val {
@@ -11,6 +12,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // UNDEF_H

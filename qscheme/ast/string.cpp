@@ -1,5 +1,6 @@
 #include "string.h"
 
+namespace qscheme {
 namespace ast {
 
 String::String(QString s) : val(s) {}
@@ -12,4 +13,5 @@ QString String::toString() {
     return QStringLiteral("\"%1\"").arg(val);
 }
 
+}
 }

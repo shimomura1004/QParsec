@@ -3,6 +3,7 @@
 
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Do : public Val {
@@ -35,6 +36,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // DO_H

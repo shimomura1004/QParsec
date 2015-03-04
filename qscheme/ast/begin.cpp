@@ -1,6 +1,7 @@
 #include "begin.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 Begin::Begin(QList<SharedVal> v) : vals(v) {}
@@ -17,4 +18,5 @@ QString Begin::toString() {
     return QStringLiteral("(begin %1)").arg(result.join(" "));
 }
 
+}
 }

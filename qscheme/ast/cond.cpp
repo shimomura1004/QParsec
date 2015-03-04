@@ -1,5 +1,6 @@
 #include "cond.h"
 
+namespace qscheme {
 namespace ast {
 
 Cond::TestSeq::TestSeq(SharedVal t, QList<SharedVal> s) : test(t), sequences(s) {}
@@ -45,4 +46,5 @@ QString Cond::toString() {
     return QStringLiteral("(cond %1 (else %2))").arg(conds.join(" "), elses.join(" "));
 }
 
+}
 }

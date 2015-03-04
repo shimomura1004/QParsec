@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     ast/let.cpp \
     ast/begin.cpp \
     ast/do.cpp \
-    ast/delay.cpp
+    ast/delay.cpp \
+    parser/parserboolean.cpp
 
 HEADERS += \
     ast/val.h \
@@ -69,5 +70,6 @@ HEADERS += \
     ast/begin.h \
     ast/do.h \
     ast/delay.h \
-    ast/ast.h
+    ast/ast.h \
+    parser/parserboolean.h
 

@@ -1,6 +1,7 @@
 #include "list.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 List::List(QList<SharedVal> l) : val(l) {}
@@ -17,4 +18,5 @@ QString List::toString() {
     return QStringLiteral("(%1)").arg(result.join(" "));
 }
 
+}
 }

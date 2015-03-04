@@ -1,5 +1,6 @@
 #include "define.h"
 
+namespace qscheme {
 namespace ast {
 
 Define::Define(QString n, SharedVal b) : name(n), body(b) {}
@@ -12,4 +13,5 @@ QString Define::toString() {
     return QStringLiteral("(define %1 %2)").arg(name, body->toString());
 }
 
+}
 }

@@ -4,6 +4,7 @@
 #include <QStringList>
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Cond : public Val {
@@ -45,6 +46,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // COND_H

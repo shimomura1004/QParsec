@@ -4,6 +4,7 @@
 #include <QStringList>
 #include "val.h"
 
+namespace qscheme {
 namespace ast {
 
 class Lambda : public Val {
@@ -19,6 +20,7 @@ public:
     QString toString();
 };
 
+}
 }
 
 #endif // LAMBDA_H

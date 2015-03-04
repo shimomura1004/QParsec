@@ -1,6 +1,7 @@
 #include "vector.h"
 #include <QStringList>
 
+namespace qscheme {
 namespace ast {
 
 Vector::Vector(QList<SharedVal> e) : elems(e) {}
@@ -17,4 +18,5 @@ QString Vector::toString() {
     return QStringLiteral("#(%1)").arg(result.join(" "));
 }
 
+}
 }
