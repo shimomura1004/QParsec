@@ -1,5 +1,5 @@
-#ifndef PARSEREOF
-#define PARSEREOF
+#ifndef QPARSEC_COMBINATOR_PARSEREOF
+#define QPARSEC_COMBINATOR_PARSEREOF
 
 #include "parser.h"
 #include "parserexception.h"
@@ -16,5 +16,5 @@ ParserEof *Eof();
 
 }
 }
-#endif // PARSEREOF
+#endif // QPARSEC_COMBINATOR_PARSEREOF
 

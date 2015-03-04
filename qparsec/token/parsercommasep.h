@@ -1,5 +1,5 @@
-#ifndef PARSERCOMMASEP
-#define PARSERCOMMASEP
+#ifndef QPARSEC_TOKEN_PARSERCOMMASEP
+#define QPARSEC_TOKEN_PARSERCOMMASEP
 
 #include "parser.h"
 #include "parsercomma.h"
@@ -18,5 +18,5 @@ Parser<QList<T>> *CommaSep1(Parser<T> *p)
 }
 }
 
-#endif // PARSERCOMMASEP
+#endif // QPARSEC_TOKEN_PARSERCOMMASEP
 

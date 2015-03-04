@@ -1,5 +1,5 @@
-#ifndef PARSERNUMBER_H
-#define PARSERNUMBER_H
+#ifndef QPARSEC_LANGUAGE_SCHEME_PARSERNUMBER_H
+#define QPARSEC_LANGUAGE_SCHEME_PARSERNUMBER_H
 
 #include <QChar>
 #include <cassert>
@@ -12,11 +12,6 @@
 namespace qparsec {
 namespace language {
 namespace scheme {
-
-using namespace qparsec;
-using namespace prim;
-using namespace character;
-using namespace combinator;
 
 struct SchemeNumber {
     int64_t gcd(int64_t n, int64_t m);
@@ -65,14 +60,14 @@ Parser<QString> *Suffix();
 template<int n>
 class ParserUReal : public Parser<SchemeNumber> {
 protected:
-    Parser<QString> *SchemeDigit(){return Many1(SDigit<n>());}
+    Parser<QString> *SchemeDigit(){return qparsec::combinator::Many1(SDigit<n>());}
 
 public:
     SchemeNumber parse(Input &input) {
         auto real = SchemeDigit()->parse(input);
 
         try {
-            Char('/')->parse(input);
+            qparsec::character::Char('/')->parse(input);
             auto denom = SchemeDigit()->parse(input);
             return SchemeNumber(QPair<int64_t, uint64_t>(real.toLongLong(0, n), denom.toLongLong(0, n)));
         } catch (const ParserException &) {}
@@ -98,7 +93,7 @@ Parser<SchemeNumber> *Real() {
 
         return num * static_cast<int64_t>((sign == '+') ? 1 : -1);
     };
-    return Apply2(Sign(), UReal<n>(), f);
+    return qparsec::prim::Apply2(Sign(), UReal<n>(), f);
 }
 
 template<int n>
@@ -118,21 +113,25 @@ protected:
                 return num;
             }
         };
-        return Left(Apply2(OneOf("+-"), Option(UReal<n>(), SchemeNumber(1.0)), f), Char('i'));
+        return qparsec::prim::Left(
+                    qparsec::prim::Apply2(qparsec::character::OneOf("+-"),
+                                          qparsec::combinator::Option(UReal<n>(), SchemeNumber(1.0)),
+                                          f),
+                    qparsec::character::Char('i'));
     }
 
 public:
     SchemeNumber parse(Input &input) {
         try {
             // e.g. "+2.3i", "-3i", "+i"
-            return Try(ImaginaryNum())->parse(input);
+            return qparsec::prim::Try(ImaginaryNum())->parse(input);
         } catch (const ParserException &) {}
 
         auto real = Real<n>()->parse(input);
 
         try {
             // what the '@' means?
-            Char('@')->parse(input);
+            qparsec::character::Char('@')->parse(input);
             auto real2 = Real<n>()->parse(input);
             Q_UNUSED(real2);
             return real;
@@ -140,7 +139,7 @@ public:
 
         try {
             // e.g. "12.3+4i"
-            auto imaginary = Try(ImaginaryNum())->parse(input);
+            auto imaginary = qparsec::prim::Try(ImaginaryNum())->parse(input);
 
             assert(real.numtype != SchemeNumber::COMPLEX);
 
@@ -156,7 +155,7 @@ Parser<SchemeNumber> *Complex() { return new ParserComplex<n>(); }
 
 template<int n>
 Parser<SchemeNumber> *Num() {
-    return Right(Radix<n>(), Complex<n>());
+    return qparsec::prim::Right(Radix<n>(), Complex<n>());
 }
 
 Parser<SchemeNumber> *Number();
@@ -165,4 +164,4 @@ Parser<SchemeNumber> *Number();
 }
 }
 
-#endif // PARSERNUMBER_H
+#endif // QPARSEC_LANGUAGE_SCHEME_PARSERNUMBER_H

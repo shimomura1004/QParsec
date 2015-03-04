@@ -1,5 +1,5 @@
-#ifndef PARSEROPTION
-#define PARSEROPTION
+#ifndef QPARSEC_COMBINATOR_PARSEROPTION
+#define QPARSEC_COMBINATOR_PARSEROPTION
 
 #include "parser.h"
 
@@ -52,5 +52,5 @@ Parser<void> *Option_(Parser<T> *p)
 }
 }
 
-#endif // PARSEROPTION
+#endif // QPARSEC_COMBINATOR_PARSEROPTION
 

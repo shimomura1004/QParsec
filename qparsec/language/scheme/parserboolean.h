@@ -1,5 +1,5 @@
-#ifndef PARSERBOOLEAN_H
-#define PARSERBOOLEAN_H
+#ifndef QPARSEC_LANGUAGE_SCHEME_PARSERBOOLEAN_H
+#define QPARSEC_LANGUAGE_SCHEME_PARSERBOOLEAN_H
 
 #include "parser.h"
 
@@ -13,4 +13,4 @@ Parser<bool> *Boolean();
 }
 }
 
-#endif // PARSERBOOLEAN_H
+#endif // QPARSEC_LANGUAGE_SCHEME_PARSERBOOLEAN_H

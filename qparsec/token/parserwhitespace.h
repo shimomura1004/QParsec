@@ -1,5 +1,5 @@
-#ifndef PARSERWHITESPACE_H
-#define PARSERWHITESPACE_H
+#ifndef QPARSEC_TOKEN_PARSERWHITESPACE_H
+#define QPARSEC_TOKEN_PARSERWHITESPACE_H
 
 #include "parser.h"
 
@@ -11,4 +11,4 @@ Parser<void> *WhiteSpace();
 }
 }
 
-#endif // PARSERWHITESPACE_H
+#endif // QPARSEC_TOKEN_PARSERWHITESPACE_H

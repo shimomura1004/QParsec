@@ -1,5 +1,5 @@
-#ifndef PARSERCHOICE
-#define PARSERCHOICE
+#ifndef QPARSEC_COMBINATOR_PARSERCHOICE
+#define QPARSEC_COMBINATOR_PARSERCHOICE
 
 #include "parser.h"
 
@@ -47,5 +47,5 @@ ParserChoice<T> *Choice(std::initializer_list< Parser<T>* > ps)
 }
 }
 
-#endif // PARSERCHOICE
+#endif // QPARSEC_COMBINATOR_PARSERCHOICE
 

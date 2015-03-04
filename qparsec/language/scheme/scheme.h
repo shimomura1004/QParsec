@@ -1,5 +1,5 @@
-#ifndef SCHEME_H
-#define SCHEME_H
+#ifndef QPARSEC_LANGUAGE_SCHEME_H
+#define QPARSEC_LANGUAGE_SCHEME_H
 
 #include "parseridentifier.h"
 #include "parservariable.h"
@@ -8,5 +8,5 @@
 #include "parsercharacter.h"
 #include "parserstring.h"
 
-#endif // SCHEME_H
+#endif // QPARSEC_LANGUAGE_SCHEME_H
 

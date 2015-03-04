@@ -1,5 +1,5 @@
-#ifndef LET_H
-#define LET_H
+#ifndef QSCHEME_AST_LET_H
+#define QSCHEME_AST_LET_H
 
 #include <QPair>
 #include "val.h"
@@ -28,4 +28,4 @@ public:
 }
 }
 
-#endif // LET_H
+#endif // QSCHEME_AST_LET_H

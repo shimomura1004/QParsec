@@ -1,5 +1,5 @@
-#ifndef IF_H
-#define IF_H
+#ifndef QSCHEME_AST_IF_H
+#define QSCHEME_AST_IF_H
 
 #include "val.h"
 
@@ -21,4 +21,4 @@ public:
 }
 }
 
-#endif // IF_H
+#endif // QSCHEME_AST_IF_H

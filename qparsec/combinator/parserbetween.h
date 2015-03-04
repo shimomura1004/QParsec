@@ -1,5 +1,5 @@
-#ifndef PARSERBETWEEN
-#define PARSERBETWEEN
+#ifndef QPARSEC_COMBINATOR_PARSERBETWEEN
+#define QPARSEC_COMBINATOR_PARSERBETWEEN
 
 #include "parser.h"
 
@@ -37,5 +37,5 @@ ParserBetween<T, TOpen, TClose> *Between(Parser<T> *p, Parser<TOpen> *popen, Par
 }
 }
 
-#endif // PARSERBETWEEN
+#endif // QPARSEC_COMBINATOR_PARSERBETWEEN
 

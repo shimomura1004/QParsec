@@ -1,5 +1,5 @@
-#ifndef PARSERMANY
-#define PARSERMANY
+#ifndef QPARSEC_COMBINATOR_PARSERMANY
+#define QPARSEC_COMBINATOR_PARSERMANY
 
 #include "parser.h"
 #include "parserexception.h"
@@ -108,5 +108,5 @@ ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend)
 }
 }
 
-#endif // PARSERMANY
+#endif // QPARSEC_COMBINATOR_PARSERMANY
 

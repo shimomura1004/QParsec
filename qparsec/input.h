@@ -1,5 +1,5 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef QPARSEC_INPUT_H
+#define QPARSEC_INPUT_H
 
 #include <QString>
 #include <QList>
@@ -34,4 +34,4 @@ public:
 
 }
 
-#endif // INPUT_H
+#endif // QPARSEC_INPUT_H

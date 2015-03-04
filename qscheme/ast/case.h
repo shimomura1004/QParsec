@@ -1,5 +1,5 @@
-#ifndef CASE_H
-#define CASE_H
+#ifndef QSCHEME_AST_CASE_H
+#define QSCHEME_AST_CASE_H
 
 #include "val.h"
 
@@ -34,4 +34,4 @@ public:
 }
 }
 
-#endif // CASE_H
+#endif // QSCHEME_AST_CASE_H

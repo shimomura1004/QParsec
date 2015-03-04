@@ -1,5 +1,5 @@
-#ifndef VARIABLE_H
-#define VARIABLE_H
+#ifndef QSCHEME_AST_VARIABLE_H
+#define QSCHEME_AST_VARIABLE_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // VARIABLE_H
+#endif // QSCHEME_AST_VARIABLE_H

@@ -1,5 +1,5 @@
-#ifndef PARSERLAZY
-#define PARSERLAZY
+#ifndef QPARSEC_PRIM_PARSERLAZY
+#define QPARSEC_PRIM_PARSERLAZY
 
 #include "parser.h"
 
@@ -27,5 +27,5 @@ ParserLazy<T> *Lazy(Parser<T>* (*p)())
 }
 }
 
-#endif // PARSERLAZY
+#endif // QPARSEC_PRIM_PARSERLAZY
 

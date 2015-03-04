@@ -1,5 +1,5 @@
-#ifndef PARSRELOOKAHEAD
-#define PARSRELOOKAHEAD
+#ifndef QPARSEC_COMBINATOR_PARSRELOOKAHEAD
+#define QPARSEC_COMBINATOR_PARSRELOOKAHEAD
 
 #include "parser.h"
 
@@ -30,5 +30,5 @@ ParserLookAhead<T> *LookAhead(Parser<T> *p)
 }
 }
 
-#endif // PARSRELOOKAHEAD
+#endif // QPARSEC_COMBINATOR_PARSRELOOKAHEAD
 

@@ -1,5 +1,5 @@
-#ifndef PARSERCOLON_H
-#define PARSERCOLON_H
+#ifndef QPARSEC_TOKEN_PARSERCOLON_H
+#define QPARSEC_TOKEN_PARSERCOLON_H
 
 #include "parser.h"
 
@@ -11,4 +11,4 @@ Parser<QChar> *Colon();
 }
 }
 
-#endif // PARSERCOLON_H
+#endif // QPARSEC_TOKEN_PARSERCOLON_H

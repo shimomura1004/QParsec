@@ -1,5 +1,5 @@
-#ifndef INTEGER_H
-#define INTEGER_H
+#ifndef QSCHEME_AST_INTEGER_H
+#define QSCHEME_AST_INTEGER_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // INTEGER_H
+#endif // QSCHEME_AST_INTEGER_H

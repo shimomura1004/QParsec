@@ -1,5 +1,5 @@
-#ifndef PARSERHELP
-#define PARSERHELP
+#ifndef QPARSEC_PRIM_PARSERHELP
+#define QPARSEC_PRIM_PARSERHELP
 
 #include "parser.h"
 #include "parserexception.h"
@@ -35,5 +35,5 @@ ParserHelp<T> *Help(Parser<T> *p, const QString &message)
 }
 }
 
-#endif // PARSERHELP
+#endif // QPARSEC_PRIM_PARSERHELP
 

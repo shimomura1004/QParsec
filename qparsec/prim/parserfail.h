@@ -1,5 +1,5 @@
-#ifndef PARSERFAIL
-#define PARSERFAIL
+#ifndef QPARSEC_PRIM_PARSERFAIL
+#define QPARSEC_PRIM_PARSERFAIL
 
 #include "parser.h"
 
@@ -20,5 +20,5 @@ ParserFail *Fail(QString message);
 }
 }
 
-#endif // PARSERFAIL
+#endif // QPARSEC_PRIM_PARSERFAIL
 

@@ -1,5 +1,5 @@
-#ifndef PARSERSEQ
-#define PARSERSEQ
+#ifndef QPARSEC_PRIM_PARSERSEQ
+#define QPARSEC_PRIM_PARSERSEQ
 
 #include "parser.h"
 
@@ -33,5 +33,5 @@ ParserSeq<Ts...> *Seq(Parser<Ts>*... ps)
 }
 }
 
-#endif // PARSERSEQ
+#endif // QPARSEC_PRIM_PARSERSEQ
 

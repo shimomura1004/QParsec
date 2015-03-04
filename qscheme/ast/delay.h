@@ -1,5 +1,5 @@
-#ifndef DELAY_H
-#define DELAY_H
+#ifndef QSCHEME_AST_DELAY_H
+#define QSCHEME_AST_DELAY_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // DELAY_H
+#endif // QSCHEME_AST_DELAY_H

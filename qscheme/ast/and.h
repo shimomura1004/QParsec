@@ -1,5 +1,5 @@
-#ifndef AND_H
-#define AND_H
+#ifndef QSCHEME_AST_AND_H
+#define QSCHEME_AST_AND_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // AND_H
+#endif // QSCHEME_AST_AND_H

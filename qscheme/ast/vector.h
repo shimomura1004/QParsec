@@ -1,5 +1,5 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef QSCHEME_AST_VECTOR_H
+#define QSCHEME_AST_VECTOR_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // VECTOR_H
+#endif // QSCHEME_AST_VECTOR_H

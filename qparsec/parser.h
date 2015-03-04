@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef QPARSEC_PARSER_H
+#define QPARSEC_PARSER_H
 
 #include "input.h"
 
@@ -16,4 +16,4 @@ public:
 
 }
 
-#endif // PARSER_H
+#endif // QPARSEC_PARSER_H

@@ -1,5 +1,5 @@
-#ifndef PARSERONEOF_H
-#define PARSERONEOF_H
+#ifndef QPARSEC_CHARACTER_PARSERONEOF_H
+#define QPARSEC_CHARACTER_PARSERONEOF_H
 
 #include <QChar>
 #include "parser.h"
@@ -22,4 +22,4 @@ ParserOneOf *OneOf(QString chars);
 }
 }
 
-#endif // PARSERONEOF_H
+#endif // QPARSEC_CHARACTER_PARSERONEOF_H

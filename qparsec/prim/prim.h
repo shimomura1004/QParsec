@@ -1,5 +1,5 @@
-#ifndef PRIM_H
-#define PRIM_H
+#ifndef QPARSEC_PRIM_H
+#define QPARSEC_PRIM_H
 
 #include "parserreturn.h"
 #include "parserignore.h"
@@ -15,5 +15,5 @@
 #include "parserlazy.h"
 #include "parserempty.h"
 
-#endif // PRIM_H
+#endif // QPARSEC_PRIM_H
 

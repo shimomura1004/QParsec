@@ -1,5 +1,5 @@
-#ifndef PARSERIDENTIFIER_H
-#define PARSERIDENTIFIER_H
+#ifndef QPARSEC_LANGUAGE_SCHEME_PARSERIDENTIFIER_H
+#define QPARSEC_LANGUAGE_SCHEME_PARSERIDENTIFIER_H
 
 #include <QString>
 #include "qparsec.h"
@@ -10,11 +10,6 @@
 namespace qparsec {
 namespace language {
 namespace scheme {
-
-using namespace qparsec;
-using namespace prim;
-using namespace character;
-using namespace combinator;
 
 class ParserIdentifier : public Parser<QString> {
 protected:
@@ -35,4 +30,4 @@ Parser<QString> *Identifier();
 }
 }
 
-#endif // PARSERIDENTIFIER_H
+#endif // QPARSEC_LANGUAGE_SCHEME_PARSERIDENTIFIER_H

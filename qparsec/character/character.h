@@ -1,5 +1,5 @@
-#ifndef CHARACTER
-#define CHARACTER
+#ifndef QPARSEC_CHARACTER
+#define QPARSEC_CHARACTER
 
 #include "parseranychar.h"
 #include "parserchar.h"
@@ -9,5 +9,4 @@
 #include "parserspace.h"
 #include "parserstr.h"
 
-#endif // CHARACTER
-
+#endif // QPARSEC_CHARACTER

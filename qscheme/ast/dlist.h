@@ -1,5 +1,5 @@
-#ifndef DLIST_H
-#define DLIST_H
+#ifndef QSCHEME_AST_DLIST_H
+#define QSCHEME_AST_DLIST_H
 
 #include "val.h"
 
@@ -20,4 +20,4 @@ public:
 }
 }
 
-#endif // DLIST_H
+#endif // QSCHEME_AST_DLIST_H

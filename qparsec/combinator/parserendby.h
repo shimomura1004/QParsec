@@ -1,5 +1,5 @@
-#ifndef PARSERENDBY
-#define PARSERENDBY
+#ifndef QPARSEC_COMBINATOR_PARSERENDBY
+#define QPARSEC_COMBINATOR_PARSERENDBY
 
 #include "parser.h"
 
@@ -76,5 +76,5 @@ ParserEndBy1<T, TSep> *EndBy1(Parser<T> *p, Parser<TSep> *psep)
 }
 }
 
-#endif // PARSERENDBY
+#endif // QPARSEC_COMBINATOR_PARSERENDBY
 

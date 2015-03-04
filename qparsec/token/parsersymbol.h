@@ -1,5 +1,5 @@
-#ifndef PARSERSYMBOL_H
-#define PARSERSYMBOL_H
+#ifndef QPARSEC_TOKEN_PARSERSYMBOL_H
+#define QPARSEC_TOKEN_PARSERSYMBOL_H
 
 #include "parser.h"
 
@@ -11,4 +11,4 @@ Parser<QString> *Symbol(QString str);
 }
 }
 
-#endif // PARSERSYMBOL_H
+#endif // QPARSEC_TOKEN_PARSERSYMBOL_H

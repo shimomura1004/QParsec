@@ -1,5 +1,5 @@
-#ifndef PARSERCOMMA_H
-#define PARSERCOMMA_H
+#ifndef QPARSEC_TOKEN_PARSERCOMMA_H
+#define QPARSEC_TOKEN_PARSERCOMMA_H
 
 #include "parser.h"
 #include "parserlexeme.h"
@@ -12,4 +12,4 @@ Parser<QChar> *Comma();
 }
 }
 
-#endif // PARSERCOMMA_H
+#endif // QPARSEC_TOKEN_PARSERCOMMA_H

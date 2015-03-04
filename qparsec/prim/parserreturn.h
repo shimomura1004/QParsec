@@ -1,5 +1,5 @@
-#ifndef PARSERRETURN_H
-#define PARSERRETURN_H
+#ifndef QPARSEC_PRIM_PARSERRETURN_H
+#define QPARSEC_PRIM_PARSERRETURN_H
 
 #include <parser.h>
 #include <input.h>
@@ -28,4 +28,4 @@ ParserReturn<T> *Return(T v)
 }
 }
 
-#endif // PARSERRETURN_H
+#endif // QPARSEC_PRIM_PARSERRETURN_H

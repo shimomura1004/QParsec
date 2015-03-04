@@ -1,5 +1,5 @@
-#ifndef REAL_H
-#define REAL_H
+#ifndef QSCHEME_AST_REAL_H
+#define QSCHEME_AST_REAL_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // REAL_H
+#endif // QSCHEME_AST_REAL_H

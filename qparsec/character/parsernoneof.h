@@ -1,5 +1,5 @@
-#ifndef PARSERNONEOF_H
-#define PARSERNONEOF_H
+#ifndef QPARSEC_CHARACTER_PARSERNONEOF_H
+#define QPARSEC_CHARACTER_PARSERNONEOF_H
 
 #include <QChar>
 #include <QString>
@@ -23,4 +23,4 @@ ParserNoneOf *NoneOf(QString chars);
 }
 }
 
-#endif // PARSERNONEOF_H
+#endif // QPARSEC_CHARACTER_PARSERNONEOF_H

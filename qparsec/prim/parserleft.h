@@ -1,5 +1,5 @@
-#ifndef PARSERLEFT
-#define PARSERLEFT
+#ifndef QPARSEC_PRIM_PARSERLEFT
+#define QPARSEC_PRIM_PARSERLEFT
 
 #include "parser.h"
 
@@ -33,5 +33,5 @@ ParserLeft<T1, T2> *Left(Parser<T1> *p1, Parser<T2> *p2)
 }
 }
 
-#endif // PARSERLEFT
+#endif // QPARSEC_PRIM_PARSERLEFT
 

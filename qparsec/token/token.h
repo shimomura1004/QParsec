@@ -1,5 +1,5 @@
-#ifndef TOKEN_H
-#define TOKEN_H
+#ifndef QPARSEC_TOKEN_H
+#define QPARSEC_TOKEN_H
 
 #include "parserwhitespace.h"
 #include "parserlexeme.h"
@@ -15,5 +15,5 @@
 #include "parsersemisep.h"
 #include "parsersquares.h"
 
-#endif // TOKEN_H
+#endif // QPARSEC_TOKEN_H
 

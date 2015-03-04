@@ -1,5 +1,5 @@
-#ifndef PARSERCHAIN
-#define PARSERCHAIN
+#ifndef QPARSEC_COMBINATOR_PARSERCHAIN
+#define QPARSEC_COMBINATOR_PARSERCHAIN
 
 #include "parser.h"
 #include "parserexception.h"
@@ -162,5 +162,5 @@ ParserChainr1<T> *Chainr1(Parser<T> *p, Parser<T(*)(T, T)> *poperator)
 }
 }
 
-#endif // PARSERCHAIN
+#endif // QPARSEC_COMBINATOR_PARSERCHAIN
 

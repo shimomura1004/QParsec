@@ -1,5 +1,5 @@
-#ifndef PARSERSTRING_H
-#define PARSERSTRING_H
+#ifndef QPARSEC_LANGUAGE_SCHEME_PARSERSTRING_H
+#define QPARSEC_LANGUAGE_SCHEME_PARSERSTRING_H
 
 #include "qparsec.h"
 #include "prim/prim.h"
@@ -16,4 +16,4 @@ Parser<QString> *String();
 }
 }
 
-#endif // PARSERSTRING_H
+#endif // QPARSEC_LANGUAGE_SCHEME_PARSERSTRING_H

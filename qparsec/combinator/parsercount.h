@@ -1,5 +1,5 @@
-#ifndef PARSERCOUNT
-#define PARSERCOUNT
+#ifndef QPARSEC_COMBINATOR_PARSERCOUNT
+#define QPARSEC_COMBINATOR_PARSERCOUNT
 
 #include <QString>
 #include <QList>
@@ -35,17 +35,10 @@ protected:
     int n_;
 
 public:
-    ParserCount(Parser<QChar> *p, int n) : Parser<QString>(), p_(p), n_(n) {}
-    ~ParserCount() { delete p_; }
+    ParserCount(Parser<QChar> *p, int n);
+    ~ParserCount();
 
-    QString parse(Input &input) {
-        QString result;
-
-        for(int i = 0; i < n_; i++) {
-            result.push_back(p_->parse(input));
-        }
-        return result;
-    }
+    QString parse(Input &input);
 };
 
 template<typename T>
@@ -57,5 +50,5 @@ ParserCount<QChar> *Count(Parser<QChar> *p, int n);
 }
 }
 
-#endif // PARSERCOUNT
+#endif // QPARSEC_COMBINATOR_PARSERCOUNT
 

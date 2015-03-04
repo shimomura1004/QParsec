@@ -1,5 +1,5 @@
-#ifndef PARSERLEXEME_H
-#define PARSERLEXEME_H
+#ifndef QPARSEC_TOKEN_PARSERLEXEME_H
+#define QPARSEC_TOKEN_PARSERLEXEME_H
 
 #include "parser.h"
 #include "parserwhitespace.h"
@@ -30,4 +30,4 @@ Parser<T> *Lexeme(Parser<T> *p)
 }
 }
 
-#endif // PARSERLEXEME_H
+#endif // QPARSEC_TOKEN_PARSERLEXEME_H

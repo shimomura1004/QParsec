@@ -1,5 +1,5 @@
-#ifndef COMBINATOR
-#define COMBINATOR
+#ifndef QPARSEC_COMBINATOR
+#define QPARSEC_COMBINATOR
 
 #include "parserbetween.h"
 #include "parserchain.h"
@@ -13,5 +13,4 @@
 #include "parserskipmany.h"
 #include "parsrelookahead.h"
 
-#endif // COMBINATOR
-
+#endif // QPARSEC_COMBINATOR

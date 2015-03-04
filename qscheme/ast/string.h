@@ -1,5 +1,5 @@
-#ifndef STRING_H
-#define STRING_H
+#ifndef QSCHEME_AST_STRING_H
+#define QSCHEME_AST_STRING_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // STRING_H
+#endif // QSCHEME_AST_STRING_H

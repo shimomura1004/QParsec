@@ -1,5 +1,5 @@
-#ifndef COND_H
-#define COND_H
+#ifndef QSCHEME_AST_COND_H
+#define QSCHEME_AST_COND_H
 
 #include <QStringList>
 #include "val.h"
@@ -49,4 +49,4 @@ public:
 }
 }
 
-#endif // COND_H
+#endif // QSCHEME_AST_COND_H

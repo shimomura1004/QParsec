@@ -4,6 +4,11 @@ namespace qparsec {
 namespace language {
 namespace scheme {
 
+using namespace qparsec;
+using namespace prim;
+using namespace character;
+using namespace combinator;
+
 Parser<QString> *ParserCharacter::CharacterName() { return Choice({Str("space"), Str("newline")}); }
 
 QChar ParserCharacter::parse(Input &input) {

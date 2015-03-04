@@ -1,5 +1,5 @@
-#ifndef PARSERPAIR
-#define PARSERPAIR
+#ifndef QPARSEC_PRIM_PARSERPAIR
+#define QPARSEC_PRIM_PARSERPAIR
 
 #include "parser.h"
 #include <QPair>
@@ -34,5 +34,5 @@ ParserPair<T1, T2> *Pair(Parser<T1> *p1, Parser<T2> *p2)
 }
 }
 
-#endif // PARSERPAIR
+#endif // QPARSEC_PRIM_PARSERPAIR
 

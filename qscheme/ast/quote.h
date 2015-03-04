@@ -1,5 +1,5 @@
-#ifndef QUOTE_H
-#define QUOTE_H
+#ifndef QSCHEME_AST_QUOTE_H
+#define QSCHEME_AST_QUOTE_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // QUOTE_H
+#endif // QSCHEME_AST_QUOTE_H

@@ -1,5 +1,5 @@
-#ifndef PARSERAPPLY
-#define PARSERAPPLY
+#ifndef QPARSEC_PRIM_PARSERAPPLY
+#define QPARSEC_PRIM_PARSERAPPLY
 
 #include "parser.h"
 
@@ -43,5 +43,5 @@ ParserApply<T1, T2> *Apply(Parser<T1> *p, T2(*func)(T1))
 }
 }
 
-#endif // PARSERAPPLY
+#endif // QPARSEC_PRIM_PARSERAPPLY
 

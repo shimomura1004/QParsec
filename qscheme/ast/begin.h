@@ -1,5 +1,5 @@
-#ifndef BEGIN_H
-#define BEGIN_H
+#ifndef QSCHEME_AST_BEGIN_H
+#define QSCHEME_AST_BEGIN_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // BEGIN_H
+#endif // QSCHEME_AST_BEGIN_H

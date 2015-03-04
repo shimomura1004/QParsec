@@ -1,5 +1,5 @@
-#ifndef PARSEREXCEPTION_H
-#define PARSEREXCEPTION_H
+#ifndef QPARSEC_PARSEREXCEPTION_H
+#define QPARSEC_PARSEREXCEPTION_H
 
 #include <QString>
 
@@ -19,4 +19,4 @@ public:
 
 }
 
-#endif // PARSEREXCEPTION_H
+#endif // QPARSEC_PARSEREXCEPTION_H

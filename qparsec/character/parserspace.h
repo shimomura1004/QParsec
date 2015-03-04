@@ -1,5 +1,5 @@
-#ifndef PARSERSPACE
-#define PARSERSPACE
+#ifndef QPARSEC_CHARACTER_PARSERSPACE
+#define QPARSEC_CHARACTER_PARSERSPACE
 
 #include "parserchar.h"
 #include "parseroneof.h"
@@ -18,5 +18,5 @@ Parser<QChar> *Tab();
 }
 }
 
-#endif // PARSERSPACE
+#endif // QPARSEC_CHARACTER_PARSERSPACE
 

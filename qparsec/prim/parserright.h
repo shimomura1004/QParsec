@@ -1,5 +1,5 @@
-#ifndef PARSERRIGHT
-#define PARSERRIGHT
+#ifndef QPARSEC_PRIM_PARSERRIGHT
+#define QPARSEC_PRIM_PARSERRIGHT
 
 #include "parser.h"
 
@@ -33,5 +33,5 @@ ParserRight<T1, T2> *Right(Parser<T1> *p1, Parser<T2> *p2)
 }
 }
 
-#endif // PARSERRIGHT
+#endif // QPARSEC_PRIM_PARSERRIGHT
 

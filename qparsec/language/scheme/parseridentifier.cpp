@@ -4,6 +4,11 @@ namespace qparsec {
 namespace language {
 namespace scheme {
 
+using namespace qparsec;
+using namespace prim;
+using namespace character;
+using namespace combinator;
+
 Parser<QChar> *ParserIdentifier::Initial() { return Choice({Letter(), SpecialInitial()}); }
 Parser<QChar> *ParserIdentifier::SpecialInitial() { return OneOf("!#$%&|*+-/:<=>?@^_~"); }
 Parser<QChar> *ParserIdentifier::Subsequent() { return Choice({Initial(), Digit(), SpecialSubsequent()}); }

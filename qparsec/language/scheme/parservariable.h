@@ -1,5 +1,5 @@
-#ifndef PARSERVARIABLE_H
-#define PARSERVARIABLE_H
+#ifndef QPARSEC_LANGUAGE_SCHEME_PARSERVARIABLE_H
+#define QPARSEC_LANGUAGE_SCHEME_PARSERVARIABLE_H
 
 #include <QStringList>
 #include "qparsec.h"
@@ -25,4 +25,4 @@ Parser<QString> *Variable();
 }
 }
 
-#endif // PARSERVARIABLE_H
+#endif // QPARSEC_LANGUAGE_SCHEME_PARSERVARIABLE_H

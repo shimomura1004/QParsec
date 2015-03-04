@@ -1,5 +1,5 @@
-#ifndef PARSERCHARACTER_H
-#define PARSERCHARACTER_H
+#ifndef QPARSEC_LANGUAGE_SCHEME_PARSERCHARACTER_H
+#define QPARSEC_LANGUAGE_SCHEME_PARSERCHARACTER_H
 
 #include "qparsec.h"
 #include "prim/prim.h"
@@ -9,11 +9,6 @@
 namespace qparsec {
 namespace language {
 namespace scheme {
-
-using namespace qparsec;
-using namespace prim;
-using namespace character;
-using namespace combinator;
 
 class ParserCharacter : public Parser<QChar> {
 protected:
@@ -29,4 +24,4 @@ Parser<QChar> *Character();
 }
 }
 
-#endif // PARSERCHARACTER_H
+#endif // QPARSEC_LANGUAGE_SCHEME_PARSERCHARACTER_H

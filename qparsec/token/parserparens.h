@@ -1,5 +1,5 @@
-#ifndef PARSERPARENS_H
-#define PARSERPARENS_H
+#ifndef QPARSEC_TOKEN_PARSERPARENS_H
+#define QPARSEC_TOKEN_PARSERPARENS_H
 
 #include "parser.h"
 #include "combinator/combinator.h"
@@ -17,4 +17,4 @@ Parser<T> *Parens(Parser<T> *p)
 }
 }
 
-#endif // PARSERPARENS_H
+#endif // QPARSEC_TOKEN_PARSERPARENS_H

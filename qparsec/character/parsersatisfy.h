@@ -1,5 +1,5 @@
-#ifndef PARSERSATISFY_H
-#define PARSERSATISFY_H
+#ifndef QPARSEC_CHARACTER_PARSERSATISFY_H
+#define QPARSEC_CHARACTER_PARSERSATISFY_H
 
 #include "QChar"
 #include "parser.h"
@@ -22,4 +22,4 @@ Parser<QChar> *Satisfy(bool(*judge)(QChar));
 }
 }
 
-#endif // PARSERSATISFY_H
+#endif // QPARSEC_CHARACTER_PARSERSATISFY_H

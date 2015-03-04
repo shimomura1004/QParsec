@@ -1,5 +1,5 @@
-#ifndef DEFINE_H
-#define DEFINE_H
+#ifndef QSCHEME_AST_DEFINE_H
+#define QSCHEME_AST_DEFINE_H
 
 #include "val.h"
 
@@ -20,4 +20,4 @@ public:
 }
 }
 
-#endif // DEFINE_H
+#endif // QSCHEME_AST_DEFINE_H

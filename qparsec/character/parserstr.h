@@ -1,5 +1,5 @@
-#ifndef PARSERSTR_H
-#define PARSERSTR_H
+#ifndef QPARSEC_CHARACTER_PARSERSTR_H
+#define QPARSEC_CHARACTER_PARSERSTR_H
 
 #include "parser.h"
 #include "parserexception.h"
@@ -21,4 +21,4 @@ ParserStr *Str(QString s);
 }
 }
 
-#endif // PARSERSTR_H
+#endif // QPARSEC_CHARACTER_PARSERSTR_H

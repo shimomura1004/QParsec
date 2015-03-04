@@ -1,5 +1,5 @@
-#ifndef RATIONAL_H
-#define RATIONAL_H
+#ifndef QSCHEME_AST_RATIONAL_H
+#define QSCHEME_AST_RATIONAL_H
 
 #include "val.h"
 
@@ -20,4 +20,4 @@ public:
 }
 }
 
-#endif // RATIONAL_H
+#endif // QSCHEME_AST_RATIONAL_H

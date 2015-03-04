@@ -1,5 +1,5 @@
-#ifndef COMPLEX_H
-#define COMPLEX_H
+#ifndef QSCHEME_AST_COMPLEX_H
+#define QSCHEME_AST_COMPLEX_H
 
 #include "val.h"
 
@@ -20,4 +20,4 @@ public:
 }
 }
 
-#endif // COMPLEX_H
+#endif // QSCHEME_AST_COMPLEX_H

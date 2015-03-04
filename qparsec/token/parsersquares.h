@@ -1,5 +1,5 @@
-#ifndef PARSERSQUARES
-#define PARSERSQUARES
+#ifndef QPARSEC_TOKEN_PARSERSQUARES
+#define QPARSEC_TOKEN_PARSERSQUARES
 
 #include "parser.h"
 #include "combinator/combinator.h"
@@ -16,5 +16,5 @@ Parser<T> *Squares(Parser<T> *p)
 
 }
 }
-#endif // PARSERSQUARES
+#endif // QPARSEC_TOKEN_PARSERSQUARES
 

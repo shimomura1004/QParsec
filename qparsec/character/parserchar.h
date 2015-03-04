@@ -1,5 +1,5 @@
-#ifndef PARSERCHAR_H
-#define PARSERCHAR_H
+#ifndef QPARSEC_CHARACTER_PARSERCHAR_H
+#define QPARSEC_CHARACTER_PARSERCHAR_H
 
 #include <QChar>
 #include "parser.h"
@@ -30,4 +30,4 @@ Parser<QChar> *Octdigit();
 }
 }
 
-#endif // PARSERCHAR_H
+#endif // QPARSEC_CHARACTER_PARSERCHAR_H

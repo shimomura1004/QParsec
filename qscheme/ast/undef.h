@@ -1,5 +1,5 @@
-#ifndef UNDEF_H
-#define UNDEF_H
+#ifndef QSCHEME_AST_UNDEF_H
+#define QSCHEME_AST_UNDEF_H
 
 #include "val.h"
 
@@ -15,4 +15,4 @@ public:
 }
 }
 
-#endif // UNDEF_H
+#endif // QSCHEME_AST_UNDEF_H

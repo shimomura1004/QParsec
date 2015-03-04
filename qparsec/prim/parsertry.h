@@ -1,5 +1,5 @@
-#ifndef PARSERTRY
-#define PARSERTRY
+#ifndef QPARSEC_PRIM_PARSERTRY
+#define QPARSEC_PRIM_PARSERTRY
 
 #include "parser.h"
 #include "parserexception.h"
@@ -36,21 +36,10 @@ protected:
     Parser<void> *p_;
 
 public:
-    ParserTry(Parser<void> *p) : p_(p) {}
-    ~ParserTry() {delete p_;}
+    ParserTry(Parser<void> *p);
+    ~ParserTry();
 
-    void parse(Input &input) {
-        input.preserve();
-        try {
-            p_->parse(input);
-            input.clear();
-            return;
-        }
-        catch (const ParserException &e) {
-            input.restore();
-            throw e;
-        }
-    }
+    void parse(Input &input);
 };
 
 template<typename T>
@@ -60,5 +49,5 @@ ParserTry<T> *Try(Parser<T> *p)
 }
 }
 
-#endif // PARSERTRY
+#endif // QPARSEC_PRIM_PARSERTRY
 

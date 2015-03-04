@@ -1,5 +1,5 @@
-#ifndef SET_H
-#define SET_H
+#ifndef QSCHEME_AST_SET_H
+#define QSCHEME_AST_SET_H
 
 #include "val.h"
 
@@ -20,4 +20,4 @@ public:
 }
 }
 
-#endif // SET_H
+#endif // QSCHEME_AST_SET_H

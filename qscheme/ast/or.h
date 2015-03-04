@@ -1,5 +1,5 @@
-#ifndef OR_H
-#define OR_H
+#ifndef QSCHEME_AST_OR_H
+#define QSCHEME_AST_OR_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // OR_H
+#endif // QSCHEME_AST_OR_H

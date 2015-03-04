@@ -1,5 +1,5 @@
-#ifndef PARSERIGNORE_H
-#define PARSERIGNORE_H
+#ifndef QPARSEC_PRIM_PARSERIGNORE_H
+#define QPARSEC_PRIM_PARSERIGNORE_H
 
 #include "parser.h"
 
@@ -28,4 +28,4 @@ ParserIgnore<T> *Ignore(Parser<T> *p)
 }
 }
 
-#endif // PARSERIGNORE_H
+#endif // QPARSEC_PRIM_PARSERIGNORE_H

@@ -1,5 +1,5 @@
-#ifndef PARSERDOT_H
-#define PARSERDOT_H
+#ifndef QPARSEC_TOKEN_PARSERDOT_H
+#define QPARSEC_TOKEN_PARSERDOT_H
 
 #include "parser.h"
 
@@ -11,4 +11,4 @@ Parser<QChar> *Dot();
 }
 }
 
-#endif // PARSERDOT_H
+#endif // QPARSEC_TOKEN_PARSERDOT_H

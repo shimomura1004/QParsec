@@ -1,5 +1,5 @@
-#ifndef PARSEREMPTY
-#define PARSEREMPTY
+#ifndef QPARSEC_PRIM_PARSEREMPTY
+#define QPARSEC_PRIM_PARSEREMPTY
 
 #include "parser.h"
 
@@ -15,5 +15,5 @@ ParserEmpty *Empty();
 }
 }
 
-#endif // PARSEREMPTY
+#endif // QPARSEC_PRIM_PARSEREMPTY
 

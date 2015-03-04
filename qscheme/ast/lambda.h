@@ -1,5 +1,5 @@
-#ifndef LAMBDA_H
-#define LAMBDA_H
+#ifndef QSCHEME_AST_LAMBDA_H
+#define QSCHEME_AST_LAMBDA_H
 
 #include <QStringList>
 #include "val.h"
@@ -23,4 +23,4 @@ public:
 }
 }
 
-#endif // LAMBDA_H
+#endif // QSCHEME_AST_LAMBDA_H

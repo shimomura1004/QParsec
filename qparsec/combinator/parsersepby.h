@@ -1,5 +1,5 @@
-#ifndef PARSERSEPBY
-#define PARSERSEPBY
+#ifndef QPARSEC_COMBINATOR_PARSERSEPBY
+#define QPARSEC_COMBINATOR_PARSERSEPBY
 
 #include "parser.h"
 
@@ -83,5 +83,5 @@ ParserSepBy1<T, TSep> *SepBy1(Parser<T> *p, Parser<TSep> *psep)
 }
 }
 
-#endif // PARSERSEPBY
+#endif // QPARSEC_COMBINATOR_PARSERSEPBY
 

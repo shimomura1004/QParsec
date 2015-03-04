@@ -1,5 +1,5 @@
-#ifndef PARSERSEMI_H
-#define PARSERSEMI_H
+#ifndef QPARSEC_TOKEN_PARSERSEMI_H
+#define QPARSEC_TOKEN_PARSERSEMI_H
 
 #include "parser.h"
 #include "parserlexeme.h"
@@ -12,4 +12,4 @@ Parser<QChar> *Semi();
 }
 }
 
-#endif // PARSERSEMI_H
+#endif // QPARSEC_TOKEN_PARSERSEMI_H

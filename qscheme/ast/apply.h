@@ -1,5 +1,5 @@
-#ifndef APPLY_H
-#define APPLY_H
+#ifndef QSCHEME_AST_APPLY_H
+#define QSCHEME_AST_APPLY_H
 
 #include "val.h"
 
@@ -20,4 +20,4 @@ public:
 }
 }
 
-#endif // APPLY_H
+#endif // QSCHEME_AST_APPLY_H

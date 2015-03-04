@@ -1,5 +1,5 @@
-#ifndef BOOL_H
-#define BOOL_H
+#ifndef QSCHEME_AST_BOOL_H
+#define QSCHEME_AST_BOOL_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // BOOL_H
+#endif // QSCHEME_AST_BOOL_H

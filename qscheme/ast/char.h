@@ -1,5 +1,5 @@
-#ifndef CHAR_H
-#define CHAR_H
+#ifndef QSCHEME_AST_CHAR_H
+#define QSCHEME_AST_CHAR_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // CHAR_H
+#endif // QSCHEME_AST_CHAR_H

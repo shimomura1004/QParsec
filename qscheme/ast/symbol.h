@@ -1,5 +1,5 @@
-#ifndef SYMBOL_H
-#define SYMBOL_H
+#ifndef QSCHEME_AST_SYMBOL_H
+#define QSCHEME_AST_SYMBOL_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // SYMBOL_H
+#endif // QSCHEME_AST_SYMBOL_H

@@ -1,5 +1,5 @@
-#ifndef VAL_H
-#define VAL_H
+#ifndef QSCHEME_AST_VAL_H
+#define QSCHEME_AST_VAL_H
 
 #include <QString>
 #include <QSharedPointer>
@@ -19,5 +19,5 @@ typedef QList<QPair<QString, SharedVal>> Env;
 }
 }
 
-#endif // VAL_H
+#endif // VAL_QSCHEME_AST_H
 

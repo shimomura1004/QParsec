@@ -1,5 +1,5 @@
-#ifndef AST_H
-#define AST_H
+#ifndef QSCHEME_AST_H
+#define QSCHEME_AST_H
 
 #include "and.h"
 #include "apply.h"
@@ -30,5 +30,5 @@
 #include "variable.h"
 #include "vector.h"
 
-#endif // AST_H
+#endif // QSCHEME_AST_H
 

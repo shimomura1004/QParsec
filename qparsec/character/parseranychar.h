@@ -1,5 +1,5 @@
-#ifndef PARSERANYCHAR_H
-#define PARSERANYCHAR_H
+#ifndef QPARSEC_CHARACTER_PARSERANYCHAR_H
+#define QPARSEC_CHARACTER_PARSERANYCHAR_H
 
 #include "parser.h"
 #include "parserexception.h"
@@ -18,4 +18,4 @@ ParserAnyChar *AnyChar();
 }
 }
 
-#endif // PARSERANYCHAR_H
+#endif // QPARSEC_CHARACTER_PARSERANYCHAR_H

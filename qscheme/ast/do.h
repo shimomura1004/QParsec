@@ -1,5 +1,5 @@
-#ifndef DO_H
-#define DO_H
+#ifndef QSCHEME_AST_DO_H
+#define QSCHEME_AST_DO_H
 
 #include "val.h"
 
@@ -39,4 +39,4 @@ public:
 }
 }
 
-#endif // DO_H
+#endif // QSCHEME_AST_DO_H

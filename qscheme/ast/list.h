@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef QSCHEME_AST_LIST_H
+#define QSCHEME_AST_LIST_H
 
 #include "val.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif // LIST_H
+#endif // QSCHEME_AST_LIST_H

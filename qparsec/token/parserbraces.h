@@ -1,5 +1,5 @@
-#ifndef PARSERBRACES_H
-#define PARSERBRACES_H
+#ifndef QPARSEC_TOKEN_PARSERBRACES_H
+#define QPARSEC_TOKEN_PARSERBRACES_H
 
 #include "parser.h"
 #include "combinator/combinator.h"
@@ -17,4 +17,4 @@ Parser<T> *Braces(Parser<T> *p)
 }
 }
 
-#endif // PARSERBRACES_H
+#endif // QPARSEC_TOKEN_PARSERBRACES_H

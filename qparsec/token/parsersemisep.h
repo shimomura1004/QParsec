@@ -1,5 +1,5 @@
-#ifndef PARSERSEMISEP
-#define PARSERSEMISEP
+#ifndef QPARSEC_TOKEN_PARSERSEMISEP
+#define QPARSEC_TOKEN_PARSERSEMISEP
 
 #include "parser.h"
 #include "parsersemi.h"
@@ -18,5 +18,5 @@ Parser<QList<T>> *SemiSep1(Parser<T> *p)
 }
 }
 
-#endif // PARSERSEMISEP
+#endif // QPARSEC_TOKEN_PARSERSEMISEP
 

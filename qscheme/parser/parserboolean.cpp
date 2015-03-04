@@ -5,8 +5,12 @@
 namespace qscheme {
 namespace parser {
 
-qparsec::Parser<ast::SharedVal> *Boolean() {
-    //return qparsec::prim::Apply(qparsec::language::scheme::Boolean(), ast::Bool::create);
+using namespace qparsec;
+using namespace prim;
+using namespace language;
+
+Parser<ast::SharedVal> *Boolean() {
+    return Apply(scheme::Boolean(), ast::Bool::create);
 }
 
 }

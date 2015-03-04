@@ -1,5 +1,5 @@
-#ifndef PARSERSKIPMANY
-#define PARSERSKIPMANY
+#ifndef QPARSEC_COMBINATOR_PARSERSKIPMANY
+#define QPARSEC_COMBINATOR_PARSERSKIPMANY
 
 #include "parser.h"
 
@@ -47,5 +47,5 @@ ParserSkipMany1<T> *SkipMany1(Parser<T> *p)
 }
 }
 
-#endif // PARSERSKIPMANY
+#endif // QPARSEC_COMBINATOR_PARSERSKIPMANY
 

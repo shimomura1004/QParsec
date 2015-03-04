@@ -1,5 +1,5 @@
-#ifndef PARSERBOOLEAN_H
-#define PARSERBOOLEAN_H
+#ifndef QPARSEC_PARSER_PARSERBOOLEAN_H
+#define QPARSEC_PARSER_PARSERBOOLEAN_H
 
 #include "parser.h"
 #include "ast/ast.h"
@@ -12,4 +12,4 @@ qparsec::Parser<ast::SharedVal> *Boolean();
 }
 }
 
-#endif // PARSERBOOLEAN_H
+#endif // QPARSEC_PARSER_PARSERBOOLEAN_H
