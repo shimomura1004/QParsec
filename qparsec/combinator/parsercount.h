@@ -1,6 +1,8 @@
 #ifndef PARSERCOUNT
 #define PARSERCOUNT
 
+#include <QString>
+#include <QList>
 #include "parser.h"
 
 namespace qparsec {
@@ -49,8 +51,8 @@ public:
 template<typename T>
 ParserCount<T> *Count(Parser<T> *p, int n)
 { return new ParserCount<T>(p, n); }
-ParserCount<QChar> *Count(Parser<QChar> *p, int n)
-{ return new ParserCount<QChar>(p, n); }
+template<>
+ParserCount<QChar> *Count(Parser<QChar> *p, int n);
 
 }
 }

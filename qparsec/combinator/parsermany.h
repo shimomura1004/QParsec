@@ -110,14 +110,12 @@ public:
 template<typename T>
 ParserMany<T> *Many(Parser<T> *p)
 { return new ParserMany<T>(p); }
-ParserMany<QChar> *Many(Parser<QChar> *p)
-{ return new ParserMany<QChar>(p); }
+ParserMany<QChar> *Many(Parser<QChar> *p);
 
 template<typename T>
 ParserMany1<T> *Many1(Parser<T> *p)
 { return new ParserMany1<T>(p); }
-ParserMany1<QChar> *Many1(Parser<QChar> *p)
-{ return new ParserMany1<QChar>(p); }
+ParserMany1<QChar> *Many1(Parser<QChar> *p);
 
 template<typename T, typename TEnd>
 ParserManyTill<T, TEnd> *ManyTill(Parser<T> *p, Parser<TEnd> *pend)

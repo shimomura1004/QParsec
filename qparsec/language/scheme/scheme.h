@@ -10,6 +10,8 @@
 #include "character/character.h"
 #include "combinator/combinator.h"
 
+#include "parseridentifier.h"
+
 namespace qparsec {
 namespace language {
 namespace scheme {
@@ -18,30 +20,6 @@ using namespace qparsec;
 using namespace prim;
 using namespace character;
 using namespace combinator;
-
-class ParserIdentifier : public Parser<QString> {
-protected:
-    Parser<QChar> *Initial() { return Choice({Letter(), SpecialInitial()}); }
-    Parser<QChar> *SpecialInitial() { return OneOf("!#$%&|*+-/:<=>?@^_~"); }
-    Parser<QChar> *Subsequent() { return Choice({Initial(), Digit(), SpecialSubsequent()}); }
-    Parser<QChar> *SpecialSubsequent() { return OneOf("+-.@"); }
-    Parser<QString> *PeculiarIdentifier() { return Choice({Str("+"), Str("-"), Str("...")}); }
-
-public:
-    ParserIdentifier() : Parser<QString>() {}
-
-    QString parse(Input &input) {
-        try {
-            auto c = Initial()->parse(input);
-            auto cs = Many(Subsequent())->parse(input);
-            return c + cs;
-        }
-        catch (const ParserException &) {
-            return PeculiarIdentifier()->parse(input);
-        }
-    }
-};
-Parser<QString> *Identifier() { return new ParserIdentifier(); }
 
 const QStringList ExpressionKeyword = {
     "quote", "lambda", "if", "set!", "begin", "cond", "and", "or", "case",

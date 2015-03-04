@@ -19,7 +19,13 @@ SOURCES += \
     character/parseranychar.cpp \
     character/parserspace.cpp \
     character/parsersatisfy.cpp \
-    language/scheme/scheme.cpp
+    language/scheme/scheme.cpp \
+    language/scheme/parseridentifier.cpp \
+    prim/parserfail.cpp \
+    prim/parserempty.cpp \
+    combinator/parsercount.cpp \
+    combinator/parsereof.cpp \
+    combinator/parsermany.cpp
 
 HEADERS += \
     parser.h \
@@ -60,4 +66,5 @@ HEADERS += \
     prim/parserignore.h \
     prim/parserseq.h \
     prim/prim.h \
-    language/scheme/scheme.h
+    language/scheme/scheme.h \
+    language/scheme/parseridentifier.h

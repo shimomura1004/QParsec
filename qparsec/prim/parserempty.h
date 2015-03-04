@@ -7,11 +7,10 @@ namespace qparsec {
 namespace prim {
 
 class ParserEmpty : public Parser<void> {
-    void parse(Input &) {}
+    void parse(Input &);
 };
 
-ParserEmpty *Empty()
-{ return new ParserEmpty(); }
+ParserEmpty *Empty();
 
 }
 }

@@ -11,15 +11,11 @@ protected:
     QString message_;
 
 public:
-    ParserFail(QString message) : message_(message) {}
-
-    void parse(Input &input) {
-        throw ParserException(input.index(), message_);
-    }
+    ParserFail(QString message);
+    void parse(Input &input);
 };
 
-ParserFail *Fail(QString message)
-{ return new ParserFail(message); }
+ParserFail *Fail(QString message);
 
 }
 }
