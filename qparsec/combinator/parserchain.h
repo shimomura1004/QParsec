@@ -2,6 +2,7 @@
 #define PARSERCHAIN
 
 #include "parser.h"
+#include "parserexception.h"
 
 namespace qparsec {
 namespace combinator {

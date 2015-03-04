@@ -29,7 +29,13 @@ SOURCES += \
     language/scheme/parserboolean.cpp \
     language/scheme/parsernumber.cpp \
     language/scheme/parsercharacter.cpp \
-    language/scheme/parserstring.cpp
+    language/scheme/parserstring.cpp \
+    token/parsersemi.cpp \
+    token/parserwhitespace.cpp \
+    token/parsersymbol.cpp \
+    token/parsercomma.cpp \
+    token/parsercolon.cpp \
+    token/parserdot.cpp
 
 HEADERS += \
     parser.h \
@@ -76,4 +82,18 @@ HEADERS += \
     language/scheme/parserboolean.h \
     language/scheme/parsernumber.h \
     language/scheme/parsercharacter.h \
-    language/scheme/parserstring.h
+    language/scheme/parserstring.h \
+    token/parsersemi.h \
+    token/parserlexeme.h \
+    token/parserwhitespace.h \
+    token/token.h \
+    token/parsersymbol.h \
+    token/parserparens.h \
+    token/parserbraces.h \
+    token/parserbrackets.h \
+    token/parsersquares.h \
+    token/parsercomma.h \
+    token/parsercolon.h \
+    token/parserdot.h \
+    token/parsersemisep.h \
+    token/parsercommasep.h
