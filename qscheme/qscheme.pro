@@ -45,7 +45,11 @@ SOURCES += main.cpp \
     parser/datum/parseridentifier.cpp \
     parser/datum/parsernumber.cpp \
     parser/datum/parserstring.cpp \
-    parser/datum/parservariable.cpp
+    parser/datum/parservariable.cpp \
+    parser/datum/parserlist.cpp \
+    parser/datum/parserdatum.cpp \
+    parser/datum/parservector.cpp \
+    parser/datum/parsercompounddatum.cpp
 
 HEADERS += \
     ast/val.h \
@@ -84,5 +88,9 @@ HEADERS += \
     parser/datum/parseridentifier.h \
     parser/datum/parsernumber.h \
     parser/datum/parserstring.h \
-    parser/datum/parservariable.h
+    parser/datum/parservariable.h \
+    parser/datum/parserlist.h \
+    parser/datum/parserdatum.h \
+    parser/datum/parservector.h \
+    parser/datum/parsercompounddatum.h
 

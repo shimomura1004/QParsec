@@ -8,13 +8,11 @@ namespace prim {
 
 template<typename T>
 class ParserLazy : public Parser<T> {
-    friend ParserLazy<T> *Lazy(Parser<T>* (*p)());
 protected:
     Parser<T>*(*p_)();
 
-    ParserLazy(Parser<T>* (*p)()) : Parser<T>(), p_(p) {}
 public:
-
+    ParserLazy(Parser<T>* (*p)()) : Parser<T>(), p_(p) {}
     T parse(Input &input) {
         return p_()->parse(input);
     }
