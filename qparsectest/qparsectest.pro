@@ -12,7 +12,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     tst_prim.cpp \
-    tst_character.cpp
+    tst_character.cpp \
+    tst_combinator.cpp
 
 HEADERS += \
     autotest.h

@@ -36,7 +36,13 @@ SOURCES += \
     language/scheme/parserboolean.cpp \
     language/scheme/parsernumber.cpp \
     language/scheme/parsercharacter.cpp \
-    language/scheme/parserstring.cpp
+    language/scheme/parserstring.cpp \
+    number/parserdecimal.cpp \
+    number/parserhexadecimal.cpp \
+    number/parseroctal.cpp \
+    number/parsernatural.cpp \
+    number/parserinteger.cpp \
+    number/parserdouble.cpp
 
 HEADERS += \
     parser.h \
@@ -97,4 +103,11 @@ HEADERS += \
     language/scheme/parserboolean.h \
     language/scheme/parsernumber.h \
     language/scheme/parsercharacter.h \
-    language/scheme/parserstring.h
+    language/scheme/parserstring.h \
+    number/parserdecimal.h \
+    number/number.h \
+    number/parserhexadecimal.h \
+    number/parseroctal.h \
+    number/parsernatural.h \
+    number/parserinteger.h \
+    number/parserdouble.h
