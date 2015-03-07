@@ -8,8 +8,10 @@ namespace qscheme {
 namespace ast {
 
 class Let : public Val {
-protected:
+public:
     enum Type { Normal, Star, Rec };
+
+protected:
     static const char* typeToString(Type type);
 
     QString name;

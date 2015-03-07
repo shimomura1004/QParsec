@@ -49,7 +49,27 @@ SOURCES += main.cpp \
     parser/datum/parserlist.cpp \
     parser/datum/parserdatum.cpp \
     parser/datum/parservector.cpp \
-    parser/datum/parsercompounddatum.cpp
+    parser/datum/parsercompounddatum.cpp \
+    parser/expression/parserexpression.cpp \
+    parser/expression/parserquotation.cpp \
+    parser/expression/parserliteral.cpp \
+    parser/expression/parserselfevaluating.cpp \
+    parser/expression/parserprocedurecall.cpp \
+    parser/expression/parsersequence.cpp \
+    parser/expression/parserbody.cpp \
+    parser/expression/parserlambda.cpp \
+    parser/expression/parsercondition.cpp \
+    parser/expression/parserassignment.cpp \
+    parser/expression/parsercond.cpp \
+    parser/expression/parsercase.cpp \
+    parser/expression/parserand.cpp \
+    parser/expression/parseror.cpp \
+    parser/expression/parserbindingspec.cpp \
+    parser/expression/parserlet.cpp \
+    parser/expression/parserbegin.cpp \
+    parser/expression/parserdo.cpp \
+    parser/expression/parserdelay.cpp \
+    parser/expression/parserderivedexpression.cpp
 
 HEADERS += \
     ast/val.h \
@@ -92,5 +112,26 @@ HEADERS += \
     parser/datum/parserlist.h \
     parser/datum/parserdatum.h \
     parser/datum/parservector.h \
-    parser/datum/parsercompounddatum.h
+    parser/datum/parsercompounddatum.h \
+    parser/expression/parserexpression.h \
+    parser/expression/parserquotation.h \
+    parser/expression/parserliteral.h \
+    parser/expression/parserselfevaluating.h \
+    parser/expression/parserprocedurecall.h \
+    parser/expression/parsersequence.h \
+    parser/expression/parserbody.h \
+    parser/expression/parserlambda.h \
+    parser/expression/parsercondition.h \
+    parser/expression/parserassignment.h \
+    parser/expression/parsercond.h \
+    parser/expression/parsercase.h \
+    parser/expression/parserand.h \
+    parser/expression/parseror.h \
+    parser/expression/parserbindingspec.h \
+    parser/expression/parserlet.h \
+    parser/expression/parserbegin.h \
+    parser/expression/parserdo.h \
+    parser/expression/parserdelay.h \
+    parser/expression/parserderivedexpression.h \
+    parser/expression/expression.h
 

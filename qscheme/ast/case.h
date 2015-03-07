@@ -7,7 +7,7 @@ namespace qscheme {
 namespace ast {
 
 class Case : public Val {
-protected:
+public:
     struct CaseClause {
         QList<SharedVal> data;
         QList<SharedVal> sequence;
@@ -15,6 +15,7 @@ protected:
         QString toString();
     };
 
+protected:
     SharedVal caseexp;
     QList<QSharedPointer<CaseClause>> caseclauses;
     QList<SharedVal> elseclause;

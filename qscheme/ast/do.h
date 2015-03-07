@@ -7,7 +7,7 @@ namespace qscheme {
 namespace ast {
 
 class Do : public Val {
-protected:
+public:
     struct IterationSpec {
         QString var;
         SharedVal init;
@@ -24,6 +24,7 @@ protected:
         virtual QString toString();
     };
 
+protected:
     QList<QSharedPointer<IterationSpec>> iterationspecs;
     SharedVal test;
     SharedVal doresult;

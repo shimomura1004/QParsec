@@ -8,7 +8,7 @@ namespace qscheme {
 namespace ast {
 
 class Cond : public Val {
-protected:
+public:
     struct CondClause {
         virtual QString toString() = 0;
         virtual ~CondClause() {}
@@ -31,6 +31,7 @@ protected:
         QString toString();
     };
 
+protected:
     QList<QSharedPointer<CondClause>> condclauses;
     QList<SharedVal> elseclause;
 
