@@ -3,15 +3,13 @@
 
 #include "parserchar.h"
 #include "parseroneof.h"
+#include "combinator/parsermany.h"
 
 namespace qparsec {
 namespace character {
 
 Parser<QChar> *Space();
-
-//Parser<QString> *Spaces()
-//{ return combinators::Many(Space()); }
-
+Parser<QString> *Spaces();
 Parser<QChar> *Newline();
 Parser<QChar> *Tab();
 

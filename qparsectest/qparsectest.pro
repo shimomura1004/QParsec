@@ -11,7 +11,8 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    tst_qparsec.cpp
+    tst_prim.cpp \
+    tst_character.cpp
 
 HEADERS += \
     autotest.h

@@ -14,12 +14,12 @@ using namespace character;
 using namespace combinator;
 using namespace token;
 
-class QParsecTest : public QObject
+class PrimTest : public QObject
 {
     Q_OBJECT
 
 public:
-    QParsecTest(){}
+    PrimTest(){}
 
 private Q_SLOTS:
     void testApply();
@@ -37,7 +37,7 @@ private Q_SLOTS:
     void testTry();
 };
 
-void QParsecTest::testApply()
+void PrimTest::testApply()
 {
     Input input("hello");
     // you can't omit template arguments
@@ -53,7 +53,7 @@ void QParsecTest::testApply()
     QVERIFY_EXCEPTION_THROWN(p->parse(input3), ParserException);
 }
 
-void QParsecTest::testFail()
+void PrimTest::testFail()
 {
     Input input("a");
 
@@ -69,7 +69,7 @@ void QParsecTest::testFail()
     QCOMPARE(a, QChar('a'));
 }
 
-void QParsecTest::testHelp()
+void PrimTest::testHelp()
 {
     Input input("a");
 
@@ -82,14 +82,14 @@ void QParsecTest::testHelp()
     }
 }
 
-void QParsecTest::testLeft()
+void PrimTest::testLeft()
 {
     Input input1("123abc");
     auto num = Left(Many1(Digit()), Str("abc"))->parse(input1);
     QCOMPARE(num, QStringLiteral("123"));
 }
 
-void QParsecTest::testPair()
+void PrimTest::testPair()
 {
     Input input("(x 3)");
     auto pair = Parens(Pair(Lexeme(AnyChar()), Lexeme(Digit())))->parse(input);
@@ -97,14 +97,14 @@ void QParsecTest::testPair()
     QCOMPARE(pair.second, QChar('3'));
 }
 
-void QParsecTest::testReturn()
+void PrimTest::testReturn()
 {
     Input input("");
     auto a = Return(QString("a"))->parse(input);
     QCOMPARE(a, QString("a"));
 }
 
-void QParsecTest::testRight()
+void PrimTest::testRight()
 {
     Input input("var x = 1;");
     auto varname = Right(Symbol("var"), ManyTill(AnyChar(), Space()))->parse(input);
@@ -114,7 +114,7 @@ void QParsecTest::testRight()
     QCOMPARE(name, QString("x"));
 }
 
-void QParsecTest::testSeq()
+void PrimTest::testSeq()
 {
     Input input("abc");
 
@@ -122,7 +122,7 @@ void QParsecTest::testSeq()
     Eof()->parse(input);
 }
 
-void QParsecTest::testTry()
+void PrimTest::testTry()
 {
     Input input("abc");
 
@@ -145,7 +145,7 @@ Parser<QString> *HelloInLazyNestedParens(){
     Parser<QString>*(*child)() = []() -> Parser<QString>* {return Between(HelloInLazyNestedParens(), Char('('), Char(')'));};
     return Choice({Str("hello"), Lazy(child)});
 }
-void QParsecTest::testLazy()
+void PrimTest::testLazy()
 {
     Input input("(((hello)))");
     // cause stack overflow
@@ -154,6 +154,6 @@ void QParsecTest::testLazy()
     QCOMPARE(hello, QString("hello"));
 }
 
-DECLARE_TEST(QParsecTest)
+DECLARE_TEST(PrimTest)
 
-#include "tst_qparsec.moc"
+#include "tst_prim.moc"
