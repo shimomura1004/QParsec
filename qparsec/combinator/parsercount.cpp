@@ -16,6 +16,7 @@ QString ParserCount<QChar>::parse(Input &input) {
     return result;
 }
 
+template<>
 ParserCount<QChar> *Count(Parser<QChar> *p, int n)
 { return new ParserCount<QChar>(p, n); }
 

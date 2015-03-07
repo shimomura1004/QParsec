@@ -18,6 +18,19 @@ class CombinatorTest : public QObject
 {
     Q_OBJECT
 
+    struct ParserPlus : Parser<int(*)(int,int)> {
+        int (*parse(Input &input))(int, int) {
+            Char('+')->parse(input);
+            return [](int x, int y){ return x + y; };
+        }
+    };
+    struct ParserDiv : Parser<int(*)(int,int)> {
+        int (*parse(Input &input))(int, int) {
+            Char('/')->parse(input);
+            return [](int x, int y){ return x / y; };
+        }
+    };
+
 public:
     CombinatorTest(){}
 

@@ -141,7 +141,6 @@ Parser<QString> *HelloInNestedParens(){
     return Choice({Str("hello"), Between(HelloInNestedParens(), Char('('), Char(')'))});
 }
 Parser<QString> *HelloInLazyNestedParens(){
-//    Parser<QString>*(*child)() = [](){return Between(HelloInLazyNestedParens(), Char('('), Char(')'));};
     Parser<QString>*(*child)() = []() -> Parser<QString>* {return Between(HelloInLazyNestedParens(), Char('('), Char(')'));};
     return Choice({Str("hello"), Lazy(child)});
 }

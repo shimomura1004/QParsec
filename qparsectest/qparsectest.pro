@@ -13,7 +13,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     tst_prim.cpp \
     tst_character.cpp \
-    tst_combinator.cpp
+    tst_combinator.cpp \
+    tst_token.cpp
 
 HEADERS += \
     autotest.h
