@@ -20,5 +20,9 @@ void ParserTry<void>::parse(Input &input) {
     }
 }
 
+template<>
+ParserTry<void> *Try<void>(Parser<void> *p)
+{ return new ParserTry<void>(p); }
+
 }
 }

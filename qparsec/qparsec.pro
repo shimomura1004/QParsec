@@ -12,6 +12,9 @@ DEFINES += QPARSEC_LIBRARY
 SOURCES += \
     input.cpp \
     parserexception.cpp \
+    prim/parserfail.cpp \
+    prim/parserempty.cpp \
+    prim/parsertry.cpp \
     character/parseroneof.cpp \
     character/parsernoneof.cpp \
     character/parserchar.cpp \
@@ -19,49 +22,27 @@ SOURCES += \
     character/parseranychar.cpp \
     character/parserspace.cpp \
     character/parsersatisfy.cpp \
-    language/scheme/parseridentifier.cpp \
-    prim/parserfail.cpp \
-    prim/parserempty.cpp \
     combinator/parsercount.cpp \
     combinator/parsereof.cpp \
     combinator/parsermany.cpp \
-    language/scheme/parservariable.cpp \
-    language/scheme/parserboolean.cpp \
-    language/scheme/parsernumber.cpp \
-    language/scheme/parsercharacter.cpp \
-    language/scheme/parserstring.cpp \
     token/parsersemi.cpp \
     token/parserwhitespace.cpp \
     token/parsersymbol.cpp \
     token/parsercomma.cpp \
     token/parsercolon.cpp \
-    token/parserdot.cpp
+    token/parserdot.cpp \
+    language/scheme/parseridentifier.cpp \
+    language/scheme/parservariable.cpp \
+    language/scheme/parserboolean.cpp \
+    language/scheme/parsernumber.cpp \
+    language/scheme/parsercharacter.cpp \
+    language/scheme/parserstring.cpp
 
 HEADERS += \
     parser.h \
     input.h \
     parserexception.h \
     qparsec.h \
-    character/parseroneof.h \
-    character/parsernoneof.h \
-    character/parserchar.h \
-    character/parserstr.h \
-    character/parseranychar.h \
-    character/parserspace.h \
-    character/parsersatisfy.h \
-    combinator/parsermany.h \
-    character/character.h \
-    combinator/parserskipmany.h \
-    combinator/parserchoice.h \
-    combinator/parsersepby.h \
-    combinator/parserendby.h \
-    combinator/parsercount.h \
-    combinator/parserbetween.h \
-    combinator/parseroption.h \
-    combinator/parsereof.h \
-    combinator/parserchain.h \
-    combinator/parsrelookahead.h \
-    combinator/combinator.h \
     prim/parserlazy.h \
     prim/parserapply.h \
     prim/parserapply2.h \
@@ -76,13 +57,26 @@ HEADERS += \
     prim/parserignore.h \
     prim/parserseq.h \
     prim/prim.h \
-    language/scheme/parseridentifier.h \
-    language/scheme/parservariable.h \
-    language/scheme/scheme.h \
-    language/scheme/parserboolean.h \
-    language/scheme/parsernumber.h \
-    language/scheme/parsercharacter.h \
-    language/scheme/parserstring.h \
+    character/parseroneof.h \
+    character/parsernoneof.h \
+    character/parserchar.h \
+    character/parserstr.h \
+    character/parseranychar.h \
+    character/parserspace.h \
+    character/parsersatisfy.h \
+    character/character.h \
+    combinator/parsermany.h \
+    combinator/parserskipmany.h \
+    combinator/parserchoice.h \
+    combinator/parsersepby.h \
+    combinator/parserendby.h \
+    combinator/parsercount.h \
+    combinator/parserbetween.h \
+    combinator/parseroption.h \
+    combinator/parsereof.h \
+    combinator/parserchain.h \
+    combinator/parsrelookahead.h \
+    combinator/combinator.h \
     token/parsersemi.h \
     token/parserlexeme.h \
     token/parserwhitespace.h \
@@ -96,4 +90,11 @@ HEADERS += \
     token/parsercolon.h \
     token/parserdot.h \
     token/parsersemisep.h \
-    token/parsercommasep.h
+    token/parsercommasep.h \
+    language/scheme/parseridentifier.h \
+    language/scheme/parservariable.h \
+    language/scheme/scheme.h \
+    language/scheme/parserboolean.h \
+    language/scheme/parsernumber.h \
+    language/scheme/parsercharacter.h \
+    language/scheme/parserstring.h

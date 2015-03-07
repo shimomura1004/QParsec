@@ -46,6 +46,9 @@ template<typename T>
 ParserTry<T> *Try(Parser<T> *p)
 { return new ParserTry<T>(p); }
 
+template<>
+ParserTry<void> *Try<void>(Parser<void> *p);
+
 }
 }
 
